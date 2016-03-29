@@ -1,0 +1,109 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using static ProbabilityMonad.Base;
+using CSharpProbabilityMonad;
+using static ProbabilityMonad.Distributions;
+
+namespace ProbabilityMonad
+{
+    public static class ProbabilityFunctions
+    {
+        /// <summary>
+        /// Multiply all the probabilities by a constant so they sum to 1
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="probs"></param>
+        /// <returns></returns>
+        public static IEnumerable<ItemProb<A>> Normalize<A>(IEnumerable<ItemProb<A>> probs)
+        {
+            var norm = probs.Select(p => p.Prob.Value).Sum();
+            return probs.Select(prob => new ItemProb<A>(prob.Item, Prob(prob.Prob.Value / norm)));
+        }
+
+        /// <summary>
+        /// Pick a value from a distribution using a probability
+        /// </summary>
+        public static A Pick<A>(this Dist<A> distribution, Prob pickProb)
+        {
+            var probVal = pickProb.Value;
+            foreach (var prob in distribution.Distribution)
+            {
+                if (probVal < prob.Prob.Value)
+                {
+                    return prob.Item;
+                }
+                probVal -= prob.Prob.Value;
+            }
+            throw new ArgumentException("Sampling failed");
+        }
+
+        public static SampleDist<A> ToSampleDist<A>(this Dist<A> dist)
+        {
+            return new SampleDist<A>(() =>
+            {
+                var rand = new MathNet.Numerics.Distributions.ContinuousUniform().Sample();
+                return dist.Pick(Prob(rand));
+            });
+        }
+
+        /// <summary>
+        /// Returns the probability of a certain event
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="distribution"></param>
+        /// <param name="eventTest"></param>
+        /// <returns></returns>
+        public static Prob ProbOf<A>(this Dist<A> distribution, Func<A, bool> eventTest)
+        {
+            return Prob(distribution.Distribution.Where(p => eventTest(p.Item)).Select(p => p.Prob.Value).Sum());
+        }
+
+        /// <summary>
+        /// Reweight by a probability that depends on associated item
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="distribution"></param>
+        /// <param name="likelihood"></param>
+        /// <returns></returns>
+        public static Dist<A> Condition<A>(this Dist<A> distribution, Func<A, Prob> likelihood)
+        {
+            return new Dist<A>(distribution.Distribution
+                .Select(p => ItemProb(p.Item, likelihood(p.Item).Mult(p.Prob))));
+        }
+        
+        /// <summary>
+        /// Join two independent distributions
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <typeparam name="B"></typeparam>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public static Dist<Tuple<A,B>> Join<A, B>(this Dist<A> self, Dist<B> other)
+        {
+            return from a in self
+                   from b in other
+                   select new Tuple<A, B>(a, b);
+        }
+
+        /// <summary>
+        /// Returns all elements, and the collection without that element
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static Dist<Tuple<A,IEnumerable<A>>> SelectOne<A>(List<A> list)
+        {
+            var removedLists = list.Select(a => {
+                var removedList = new List<A>(list);
+                removedList.Remove(a);
+                return new Tuple<A, IEnumerable<A>>(a, removedList);
+               });
+            return EnumUniformD(removedLists);
+        }
+
+    }
+}
