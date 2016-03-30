@@ -52,6 +52,16 @@ namespace ProbabilityMonad.Test
             var pSumTo8 = threeRolls.ProbOf(s => s == 8);
             Assert.AreEqual("9.7%", pSumTo8.ToString());
         }
+
+        [TestMethod]
+        public void FreeMonad()
+        {
+            DistF<string, string> program =
+                from msg in DistOps.GetMessage<string>()
+                from msg2 in DistOps.GetMessage<string>()
+                from _ in DistOps.DisplayMessage<string>(msg + msg2)
+                select msg2;
+        }
     }
 }
 

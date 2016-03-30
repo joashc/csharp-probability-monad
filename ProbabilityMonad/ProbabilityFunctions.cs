@@ -20,13 +20,13 @@ namespace ProbabilityMonad
         public static IEnumerable<ItemProb<A>> Normalize<A>(IEnumerable<ItemProb<A>> probs)
         {
             var norm = probs.Select(p => p.Prob.Value).Sum();
-            return probs.Select(prob => new ItemProb<A>(prob.Item, Prob(prob.Prob.Value / norm)));
+            return probs.Select(prob => new ItemProb<A>(prob.Item, prob.Prob.Div(Prob(norm))));
         }
 
         /// <summary>
         /// Pick a value from a distribution using a probability
         /// </summary>
-        public static A Pick<A>(this Dist<A> distribution, Prob pickProb)
+        public static A Pick<A>(this FiniteDist<A> distribution, Prob pickProb)
         {
             var probVal = pickProb.Value;
             foreach (var prob in distribution.Distribution)
@@ -40,9 +40,15 @@ namespace ProbabilityMonad
             throw new ArgumentException("Sampling failed");
         }
 
-        public static SampleDist<A> ToSampleDist<A>(this Dist<A> dist)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="dist"></param>
+        /// <returns></returns>
+        public static ContDist<A> ToSampleDist<A>(this FiniteDist<A> dist)
         {
-            return new SampleDist<A>(() =>
+            return new ContDist<A>(() =>
             {
                 var rand = new MathNet.Numerics.Distributions.ContinuousUniform().Sample();
                 return dist.Pick(Prob(rand));
@@ -56,7 +62,7 @@ namespace ProbabilityMonad
         /// <param name="distribution"></param>
         /// <param name="eventTest"></param>
         /// <returns></returns>
-        public static Prob ProbOf<A>(this Dist<A> distribution, Func<A, bool> eventTest)
+        public static Prob ProbOf<A>(this FiniteDist<A> distribution, Func<A, bool> eventTest)
         {
             return Prob(distribution.Distribution.Where(p => eventTest(p.Item)).Select(p => p.Prob.Value).Sum());
         }
@@ -68,9 +74,9 @@ namespace ProbabilityMonad
         /// <param name="distribution"></param>
         /// <param name="likelihood"></param>
         /// <returns></returns>
-        public static Dist<A> Condition<A>(this Dist<A> distribution, Func<A, Prob> likelihood)
+        public static FiniteDist<A> Condition<A>(this FiniteDist<A> distribution, Func<A, Prob> likelihood)
         {
-            return new Dist<A>(distribution.Distribution
+            return new FiniteDist<A>(distribution.Distribution
                 .Select(p => ItemProb(p.Item, likelihood(p.Item).Mult(p.Prob))));
         }
         
@@ -82,7 +88,7 @@ namespace ProbabilityMonad
         /// <param name="self"></param>
         /// <param name="other"></param>
         /// <returns></returns>
-        public static Dist<Tuple<A,B>> Join<A, B>(this Dist<A> self, Dist<B> other)
+        public static FiniteDist<Tuple<A,B>> Join<A, B>(this FiniteDist<A> self, FiniteDist<B> other)
         {
             return from a in self
                    from b in other
@@ -95,7 +101,7 @@ namespace ProbabilityMonad
         /// <typeparam name="A"></typeparam>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static Dist<Tuple<A,IEnumerable<A>>> SelectOne<A>(List<A> list)
+        public static FiniteDist<Tuple<A,IEnumerable<A>>> SelectOne<A>(List<A> list)
         {
             var removedLists = list.Select(a => {
                 var removedList = new List<A>(list);

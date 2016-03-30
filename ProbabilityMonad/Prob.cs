@@ -3,12 +3,13 @@
 namespace CSharpProbabilityMonad
 {
     /// <summary>
-    /// Interface for probability wrapper so we can easily switch to log likelihoods etc.
+    /// Interface for probability wrapper so we can easily switch to log likelihoods
     /// </summary>
     public interface Prob : IEquatable<Prob>, IComparable<Prob>
     {
         double Value { get; }
         Prob Mult(Prob other);
+        Prob Div(Prob other);
     }
 
     /// <summary>
@@ -33,6 +34,11 @@ namespace CSharpProbabilityMonad
             return new DoubleProb(Value * other.Value);
         }
 
+        public Prob Div(Prob other)
+        {
+            return new DoubleProb(Value / other.Value);
+        }
+
         public int CompareTo(Prob other)
         {
             return Value.CompareTo(other.Value);
@@ -43,5 +49,4 @@ namespace CSharpProbabilityMonad
             return Value.Equals(other.Value);
         }
     }
-
 }

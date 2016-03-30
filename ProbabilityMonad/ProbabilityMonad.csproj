@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base.cs" />
+    <Compile Include="DistF.cs" />
     <Compile Include="Distributions.cs" />
     <Compile Include="Prob.cs" />
     <Compile Include="ProbabilityFunctions.cs" />

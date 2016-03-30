@@ -38,17 +38,17 @@ namespace ProbabilityMonad
     }
 
     /// <summary>
-    /// Distribution monad
+    /// Discrete distribution monad
     /// </summary>
     /// <typeparam name="A"></typeparam>
-    public class Dist<A>
+    public class FiniteDist<A>
     {
-        public Dist(IEnumerable<ItemProb<A>> probs)
+        public FiniteDist(IEnumerable<ItemProb<A>> probs)
         {
             Distribution = probs;
         }
 
-        public Dist(params ItemProb<A>[] probs)
+        public FiniteDist(params ItemProb<A>[] probs)
         {
             Distribution = probs;
         }
@@ -57,16 +57,16 @@ namespace ProbabilityMonad
     }
 
     /// <summary>
-    /// Extension methods for distribution monad
+    /// Extension methods for discrete distribution monad
     /// </summary>
-    public static class DistExt
+    public static class FiniteDistExt
     {
-        public static Dist<B> Select<A, B>(this Dist<A> self, Func<A, B> select)
+        public static FiniteDist<B> Select<A, B>(this FiniteDist<A> self, Func<A, B> select)
         {
-            return new Dist<B>(self.Distribution.Select(i => new ItemProb<B>(select(i.Item), i.Prob)));
+            return new FiniteDist<B>(self.Distribution.Select(i => new ItemProb<B>(select(i.Item), i.Prob)));
         }
 
-        public static IEnumerable<ItemProb<A>> DistJoin<A>(Dist<Dist<A>> distOverDist)
+        public static IEnumerable<ItemProb<A>> DistJoin<A>(FiniteDist<FiniteDist<A>> distOverDist)
         {
             foreach (var dist in distOverDist.Distribution)
             {
@@ -80,9 +80,9 @@ namespace ProbabilityMonad
             }
         }
 
-        public static Dist<C> SelectMany<A, B, C>(
-            this Dist<A> self,
-            Func<A, Dist<B>> bind,
+        public static FiniteDist<C> SelectMany<A, B, C>(
+            this FiniteDist<A> self,
+            Func<A, FiniteDist<B>> bind,
             Func<A, B, C> project
         )
         {
@@ -91,35 +91,42 @@ namespace ProbabilityMonad
                     ItemProb(bind(a.Item).Select(b => 
                         project(a.Item, b)), a.Prob));
 
-            var dists = new Dist<Dist<C>>(itemProbs);
-            return new Dist<C>(DistJoin(dists));
+            var dists = new FiniteDist<FiniteDist<C>>(itemProbs);
+            return new FiniteDist<C>(DistJoin(dists));
         }
     }
 
-    public class SampleDist<A>
+    /// <summary>
+    /// Continuous distribution monad
+    /// </summary>
+    /// <typeparam name="A"></typeparam>
+    public class ContDist<A>
     {
         public Func<A> Sample { get; }
-        public SampleDist(Func<A> sample)
+        public ContDist(Func<A> sample)
         {
             Sample = sample;
         }
     }
 
 
-    public static class SampleDistExt
+    /// <summary>
+    /// Extension methods for continuous dist monad
+    /// </summary>
+    public static class ContDiscExt
     {
-        public static SampleDist<B> Select<A, B>(this SampleDist<A> self, Func<A, B> select)
+        public static ContDist<B> Select<A, B>(this ContDist<A> self, Func<A, B> select)
         {
-            return new SampleDist<B>(() => select(self.Sample()));
+            return new ContDist<B>(() => select(self.Sample()));
         }
 
-        public static SampleDist<C> SelectMany<A, B, C>(
-            this SampleDist<A> self,
-            Func<A, SampleDist<B>> bind,
+        public static ContDist<C> SelectMany<A, B, C>(
+            this ContDist<A> self,
+            Func<A, ContDist<B>> bind,
             Func<A, B, C> project
         )
         {
-            return new SampleDist<C>(() =>
+            return new ContDist<C>(() =>
             {
                 var firstSample = self.Sample();
                 var secondSample = bind(firstSample).Sample();
@@ -128,5 +135,18 @@ namespace ProbabilityMonad
             
         }
     } 
+
+    public class ConditionalDist<A>
+    {
+        public Func<A, Prob> Condition { get; }
+        public ContDist<A> Dist { get; }
+        public ConditionalDist(Func<A, Prob> condition, ContDist<A> dist)   
+        {
+            Condition = condition;
+            Dist = dist;
+        }
+    }
+
+
 
 }
