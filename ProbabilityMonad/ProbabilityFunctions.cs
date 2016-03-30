@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static ProbabilityMonad.Base;
-using CSharpProbabilityMonad;
 using static ProbabilityMonad.Distributions;
 
 namespace ProbabilityMonad
@@ -74,10 +73,28 @@ namespace ProbabilityMonad
         /// <param name="distribution"></param>
         /// <param name="likelihood"></param>
         /// <returns></returns>
-        public static FiniteDist<A> Condition<A>(this FiniteDist<A> distribution, Func<A, Prob> likelihood)
+        public static FiniteDist<A> ConditionSoft<A>(this FiniteDist<A> distribution, Func<A, Prob> likelihood)
         {
-            return new FiniteDist<A>(distribution.Distribution
-                .Select(p => ItemProb(p.Item, likelihood(p.Item).Mult(p.Prob))));
+            return new FiniteDist<A>(Normalize(distribution.Distribution
+                .Select(p => ItemProb(p.Item, likelihood(p.Item).Mult(p.Prob)))));
+        }
+
+        /// <summary>
+        /// Hard reweight by a condition that depends on associated item
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="distribution"></param>
+        /// <param name="likelihood"></param>
+        /// <returns></returns>
+        public static FiniteDist<A> ConditionHard<A>(this FiniteDist<A> distribution, Func<A, bool> likelihood)
+        {
+            return new FiniteDist<A>(Normalize(distribution.Distribution
+                .Select(p => ItemProb(p.Item, likelihood(p.Item) ? p.Prob : Prob(0)))));
+        }
+
+        public static FiniteDist<A> Normalize<A>(this FiniteDist<A> dist)
+        {
+            return new FiniteDist<A>(Normalize(dist.Distribution));
         }
         
         /// <summary>

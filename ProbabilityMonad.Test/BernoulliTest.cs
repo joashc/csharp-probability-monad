@@ -7,6 +7,7 @@ using static ProbabilityMonad.Base;
 using static ProbabilityMonad.ProbabilityFunctions;
 using System.Linq;
 using System.Collections.Generic;
+using CSharpProbabilityMonad;
 
 namespace ProbabilityMonad.Test
 {
@@ -33,7 +34,7 @@ namespace ProbabilityMonad.Test
             var weight = from isFair in Bernoulli(Prob(0.8))
                          select isFair ? 0.5 : Beta(5, 1).Sample();
 
-            Func<bool, FiniteDist<double>, FiniteDist<double>> toss = (t, dist) => Conditional(w => Prob(t ? w : 1-w), dist);
+            Func<bool, FiniteDist<double>, FiniteDist<double>> toss = (t, dist) => SoftConditional(w => Prob(t ? w : 1-w), dist);
 
             Func<List<bool>, FiniteDist<double>, FiniteDist<double>> tosses = (ts, dist) => ts.Aggregate(dist, (d, t) => toss(t, d));
 
@@ -59,6 +60,26 @@ namespace ProbabilityMonad.Test
             Assert.AreEqual("16.6%", rollAndFlip.ProbOf(a => a == 6).ToString());
             Assert.AreEqual("8.3%", rollAndFlip.ProbOf(a => a == 1).ToString());
         }
+
+        [TestMethod]
+        public void SprinklerBayes()
+        {
+            Func<bool, bool, Prob> wetProb = (rain, sprinkler) =>
+            {
+                if (rain && sprinkler) return Prob(0.98);
+                if (rain && !sprinkler) return Prob(0.8);
+                if (!rain && sprinkler) return Prob(0.9);
+                return Prob(0);
+            };
+
+            var sprinklerModel =
+                from rain in Bernoulli(Prob(0.3))
+                from sprinkler in Bernoulli(Prob(rain ? 0.1 : 0.4))
+                from wet in Bernoulli(wetProb(rain, sprinkler))
+                select wet;
+
+        }
+
     }
 }
 

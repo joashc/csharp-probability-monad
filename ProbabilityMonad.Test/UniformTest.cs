@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ProbabilityMonad;
 using System.Diagnostics;
+using ProbabilityMonad;
 using static ProbabilityMonad.Distributions;
 using static ProbabilityMonad.Base;
 using static ProbabilityMonad.ProbabilityFunctions;
@@ -56,11 +56,6 @@ namespace ProbabilityMonad.Test
         [TestMethod]
         public void FreeMonad()
         {
-            DistF<string, string> program =
-                from msg in DistOps.GetMessage<string>()
-                from msg2 in DistOps.GetMessage<string>()
-                from _ in DistOps.DisplayMessage<string>(msg + msg2)
-                select msg2;
         }
     }
 }

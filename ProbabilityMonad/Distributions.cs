@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using static ProbabilityMonad.Base;
 using static ProbabilityMonad.ProbabilityFunctions;
-using CSharpProbabilityMonad;
 using MathNet.Numerics.Distributions;
 
 namespace ProbabilityMonad
@@ -53,10 +52,15 @@ namespace ProbabilityMonad
         /// <param name="cond"></param>
         /// <param name="dist"></param>
         /// <returns></returns>
-        public static FiniteDist<A> Conditional<A>(Func<A, Prob> cond, FiniteDist<A> dist) 
+        public static FiniteDist<A> SoftConditional<A>(Func<A, Prob> cond, FiniteDist<A> dist) 
         {
-            var condDist = dist.Condition(cond).Distribution;
+            var condDist = dist.ConditionSoft(cond).Distribution;
             return new FiniteDist<A>(Normalize(condDist));
+        }
+
+        public static FiniteDist<A> HardConditional<A>(Func<A, bool> cond, A item)
+        {
+            return new FiniteDist<A>(ItemProb(item, Prob(cond(item) ? 1 : 0)));
         }
 
         /// <summary>

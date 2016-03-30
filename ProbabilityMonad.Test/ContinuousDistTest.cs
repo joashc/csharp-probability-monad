@@ -39,8 +39,6 @@ namespace CSharpProbabilityMonad.Test
                              select new List<int>() { roll1, roll2, roll3 };
             var samp3Roll = threeRolls.ToSampleDist();
             var sample = samp3Roll.Sample();
-
-            Assert.AreEqual($"{sample[0]}, {sample[1]}, {sample[2]}", "something");
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using CSharpProbabilityMonad;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using static ProbabilityMonad.Base;
@@ -55,6 +54,7 @@ namespace ProbabilityMonad
 
         public IEnumerable<ItemProb<A>> Distribution { get; }
     }
+
 
     /// <summary>
     /// Extension methods for discrete distribution monad

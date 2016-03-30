@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CSharpProbabilityMonad
+namespace ProbabilityMonad
 {
     /// <summary>
     /// Interface for probability wrapper so we can easily switch to log likelihoods
