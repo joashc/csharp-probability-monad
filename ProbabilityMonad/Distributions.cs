@@ -75,6 +75,11 @@ namespace ProbabilityMonad
                 MathNet.Numerics.Distributions.Normal.WithMeanVariance(mean, var).Sample());
         }
 
+        public static Prob NormalPdf(double mean, double var, double x)
+        {
+            return Prob(MathNet.Numerics.Distributions.Normal.PDF(mean, var, x));
+        }
+
         /// <summary>
         /// Beta distribution
         /// </summary>

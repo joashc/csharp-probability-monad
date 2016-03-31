@@ -62,23 +62,24 @@ namespace ProbabilityMonad.Test
         }
 
         [TestMethod]
-        public void SprinklerBayes()
+        public void ChanceAddOneToRollTwice()
         {
-            Func<bool, bool, Prob> wetProb = (rain, sprinkler) =>
-            {
-                if (rain && sprinkler) return Prob(0.98);
-                if (rain && !sprinkler) return Prob(0.8);
-                if (!rain && sprinkler) return Prob(0.9);
-                return Prob(0);
-            };
+            Func<int, FiniteDist<int>> flipCoinAddOne = x => UniformD(x, x + 1);
 
-            var sprinklerModel =
-                from rain in Bernoulli(Prob(0.3))
-                from sprinkler in Bernoulli(Prob(rain ? 0.1 : 0.4))
-                from wet in Bernoulli(wetProb(rain, sprinkler))
-                select wet;
+            var die = UniformD(1, 2, 3, 4, 5, 6);
+            var rollAndFlip = from roll in die
+                              from maybeAdded in flipCoinAddOne(roll)
+                              select maybeAdded;
 
+            var twice = from first in rollAndFlip
+                        from second in rollAndFlip
+                        select first + second; 
+
+            Assert.AreEqual("0.6%", twice.ProbOf(a => a == 2).ToString());
+            Assert.AreEqual("0%", twice.ProbOf(a => a == 1).ToString());
+            Assert.AreEqual("13.8%", twice.ProbOf(a => a == 9).ToString());
         }
+
 
     }
 }

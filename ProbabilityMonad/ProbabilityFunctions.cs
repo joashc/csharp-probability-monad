@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static ProbabilityMonad.Base;
 using static ProbabilityMonad.Distributions;
+using MathNet.Numerics.Distributions;
 
 namespace ProbabilityMonad
 {
@@ -77,6 +78,19 @@ namespace ProbabilityMonad
         {
             return new FiniteDist<A>(Normalize(distribution.Distribution
                 .Select(p => ItemProb(p.Item, likelihood(p.Item).Mult(p.Prob)))));
+        }
+
+        /// <summary>
+        /// Reweight by a probability that depends on associated item, without normalizing
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="distribution"></param>
+        /// <param name="likelihood"></param>
+        /// <returns></returns>
+        public static FiniteDist<A> ConditionSoftUnnormalized<A>(this FiniteDist<A> distribution, Func<A, Prob> likelihood)
+        {
+            return new FiniteDist<A>(distribution.Distribution
+                .Select(p => ItemProb(p.Item, likelihood(p.Item).Mult(p.Prob))));
         }
 
         /// <summary>

@@ -21,12 +21,47 @@ namespace CSharpProbabilityMonad.Test
                              select $"{n}, {n2}";
         }
 
+        /// <summary>
+        /// Param class
+        /// </summary>
+        internal class Param
+        {
+            public double a { get; }
+            public double b { get; }
+            public Param(double a, double b)
+            {
+                this.a = a;
+                this.b = b;
+            }
+        }
+
+        /// <summary>
+        /// Point class
+        /// </summary>
+        internal class Point
+        {
+            public double x { get; }
+            public double y { get; }
+            public Point(double x, double y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+        }
+
         [TestMethod]
         public void LinReg()
         {
             var linear = from a in Normal(0, 1)
                          from b in Normal(0, 1)
-                         select new Tuple<double, double>(a, b);
+                         select new Param(a, b);
+
+            //Func<ContDist<Param>, Point, ContDist<Param>>
+            //linRegPoint = (dist, point) =>
+            //    dist.ConditionSoft(param => NormalPdf(param.a * point.x + param.b, 1, point.y));
+
+
+
         }
 
         [TestMethod]

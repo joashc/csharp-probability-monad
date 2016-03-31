@@ -40,10 +40,11 @@ namespace ProbabilityMonad.Test
                 if (!rain && sprinkler) return Prob(0.9);
                 return Prob(0);
             };
+            var rainDist = Bernoulli(Prob(0.2));
 
             // Bayesian network for sprinkler model
             var sprinklerModel =
-                 from rain in Bernoulli(Prob(0.2))
+                 from rain in rainDist
                  from sprinkler in Bernoulli(Prob(rain ? 0.01 : 0.4))
                  from wet in Bernoulli(wetProb(rain, sprinkler))
                  select new SprinklerEvent(rain, sprinkler, wet);
@@ -60,6 +61,7 @@ namespace ProbabilityMonad.Test
             var prRainingGivenWet = givenGrassWet.ProbOf(e => e.Raining);
 
             Assert.AreEqual("35.7%", prRainingGivenWet.ToString());
+
         }
 
         internal class Door 
