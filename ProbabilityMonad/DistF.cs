@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static ProbabilityMonad.Distributions;
+using static ProbabilityMonad.Base;
 
 namespace ProbabilityMonad
 {
@@ -224,25 +226,112 @@ namespace ProbabilityMonad
     ///// <summary>
     ///// interpreter :: DistFMonad () -> IO ()
     ///// </summary>
-    //public static class DistFInterpreter
-    //{
-    //    public static NextA Interpret<A, NextA>(this DistF<A, NextA> self)
-    //    {
-    //        return self.Match(
-    //            a => a,
-    //            a => a.Match(
-    //                (s, next) =>
-    //                {
-    //                    return Interpret(next(s));
-    //                },
-    //                next =>
-    //                {
-    //                    var s = Console.ReadLine();
-    //                    return Interpret(next(s));
-    //                }
-    //            )
-    //        );
-    //    }
-    //}
+    public static class DistFInterpreter
+    {
+        public static NextA Interpret<A, NextA>(this DistF<A, NextA> self)
+        {
+            return self.Match(
+                a => a,
+                a => a.Match(
+                    (s, next) =>
+                    {
+                        Debug.WriteLine("Prim");
+                        return Interpret(next(s));
+                    },
+                    (l, d, next) =>
+                    {
+                        Debug.WriteLine("Cond");
+                        return Interpret(next(l, d));
+                    }
+                )
+            );
+        }
+
+        public static A Sample<A>(this DistF<A, Dist<A>> self)
+        {
+            return self.Match(
+                a => a.Sample(),
+                a => a.Match(
+                    (s, next) =>
+                    {
+                        Debug.WriteLine("Prim");
+                        return Sample(next(s));
+                    },
+                    (l, d, next) =>
+                    {
+                        Debug.WriteLine("Cond");
+                        return Sample(next(l, d));
+                    }
+                )
+            );
+        }
+
+        public static A Sample<A>(this Dist<A> dist)
+        {
+            if (dist is Pure<A>)
+            {
+                var pure = dist as Pure<A>;
+                return pure.Value;
+            }
+            if (dist is ConditionalC<A>)
+            {
+                throw new ArgumentException("Can't sample from conditional distribution");
+            }
+            if (dist is Primitive<A>)
+            {
+                var primitive = dist as Primitive<A>;
+                return primitive.dist.Sample();
+            }
+            throw new ArgumentException();
+        }
+
+        public static Dist<ItemProb<A>> Prior<A>(this Dist<A> dist)
+        {
+            if (dist is Pure<A>)
+            {
+                var pure = dist as Pure<A>;
+                return new Pure<ItemProb<A>>(new ItemProb<A>(pure.Value, Prob(1)));
+            }
+            if (dist is ConditionalC<A>)
+            {
+                var cond = dist as ConditionalC<A>;
+                var next = Prior(cond.dist);
+                if (next is ConditionalC<A>)
+                {
+                    var nextCond = next as ConditionalC<A>;
+                    return Prior(nextCond);
+                }
+                var itemProb = next.Sample();
+                return new Pure<ItemProb<A>>(new ItemProb<A>(itemProb.Item, itemProb.Prob.Mult(cond.likelihood(itemProb.Item))));
+            }
+            if (dist is Primitive<A>)
+            {
+                var primitive = dist as Primitive<A>;
+                return new Pure<ItemProb<A>>(new ItemProb<A>(primitive.dist.Sample(), Prob(1)));
+            }
+            throw new ArgumentException();
+        }
+
+        public static Dist<ItemProb<A>> Prior<A>(this DistF<A, Dist<A>> self)
+        {
+
+            return self.Match(
+                Prior,
+                a => a.Match(
+                    (s, next) =>
+                    {
+                        Debug.WriteLine("Prim");
+                        return Prior(next(s));
+                    },
+                    (l, d, next) =>
+                    {
+                        Debug.WriteLine("Cond");
+                        return Prior(next(l, d));
+                    }
+                )
+            );
+        }
+
+    }
 
 }

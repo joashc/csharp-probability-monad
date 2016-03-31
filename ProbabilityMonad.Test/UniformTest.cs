@@ -58,8 +58,14 @@ namespace ProbabilityMonad.Test
         {
             var x =
                 from normal in DistOps.Normal(0, 1)
-                from conditioned in DistOps.Conditional(a => Prob(0.3), normal)
-                select conditioned;
+                from normal2 in DistOps.Normal(10* normal.Sample(), 1)
+                from cond in DistOps.Conditional(a => Prob(0.1), normal2)
+                from cond2 in DistOps.Conditional(a => Prob(0.2), cond)
+                select cond2;
+
+
+            var sample = DistFInterpreter.Prior(x).Sample();
+            Assert.AreEqual("hey", $"{sample.Item}: {sample.Prob}");
         }
     }
 }
