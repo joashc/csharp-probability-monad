@@ -56,6 +56,10 @@ namespace CSharpProbabilityMonad.Test
                          from b in Normal(0, 1)
                          select new Param(a, b);
 
+            var linny = from a in new Primitive<double>(Normal(0, 1))
+                        from b in new Primitive<double>(Normal(0, 2))
+                        select new Param(a, b);
+
             //Func<ContDist<Param>, Point, ContDist<Param>>
             //linRegPoint = (dist, point) =>
             //    dist.ConditionSoft(param => NormalPdf(param.a * point.x + param.b, 1, point.y));

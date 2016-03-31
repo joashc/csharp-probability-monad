@@ -247,91 +247,61 @@ namespace ProbabilityMonad
             );
         }
 
-        public static A Sample<A>(this DistF<A, Dist<A>> self)
+        public static Func<ItemProb<A>, Dist<B>> BindItemProb<A, B>(Func<A, Dist<B>> bind)
         {
-            return self.Match(
-                a => a.Sample(),
-                a => a.Match(
-                    (s, next) =>
-                    {
-                        Debug.WriteLine("Prim");
-                        return Sample(next(s));
-                    },
-                    (l, d, next) =>
-                    {
-                        Debug.WriteLine("Cond");
-                        return Sample(next(l, d));
-                    }
-                )
-            );
+            return itemProb => bind(itemProb.Item);
         }
 
-        public static A Sample<A>(this Dist<A> dist)
+    }
+
+    public class PriorVisitor<A> : DistVisitor<A, Dist<ItemProb<A>>>
+    {
+        public Dist<ItemProb<A>> BindVisitor<B>(Dist<B> dist, Func<B, Dist<A>> bind)
         {
-            if (dist is Pure<A>)
-            {
-                var pure = dist as Pure<A>;
-                return pure.Value;
-            }
-            if (dist is ConditionalC<A>)
-            {
-                throw new ArgumentException("Can't sample from conditional distribution");
-            }
-            if (dist is Primitive<A>)
-            {
-                var primitive = dist as Primitive<A>;
-                return primitive.dist.Sample();
-            }
-            throw new ArgumentException();
+            return from x in dist.Accept(new PriorVisitor<B>())
+                   from y in bind(x.Item).Accept(new PriorVisitor<A>())
+                   select new ItemProb<A>(y.Item, x.Prob);
         }
 
-        public static Dist<ItemProb<A>> Prior<A>(this Dist<A> dist)
+        public Dist<ItemProb<A>> ConditionalVisitor(Func<A, Prob> lik, Dist<A> dist)
         {
-            if (dist is Pure<A>)
-            {
-                var pure = dist as Pure<A>;
-                return new Pure<ItemProb<A>>(new ItemProb<A>(pure.Value, Prob(1)));
-            }
-            if (dist is ConditionalC<A>)
-            {
-                var cond = dist as ConditionalC<A>;
-                var next = Prior(cond.dist);
-                if (next is ConditionalC<A>)
-                {
-                    var nextCond = next as ConditionalC<A>;
-                    return Prior(nextCond);
-                }
-                var itemProb = next.Sample();
-                return new Pure<ItemProb<A>>(new ItemProb<A>(itemProb.Item, itemProb.Prob.Mult(cond.likelihood(itemProb.Item))));
-            }
-            if (dist is Primitive<A>)
-            {
-                var primitive = dist as Primitive<A>;
-                return new Pure<ItemProb<A>>(new ItemProb<A>(primitive.dist.Sample(), Prob(1)));
-            }
-            throw new ArgumentException();
+            return from itemProb in dist.Accept(new PriorVisitor<A>())
+            select new ItemProb<A>(itemProb.Item, itemProb.Prob.Mult(lik(itemProb.Item)));
         }
 
-        public static Dist<ItemProb<A>> Prior<A>(this DistF<A, Dist<A>> self)
+        public Dist<ItemProb<A>> PrimitiveVisitor(ContDist<A> dist)
         {
-
-            return self.Match(
-                Prior,
-                a => a.Match(
-                    (s, next) =>
-                    {
-                        Debug.WriteLine("Prim");
-                        return Prior(next(s));
-                    },
-                    (l, d, next) =>
-                    {
-                        Debug.WriteLine("Cond");
-                        return Prior(next(l, d));
-                    }
-                )
-            );
+            return new Pure<ItemProb<A>>(new ItemProb<A>(dist.Sample(), Prob(1)));
         }
 
+        public Dist<ItemProb<A>> PureVisitor(A value)
+        {
+            return new Pure<ItemProb<A>>(new ItemProb<A>(value, Prob(1)));
+        }
+    }
+
+    public class SampleVisitor<A> : DistVisitor<A, A>
+    {
+        A DistVisitor<A, A>.BindVisitor<B>(Dist<B> dist, Func<B, Dist<A>> bind)
+        {
+            var x = dist.Accept(new SampleVisitor<B>());
+            return bind(x).Accept(new SampleVisitor<A>());
+        }
+
+        A DistVisitor<A, A>.ConditionalVisitor(Func<A, Prob> lik, Dist<A> dist)
+        {
+            throw new ArgumentException("Cannot sample from conditional distribution.");
+        }
+
+        A DistVisitor<A, A>.PrimitiveVisitor(ContDist<A> dist)
+        {
+            return dist.Sample();
+        }
+
+        A DistVisitor<A, A>.PureVisitor(A value)
+        {
+            return value;
+        }
     }
 
 }

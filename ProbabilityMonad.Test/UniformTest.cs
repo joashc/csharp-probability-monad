@@ -56,15 +56,17 @@ namespace ProbabilityMonad.Test
         [TestMethod]
         public void FreeMonad()
         {
-            var x =
-                from normal in DistOps.Normal(0, 1)
-                from normal2 in DistOps.Normal(10* normal.Sample(), 1)
-                from cond in DistOps.Conditional(a => Prob(0.1), normal2)
-                from cond2 in DistOps.Conditional(a => Prob(0.2), cond)
-                select cond2;
+            var y =
+                from a in new Primitive<double>(Normal(0, 1))
+                from b in new Primitive<double>(Normal(0, 1))
+                from cond in new ConditionalC<double>(a => Prob(0.2), new Pure<double>(b))
+                select cond;
 
 
-            var sample = DistFInterpreter.Prior(x).Sample();
+            var yz = y.Accept(new PriorVisitor<double>());
+                
+                
+            var sample = yz.Accept(new SampleVisitor<ItemProb<double>>());
             Assert.AreEqual("hey", $"{sample.Item}: {sample.Prob}");
         }
     }
