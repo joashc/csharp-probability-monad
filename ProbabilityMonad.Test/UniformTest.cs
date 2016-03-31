@@ -56,6 +56,10 @@ namespace ProbabilityMonad.Test
         [TestMethod]
         public void FreeMonad()
         {
+            var x =
+                from normal in DistOps.Normal(0, 1)
+                from conditioned in DistOps.Conditional(a => Prob(0.3), normal)
+                select conditioned;
         }
     }
 }

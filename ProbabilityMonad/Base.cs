@@ -136,11 +136,11 @@ namespace ProbabilityMonad
         }
     } 
 
-    public class ConditionalDist<A>
+    public class ConditionalDist<A, Next>
     {
         public Func<A, Prob> Condition { get; }
-        public ContDist<A> Dist { get; }
-        public ConditionalDist(Func<A, Prob> condition, ContDist<A> dist)   
+        public DistF<A, Next> Dist { get; }
+        public ConditionalDist(Func<A, Prob> condition, DistF<A, Next> dist)   
         {
             Condition = condition;
             Dist = dist;

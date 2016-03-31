@@ -86,15 +86,6 @@ namespace ProbabilityMonad
             return new ContDist<double>(() => new Beta(alpha, beta).Sample());
         }
 
-
-        public interface Inference<A>
-        {
-            Func<A, ContDist<A>> Return();
-            Func<ContDist<B>, Func<B, ContDist<A>, ContDist<A>>> Bind<B>();
-            Func<ContDist<A>, ContDist<A>> Primitive();
-            Func<Func<A, Prob>, ConditionalDist<A>, ContDist<A>> Conditional();
-        }
-
         public interface Dist<A> { }
 
         public class Pure<A> : Dist<A>
@@ -106,21 +97,10 @@ namespace ProbabilityMonad
             }
         }
 
-        public class Bind<A,B> : Dist<A>
-        {
-            public readonly Dist<A> dist;
-            public readonly Func<A, Dist<B>> bind;
-            public Bind(Dist<A> dist, Func<A, Dist<B>> bind)
-            {
-                this.dist = dist;
-                this.bind = bind;
-            }
-        }
-
         public class Primitive<A> : Dist<A>
         {
-            public readonly Sampleable<A> dist;
-            public Primitive(Sampleable<A> dist)
+            public readonly ContDist<A> dist;
+            public Primitive(ContDist<A> dist)
             {
                 this.dist = dist;
             }
@@ -136,15 +116,6 @@ namespace ProbabilityMonad
                 this.dist = dist;
             }
         }
-
-        public interface Sampleable<A> : Dist<A>
-        {
-            A Sample(Dist<A> dist);
-        }
-
-
-
-
 
     }
 }

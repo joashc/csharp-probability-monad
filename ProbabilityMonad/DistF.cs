@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ProbabilityMonad.Distributions;
 
 namespace ProbabilityMonad
 {
@@ -15,7 +16,7 @@ namespace ProbabilityMonad
     {
         public abstract X Match<X>(
             Func<ContDist<A>, Func<ContDist<A>, Next>, X> primitive,
-            Func<Func<string, Next>, X> getMessage
+            Func<Func<A, Prob>, Dist<A>, Func<Func<A, Prob>, Dist<A>, Next>, X> conditional
         );
 
         /// <summary>
@@ -45,7 +46,7 @@ namespace ProbabilityMonad
 
             public override X Match<X>(
                 Func<ContDist<A>, Func<ContDist<A>, Next>, X> primitive,
-                Func<Func<string, Next>, X> getMessage)
+                Func<Func<A, Prob>, Dist<A>, Func<Func<A, Prob>, Dist<A>, Next>, X> conditional)
             {
                 return primitive(dist, next);
             }
@@ -54,19 +55,23 @@ namespace ProbabilityMonad
         /// <summary>
         /// GetMessage (m -> next)
         /// </summary>
-        internal class GetMessage : DistOp<A, Next>
+        internal class Conditional : DistOp<A, Next>
         {
-            public readonly Func<string, Next> f;
-            public GetMessage(Func<string, Next> f)
+            public readonly Func<A, Prob> lik;
+            public readonly Dist<A> dist;
+            public readonly Func<Func<A, Prob>, Dist<A>, Next> next;
+            public Conditional(Func<A, Prob> lik, Dist<A> dist, Func<Func<A, Prob>, Dist<A>, Next> next)
             {
-                this.f = f;
+                this.lik = lik;
+                this.dist = dist;
+                this.next = next;
             }
 
             public override X Match<X>(
                 Func<ContDist<A>, Func<ContDist<A>, Next>, X> primitive,
-                Func<Func<string, Next>, X> getMessage)
+                Func<Func<A, Prob>, Dist<A>, Func<Func<A, Prob>, Dist<A>, Next>, X> conditional)
             {
-                return getMessage(f);
+                return conditional(lik, dist, next);
             }
         }
     }
@@ -80,7 +85,7 @@ namespace ProbabilityMonad
         {
             return self.Match<DistOp<A, NextB>>(
                 (s, n) => new DistOp<A, NextB>.Primitive(s, d => f(n(d))),
-                g => new DistOp<A, NextB>.GetMessage(s => f(g(s)))
+                (lik, dist, n) => new DistOp<A, NextB>.Conditional(lik, dist, (l, d) => f(n(l, d)))
             );
         }
     }
@@ -197,14 +202,14 @@ namespace ProbabilityMonad
     /// </summary>
     public static class DistOps
     {
-        public static DistF<double, ContDist<double>> Normal(double mean, double var)
+        public static DistF<double, Dist<double>> Normal(double mean, double var)
         {
-            return new DistOp<double, ContDist<double>>.Primitive(Distributions.Normal(mean, var), d => d).Lift;
+            return new DistOp<double, Dist<double>>.Primitive(Distributions.Normal(mean, var), d => new Primitive<double>(d)).Lift;
         }
 
-        public static DistF<A, string> GetMessage<A>()
+        public static DistF<A, Dist<A>> Conditional<A>(Func<A, Prob> lik, Dist<A> dist)
         {
-            return new DistOp<A, string>.GetMessage(s => s).Lift;
+            return new DistOp<A, Dist<A>>.Conditional(lik, dist, (l, d) => new ConditionalC<A>(l, d)).Lift;
         }
     }
 
@@ -216,28 +221,28 @@ namespace ProbabilityMonad
         public static readonly Unit Value = new Unit();
     }
 
-    /// <summary>
-    /// interpreter :: DistFMonad () -> IO ()
-    /// </summary>
-    public static class DistFInterpreter
-    {
-        public static NextA Interpret<A, NextA>(this DistF<A, NextA> self)
-        {
-            return self.Match(
-                a => a,
-                a => a.Match(
-                    (s, next) =>
-                    {
-                        return Interpret(next(s));
-                    },
-                    next =>
-                    {
-                        var s = Console.ReadLine();
-                        return Interpret(next(s));
-                    }
-                )
-            );
-        }
-    }
+    ///// <summary>
+    ///// interpreter :: DistFMonad () -> IO ()
+    ///// </summary>
+    //public static class DistFInterpreter
+    //{
+    //    public static NextA Interpret<A, NextA>(this DistF<A, NextA> self)
+    //    {
+    //        return self.Match(
+    //            a => a,
+    //            a => a.Match(
+    //                (s, next) =>
+    //                {
+    //                    return Interpret(next(s));
+    //                },
+    //                next =>
+    //                {
+    //                    var s = Console.ReadLine();
+    //                    return Interpret(next(s));
+    //                }
+    //            )
+    //        );
+    //    }
+    //}
 
 }
