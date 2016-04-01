@@ -1,15 +1,16 @@
 ﻿using System;
+using static ProbabilityMonad.Base;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static ProbabilityMonad.Base;
-using static ProbabilityMonad.Distributions;
-using MathNet.Numerics.Distributions;
 
 namespace ProbabilityMonad
 {
-    public static class ProbabilityFunctions
+    /// <summary>
+    /// Useful extension methods for finite distributions.
+    /// </summary>
+    public static class FiniteExtensions
     {
         /// <summary>
         /// Multiply all the probabilities by a constant so they sum to 1
@@ -48,7 +49,7 @@ namespace ProbabilityMonad
         /// <returns></returns>
         public static ContDist<A> ToSampleDist<A>(this FiniteDist<A> dist)
         {
-            return new ContDist<A>(() =>
+            return new ContDistImpl<A>(() =>
             {
                 var rand = new MathNet.Numerics.Distributions.ContinuousUniform().Sample();
                 return dist.Pick(Prob(rand));

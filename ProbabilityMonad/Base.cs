@@ -1,152 +1,108 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using static ProbabilityMonad.Base;
+using ProbabilityMonad;
+using static ProbabilityMonad.FiniteExtensions;
+using System;
 
 namespace ProbabilityMonad
 {
     /// <summary>
-    /// Constructor helpers
+    /// Export constructors
     /// </summary>
     public static class Base
     {
+        /// <summary>
+        /// Probability constructor
+        /// </summary>
+        /// <param name="probability"></param>
+        /// <returns></returns>
         public static Prob Prob(double probability)
         {
             return new DoubleProb(probability);
         }
 
+        /// <summary>
+        /// ItemProb constructor 
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="item"></param>
+        /// <param name="prob"></param>
+        /// <returns></returns>
         public static ItemProb<A> ItemProb<A>(A item, Prob prob)
         {
             return new ItemProb<A>(item, prob);
         }
-    }
 
-    /// <summary>
-    /// Tuple class since C# tuples cause a few issues
-    /// </summary>
-    /// <typeparam name="A"></typeparam>
-    public class ItemProb<A>
-    {
-        public A Item { get; }
-        public Prob Prob { get; }
-        public ItemProb(A item, Prob prob)
+        /// <summary>
+        /// Uniform distribution over list of items
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        public static FiniteDist<A> EnumUniformD<A>(IEnumerable<A> items)
         {
-            Item = item;
-            Prob = prob;
-        }
-    }
-
-    /// <summary>
-    /// Discrete distribution monad
-    /// </summary>
-    /// <typeparam name="A"></typeparam>
-    public class FiniteDist<A>
-    {
-        public FiniteDist(IEnumerable<ItemProb<A>> probs)
-        {
-            Distribution = probs;
+            var uniform = items.Select(i => new ItemProb<A>(i, Prob(1)));
+            return new FiniteDist<A>(Normalize(uniform));
         }
 
-        public FiniteDist(params ItemProb<A>[] probs)
+        /// <summary>
+        /// Uniform distribution, using parameters
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        public static FiniteDist<A> UniformD<A>(params A[] items)
         {
-            Distribution = probs;
+            var itemList = new List<A>(items);
+            return EnumUniformD(itemList);
         }
 
-        public IEnumerable<ItemProb<A>> Distribution { get; }
-    }
-
-
-    /// <summary>
-    /// Extension methods for discrete distribution monad
-    /// </summary>
-    public static class FiniteDistExt
-    {
-        public static FiniteDist<B> Select<A, B>(this FiniteDist<A> self, Func<A, B> select)
+        /// <summary>
+        /// Bernoulli distribution constructed from success probability
+        /// </summary>
+        /// <param name="prob"></param>
+        /// <returns></returns>
+        public static FiniteDist<bool> Bernoulli(Prob prob)
         {
-            return new FiniteDist<B>(self.Distribution.Select(i => new ItemProb<B>(select(i.Item), i.Prob)));
+            return new FiniteDist<bool>(ItemProb(true, prob), ItemProb(false, Prob(1 - prob.Value)));
         }
 
-        public static IEnumerable<ItemProb<A>> DistJoin<A>(FiniteDist<FiniteDist<A>> distOverDist)
+
+        /// <summary>
+        /// Normal dist constructor
+        /// </summary>
+        /// <param name="mean"></param>
+        /// <param name="variance"></param>
+        /// <returns></returns>
+        public static Normal Normal(double mean, double variance)
         {
-            foreach (var dist in distOverDist.Distribution)
+            return new Normal(mean, variance);
+        }
+
+        /// <summary>
+        /// Beta constructoe
+        /// </summary>
+        public static Beta Beta(double alpha, double beta)
+        {
+            return new Beta(beta, alpha);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static Prob Pdf(ContDist<double> dist, double y)
+        {
+            if (dist is Normal)
             {
-                foreach (var itemProb in dist.Item.Distribution)
-                {
-                    yield return ItemProb(
-                            itemProb.Item,
-                            itemProb.Prob.Mult(dist.Prob)
-                    );
-                }
+                var normal = dist as Normal;
+                return Prob(MathNet.Numerics.Distributions.Normal.PDF(normal.Mean, normal.Variance, y));
             }
-        }
-
-        public static FiniteDist<C> SelectMany<A, B, C>(
-            this FiniteDist<A> self,
-            Func<A, FiniteDist<B>> bind,
-            Func<A, B, C> project
-        )
-        {
-            var itemProbs = 
-                self.Distribution.Select(a => 
-                    ItemProb(bind(a.Item).Select(b => 
-                        project(a.Item, b)), a.Prob));
-
-            var dists = new FiniteDist<FiniteDist<C>>(itemProbs);
-            return new FiniteDist<C>(DistJoin(dists));
-        }
-    }
-
-    /// <summary>
-    /// Continuous distribution monad
-    /// </summary>
-    /// <typeparam name="A"></typeparam>
-    public class ContDist<A>
-    {
-        public Func<A> Sample { get; }
-        public ContDist(Func<A> sample)
-        {
-            Sample = sample;
-        }
-    }
-
-
-    /// <summary>
-    /// Extension methods for continuous dist monad
-    /// </summary>
-    public static class ContDiscExt
-    {
-        public static ContDist<B> Select<A, B>(this ContDist<A> self, Func<A, B> select)
-        {
-            return new ContDist<B>(() => select(self.Sample()));
-        }
-
-        public static ContDist<C> SelectMany<A, B, C>(
-            this ContDist<A> self,
-            Func<A, ContDist<B>> bind,
-            Func<A, B, C> project
-        )
-        {
-            return new ContDist<C>(() =>
+            if (dist is Beta)
             {
-                var firstSample = self.Sample();
-                var secondSample = bind(firstSample).Sample();
-                return project(firstSample, secondSample);
-            });
-            
-        }
-    } 
-
-    public class ConditionalDist<A, Next>
-    {
-        public Func<A, Prob> Condition { get; }
-        public DistF<A, Next> Dist { get; }
-        public ConditionalDist(Func<A, Prob> condition, DistF<A, Next> dist)   
-        {
-            Condition = condition;
-            Dist = dist;
+                var beta = dist as Beta;
+                return Prob(MathNet.Numerics.Distributions.Beta.PDF(beta.alpha, beta.beta, y));
+            }
+            throw new NotImplementedException("No PDF for this distribution implemented");
         }
     }
-
-
-
 }

@@ -2,9 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProbabilityMonad;
 using System.Diagnostics;
-using static ProbabilityMonad.Distributions;
 using static ProbabilityMonad.Base;
-using static ProbabilityMonad.ProbabilityFunctions;
 using System.Linq;
 using System.Collections.Generic;
 using CSharpProbabilityMonad;
@@ -34,7 +32,7 @@ namespace ProbabilityMonad.Test
             var weight = from isFair in Bernoulli(Prob(0.8))
                          select isFair ? 0.5 : Beta(5, 1).Sample();
 
-            Func<bool, FiniteDist<double>, FiniteDist<double>> toss = (t, dist) => SoftConditional(w => Prob(t ? w : 1-w), dist);
+            Func<bool, FiniteDist<double>, FiniteDist<double>> toss = (t, dist) => dist.ConditionSoft(w => Prob(t ? w : 1-w));
 
             Func<List<bool>, FiniteDist<double>, FiniteDist<double>> tosses = (ts, dist) => ts.Aggregate(dist, (d, t) => toss(t, d));
 

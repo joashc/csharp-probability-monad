@@ -1,14 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using ProbabilityMonad;
 using static ProbabilityMonad.Base;
-using static ProbabilityMonad.Distributions;
-using System.Threading.Tasks;
-using MathNet.Numerics.LinearAlgebra;
 
 namespace ProbabilityMonad.Test
 {
@@ -42,7 +37,7 @@ namespace ProbabilityMonad.Test
 
             // Model the observed values as latent variables with gaussian noise
             Func<int, double, Prob>
-            emission = (x, y) => NormalPdf(x, 1, y);
+            emission = (x, y) => Pdf(Normal(x, 1), y);
 
             Func<int, List<int>, List<int>>
             cons = (x,xs) => {

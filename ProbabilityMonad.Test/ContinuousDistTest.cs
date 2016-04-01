@@ -2,9 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProbabilityMonad;
 using System.Diagnostics;
-using static ProbabilityMonad.Distributions;
 using static ProbabilityMonad.Base;
-using static ProbabilityMonad.ProbabilityFunctions;
 using System.Linq;
 using System.Collections.Generic;
 

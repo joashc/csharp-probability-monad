@@ -46,10 +46,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base.cs" />
-    <Compile Include="DistF.cs" />
-    <Compile Include="Distributions.cs" />
+    <Compile Include="Continuous\ContDist.cs" />
+    <Compile Include="Continuous\ContDistributions.cs" />
+    <Compile Include="DistGadt.cs" />
+    <Compile Include="Finite\FiniteExtensions.cs" />
+    <Compile Include="Interpreters.cs" />
+    <Compile Include="Finite\FiniteDist.cs" />
+    <Compile Include="ItemProb.cs" />
     <Compile Include="Prob.cs" />
-    <Compile Include="ProbabilityFunctions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -2,9 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using ProbabilityMonad;
-using static ProbabilityMonad.Distributions;
 using static ProbabilityMonad.Base;
-using static ProbabilityMonad.ProbabilityFunctions;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -59,15 +57,15 @@ namespace ProbabilityMonad.Test
             var y =
                 from a in new Primitive<double>(Normal(0, 1))
                 from b in new Primitive<double>(Normal(0, 1))
-                from cond in new ConditionalC<double>(a => Prob(0.2), new Pure<double>(b))
+                from cond in new Conditional<double>(a => Prob(0.2), new Pure<double>(b))
                 select cond;
 
 
-            var yz = y.Accept(new PriorVisitor<double>());
-                
-                
-            var sample = yz.Accept(new SampleVisitor<ItemProb<double>>());
-            Assert.AreEqual("hey", $"{sample.Item}: {sample.Prob}");
+            var prior = y.Prior();
+
+
+            var sample = prior.Sample();
+
         }
     }
 }
