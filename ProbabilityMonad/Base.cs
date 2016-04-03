@@ -11,6 +11,7 @@ namespace ProbabilityMonad
     /// </summary>
     public static class Base
     {
+        public static Random Gen = new Random();
         /// <summary>
         /// Probability constructor
         /// </summary>
@@ -18,7 +19,7 @@ namespace ProbabilityMonad
         /// <returns></returns>
         public static Prob Prob(double probability)
         {
-            return new DoubleProb(probability);
+            return new LogProb(Math.Log(probability));
         }
 
         /// <summary>
@@ -76,7 +77,41 @@ namespace ProbabilityMonad
         /// <returns></returns>
         public static Normal Normal(double mean, double variance)
         {
-            return new Normal(mean, variance);
+            return new Normal(mean, variance, Gen);
+        }
+
+        /// <summary>
+        /// Primitive constructor
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="dist"></param>
+        /// <returns></returns>
+        public static Dist<A> Primitive<A>(ContDist<A> dist)
+        {
+            return new Primitive<A>(dist);
+        }
+
+        /// <summary>
+        /// Pure constructor, monadic return
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Dist<A> Return<A>(A value)
+        {
+            return new Pure<A>(value);
+        }
+
+        /// <summary>
+        /// Conditional constructor
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="likelihood"></param>
+        /// <param name="dist"></param>
+        /// <returns></returns>
+        public static Dist<A> Condition<A>(Func<A, Prob> likelihood, Dist<A> dist)
+        {
+            return new Conditional<A>(likelihood, dist);
         }
 
         /// <summary>
@@ -84,7 +119,7 @@ namespace ProbabilityMonad
         /// </summary>
         public static Beta Beta(double alpha, double beta)
         {
-            return new Beta(beta, alpha);
+            return new Beta(beta, alpha, Gen);
         }
 
         /// <summary>
