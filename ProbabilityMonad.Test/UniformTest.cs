@@ -67,6 +67,7 @@ namespace ProbabilityMonad.Test
             var sample = prior.Sample();
 
         }
+
     }
 }
 

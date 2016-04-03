@@ -59,6 +59,7 @@
     <Compile Include="BernoulliTest.cs" />
     <Compile Include="ContinuousDistTest.cs" />
     <Compile Include="HiddenMarkovModel.cs" />
+    <Compile Include="MetropolisTest.cs" />
     <Compile Include="UniformTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

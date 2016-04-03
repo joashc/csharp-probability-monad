@@ -50,6 +50,11 @@
     <Compile Include="Continuous\ContDistributions.cs" />
     <Compile Include="DistGadt.cs" />
     <Compile Include="Finite\FiniteExtensions.cs" />
+    <Compile Include="Histogram.cs" />
+    <Compile Include="Inference\Importance.cs" />
+    <Compile Include="Inference\MetropolisHastings.cs" />
+    <Compile Include="Inference\PIMH.cs" />
+    <Compile Include="Inference\SMC.cs" />
     <Compile Include="Interpreters.cs" />
     <Compile Include="Finite\FiniteDist.cs" />
     <Compile Include="ItemProb.cs" />
