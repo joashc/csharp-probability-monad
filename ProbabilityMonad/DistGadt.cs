@@ -140,6 +140,22 @@ namespace ProbabilityMonad
                 );
         }
 
+
+        /// <summary>
+        /// `sequence` can be implemented as
+        /// sequence xs = foldr (liftM2 (:)) (return []) xs
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="dists"></param>
+        /// <returns></returns>
+        public static Dist<IEnumerable<A>> Sequence<A>(this IEnumerable<Dist<A>> dists)
+        {
+            return dists.Aggregate(
+                Return<IEnumerable<A>>(new List<A>()),
+                (listDist, aDist) => from a in aDist
+                                     from list in listDist
+                                     select Append(list, a));
+        }
     }
 
 }
