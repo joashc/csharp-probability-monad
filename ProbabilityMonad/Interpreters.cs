@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using static ProbabilityMonad.Base;
 
 namespace ProbabilityMonad
@@ -13,6 +15,11 @@ namespace ProbabilityMonad
         public static A  Sample<A>(this Dist<A> dist)
         {
             return dist.Run(new Sampler<A>());
+        }
+
+        public static IEnumerable<A> SampleN<A>(this Dist<A> dist, int n)
+        {
+            return Enumerable.Range(0, n).Select(_ => dist.Sample());
         }
     }
 
@@ -45,6 +52,35 @@ namespace ProbabilityMonad
             return new Pure<ItemProb<A>>(new ItemProb<A>(value, Prob(1)));
         }
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="A"></typeparam>
+    public class PriorDiscard<A> : DistInterpreter<A, Dist<A>>
+    {
+        Dist<A> DistInterpreter<A, Dist<A>>.Bind<B>(Dist<B> dist, Func<B, Dist<A>> bind)
+        {
+            return new Bind<B, A>(dist.Run(new PriorDiscard<B>()), bind);
+        }
+
+        Dist<A> DistInterpreter<A, Dist<A>>.Conditional(Func<A, Prob> lik, Dist<A> dist)
+        {
+            return dist.Run(new PriorDiscard<A>());
+        }
+
+        Dist<A> DistInterpreter<A, Dist<A>>.Primitive(ContDist<A> dist)
+        {
+            return new Pure<A>(dist.Sample());
+        }
+
+        Dist<A> DistInterpreter<A, Dist<A>>.Pure(A value)
+        {
+            return new Pure<A>(value);
+        }
+    }
+
+
 
     /// <summary>
     /// 
