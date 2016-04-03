@@ -50,20 +50,49 @@ namespace CSharpProbabilityMonad.Test
         [TestMethod]
         public void LinReg()
         {
-            var linear = from a in Normal(0, 1)
-                         from b in Normal(0, 1)
-                         select new Param(a, b);
-
-            var linny = from a in new Primitive<double>(Normal(0, 1))
-                        from b in new Primitive<double>(Normal(0, 2))
+            // Define a prior with heavy tails
+            var prior = from a in Primitive(Normal(5, 30))
+                        from b in Primitive(Normal(1, 30))
                         select new Param(a, b);
 
-            //Func<ContDist<Param>, Point, ContDist<Param>>
-            //linRegPoint = (dist, point) =>
-            //    dist.ConditionSoft(param => NormalPdf(param.a * point.x + param.b, 1, point.y));
+            // Define likelihood function
+            Func<Dist<Param>, Point, Dist<Param>>
+            linRegPoint = (dist, point) =>
+            {
+                return from cond in Condition(param =>
+                            Pdf(Normal(param.a * point.x + param.b, 1), point.y), dist)
+                       select cond;
+            };
 
+            // Diameter of sand granules vs slope on beach
+            // from http://college.cengage.com/mathematics/brase/understandable_statistics/7e/students/datasets/slr/frames/frame.html
+            // y = 17.16x - 2.48 
+            var points = new List<Point> {
+                new Point(0.1700000018,0.6299999952),
+                new Point(0.1899999976,0.6999999881),
+                new Point(0.2199999988,0.8199999928),
+                new Point(0.2349999994,0.8799999952),
+                new Point(0.2349999994,1.149999976),
+                new Point(0.3000000119,1.5),
+                new Point(0.349999994,4.400000095),
+                new Point(0.4199999869,7.300000191),
+                new Point(0.8500000238,11.30000019),
+            };
 
+            // Create the linear regression, but don't do any inference yet
+            var linReg = points.Aggregate(prior, linRegPoint, d => d);
 
+            // Basically do importance sampling using the prior
+            var samples = Enumerable.Range(0, 1000).Select(s => linReg.Prior().Sample());
+            var posteriorA = samples.Select(sample => ItemProb(sample.Item.a, sample.Prob));
+            var posteriorB = samples.Select(sample => ItemProb(sample.Item.b, sample.Prob));
+
+            // Graph the results
+            Debug.WriteLine("Posterior distribution of a:");
+            Debug.WriteLine(Histogram.Weighted(posteriorA, 20));
+
+            Debug.WriteLine("Posterior distribution of b:");
+            Debug.WriteLine(Histogram.Weighted(posteriorB, 20));
         }
 
         [TestMethod]
