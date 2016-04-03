@@ -8,6 +8,7 @@ namespace ProbabilityMonad
     public interface Prob : IEquatable<Prob>, IComparable<Prob>
     {
         double Value { get; }
+        double LogValue { get; }
         Prob Mult(Prob other);
         Prob Div(Prob other);
     }
@@ -18,6 +19,15 @@ namespace ProbabilityMonad
     public class DoubleProb : Prob
     {
         public double Value { get; }
+
+        public double LogValue
+        {
+            get
+            {
+                return Math.Log(Value);
+            }
+        }
+
         public DoubleProb(double probability)
         {
             Value = probability;
@@ -36,6 +46,7 @@ namespace ProbabilityMonad
 
         public Prob Div(Prob other)
         {
+            if (other.Value == 0) return new DoubleProb(0);
             return new DoubleProb(Value / other.Value);
         }
 
@@ -47,6 +58,58 @@ namespace ProbabilityMonad
         public bool Equals(Prob other)
         {
             return Value.Equals(other.Value);
+        }
+    }
+
+    public class LogProb : Prob
+    {
+        public double logProb;
+        public LogProb(double logProb)
+        {
+            this.logProb = logProb;
+        }
+
+        public double Value
+        {
+            get
+            {
+                return Math.Exp(logProb);
+            }
+        }
+
+        public double LogValue
+        {
+            get
+            {
+                return logProb;
+            }
+        }
+
+        public override string ToString()
+        {
+            var rounded = Math.Floor(Value * 1000) / 1000;
+            return $"{rounded*100}%";
+        }
+
+        public int CompareTo(Prob other)
+        {
+            return logProb.CompareTo(other.LogValue);
+        }
+
+        public Prob Div(Prob other)
+        {
+            if (other.Value == 0) return new LogProb(0);
+            return new LogProb(logProb - other.LogValue);
+        }
+
+        public bool Equals(Prob other)
+        {
+            return other.LogValue == logProb;
+        }
+
+        public Prob Mult(Prob other)
+        {
+            return new LogProb(logProb + other.LogValue);
         }
     }
 }
