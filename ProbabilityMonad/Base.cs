@@ -139,5 +139,54 @@ namespace ProbabilityMonad
             }
             throw new NotImplementedException("No PDF for this distribution implemented");
         }
+
+        /// <summary>
+        /// Unzip list of itemprobs into items and weights
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="itemProbs"></param>
+        /// <returns></returns>
+        public static Tuple<IEnumerable<A>, IEnumerable<Prob>> Unzip<A>(this IEnumerable<ItemProb<A>> itemProbs)
+        {
+            return new Tuple<IEnumerable<A>, IEnumerable<Prob>>(itemProbs.Select(ip => ip.Item), itemProbs.Select(ip => ip.Prob));
+        }
+
+        /// <summary>
+        /// Lift a list of samples into the GADT dist type
+        /// </summary> 
+        /// <typeparam name="A"></typeparam>
+        /// <param name="samples"></param>
+        /// <returns></returns>
+        public static Dist<A> SamplesToDist<A>(IEnumerable<ItemProb<A>> samples)
+        {
+            return Primitive(new FiniteDist<A>(samples).ToSampleDist());
+        }
+
+        /// <summary>
+        /// The native IEnumerable<A>.Add is mutative
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static IEnumerable<A> Append<A>(IEnumerable<A> list, A value)
+        {
+            var appendList = new List<A>(list);
+            appendList.Add(value);
+            return appendList;
+        }
+
+        /// <summary>
+        /// SMC that just discards pseudo-marginal likelihood
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="n"></param>
+        /// <param name="dist"></param>
+        /// <returns></returns>
+        public static Dist<IEnumerable<ItemProb<A>>> SmcStandard<A>(int n, Dist<A> dist)
+        {
+            return dist.Run(new SMC<A>(n)).Run(new PriorDiscard<IEnumerable<ItemProb<A>>>());
+        }
+
     }
 }

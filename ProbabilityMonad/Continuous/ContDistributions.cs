@@ -1,5 +1,6 @@
 ﻿using System;
 using static ProbabilityMonad.Base;
+using System.Security.Cryptography;
 
 namespace ProbabilityMonad
 {
@@ -10,10 +11,12 @@ namespace ProbabilityMonad
     {
         public double Mean { get; }
         public double Variance { get; }
-        public Normal(double mean, double variance)
+        public Random Gen {get;}
+        public Normal(double mean, double variance, Random gen)
         {
             Mean = mean;
             Variance = variance;
+            Gen = gen;
         }
 
         public Func<double> Sample
@@ -21,7 +24,7 @@ namespace ProbabilityMonad
             get
             {
                 return () => MathNet.Numerics.Distributions.Normal
-                        .WithMeanVariance(Mean, Variance)
+                        .WithMeanVariance(Mean, Variance, Gen)
                         .Sample();
             }
         }
@@ -35,11 +38,11 @@ namespace ProbabilityMonad
         public double alpha;
         public double beta;
         public MathNet.Numerics.Distributions.Beta dist;
-        public Beta(double alpha, double beta)
+        public Beta(double alpha, double beta, Random gen)
         {
             this.alpha = alpha;
             this.beta = beta;
-            dist = new MathNet.Numerics.Distributions.Beta(alpha, beta);
+            dist = new MathNet.Numerics.Distributions.Beta(alpha, beta, gen);
         }
 
         public Func<double> Sample
