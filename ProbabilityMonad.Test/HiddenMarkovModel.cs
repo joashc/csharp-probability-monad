@@ -18,7 +18,7 @@ namespace ProbabilityMonad.Test
 
             Func<List<double>, FiniteDist<int>> 
             transitionDist = ps => new FiniteDist<int>(
-                states.Zip(ps, (s, p) => new ItemProb<int>(s, Prob(p)))
+                Samples(states.Zip(ps, (s, p) => new ItemProb<int>(s, Prob(p))))
             );
 
             var tNeg1 = transitionDist(new List<double> { 0.1,  0.4, 0.5  });
@@ -33,11 +33,11 @@ namespace ProbabilityMonad.Test
                 throw new ArgumentException("Invalid state specified");
             };
             
-            var startDist = EnumUniformD(states.Select(s => new List<int> { s }));
+            var startDist = EnumUniformF(states.Select(s => new List<int> { s }));
 
             // Model the observed values as latent variables with gaussian noise
             Func<int, double, Prob>
-            emission = (x, y) => Pdf(Normal(x, 1), y);
+            emission = (x, y) => Pdf(NormalC(x, 1), y);
 
             Func<int, List<int>, List<int>>
             cons = (x,xs) => {

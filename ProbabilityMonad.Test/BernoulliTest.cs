@@ -15,22 +15,22 @@ namespace ProbabilityMonad.Test
         [TestMethod]
         public void CoinFlip_SumsToOne()
         {
-            var coin = Bernoulli(Prob(0.5));
-            Assert.AreEqual(1, coin.Distribution.Select(p => p.Prob.Value).Sum());
+            var coin = BernoulliF(Prob(0.5));
+            Assert.AreEqual(1, coin.Explicit.Select(p => p.Prob.Value).Sum());
         }
 
         [TestMethod]
-        public void SingleUniformDie_ProbIsOne()
+        public void SingleUniformFie_ProbIsOne()
         {
-            var die = UniformD(1, 2, 3, 4, 5, 6);
+            var die = UniformF(1, 2, 3, 4, 5, 6);
             Assert.AreEqual("16.6%", die.ProbOf(roll => roll == 1).ToString());
         }
 
         [TestMethod]
         public void ThreeDice_AtLeast2Odd()
         {
-            var weight = from isFair in Bernoulli(Prob(0.8))
-                         select isFair ? 0.5 : Beta(5, 1).Sample();
+            var weight = from isFair in BernoulliF(Prob(0.8))
+                         select isFair ? 0.5 : BetaC(5, 1).Sample();
 
             Func<bool, FiniteDist<double>, FiniteDist<double>> toss = (t, dist) => dist.ConditionSoft(w => Prob(t ? w : 1-w));
 
@@ -38,7 +38,7 @@ namespace ProbabilityMonad.Test
 
             var observations = new List<bool> { true, false, true, true, false, true, true, false };
             var posteriorWeight = tosses(observations, weight);
-            foreach (var something in posteriorWeight.Distribution)
+            foreach (var something in posteriorWeight.Explicit)
             {
                 Debug.WriteLine($"{something.Item}: {something.Prob}");
             }
@@ -47,9 +47,9 @@ namespace ProbabilityMonad.Test
         [TestMethod]
         public void ChanceAddOneToRoll()
         {
-            Func<int, FiniteDist<int>> flipCoinAddOne = x => UniformD(x, x + 1);
+            Func<int, FiniteDist<int>> flipCoinAddOne = x => UniformF(x, x + 1);
 
-            var die = UniformD(1, 2, 3, 4, 5, 6);
+            var die = UniformF(1, 2, 3, 4, 5, 6);
             var rollAndFlip = from roll in die
                               from maybeAdded in flipCoinAddOne(roll)
                               select maybeAdded;
@@ -62,9 +62,9 @@ namespace ProbabilityMonad.Test
         [TestMethod]
         public void ChanceAddOneToRollTwice()
         {
-            Func<int, FiniteDist<int>> flipCoinAddOne = x => UniformD(x, x + 1);
+            Func<int, FiniteDist<int>> flipCoinAddOne = x => UniformF(x, x + 1);
 
-            var die = UniformD(1, 2, 3, 4, 5, 6);
+            var die = UniformF(1, 2, 3, 4, 5, 6);
             var rollAndFlip = from roll in die
                               from maybeAdded in flipCoinAddOne(roll)
                               select maybeAdded;

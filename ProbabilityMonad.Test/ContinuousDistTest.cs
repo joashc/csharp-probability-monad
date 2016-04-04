@@ -51,8 +51,8 @@ namespace CSharpProbabilityMonad.Test
         public void LinReg()
         {
             // Define a prior with heavy tails
-            var prior = from a in Primitive(Normal(5, 30))
-                        from b in Primitive(Normal(1, 30))
+            var prior = from a in Normal(5, 30)
+                        from b in Normal(1, 30)
                         select new Param(a, b);
 
             // Define likelihood function
@@ -60,7 +60,7 @@ namespace CSharpProbabilityMonad.Test
             linRegPoint = (dist, point) =>
             {
                 return from cond in Condition(param =>
-                            Pdf(Normal(param.a * point.x + param.b, 1), point.y), dist)
+                            Pdf(NormalC(param.a * point.x + param.b, 1), point.y), dist)
                        select cond;
             };
 
@@ -98,7 +98,7 @@ namespace CSharpProbabilityMonad.Test
         [TestMethod]
         public void ThreeRolls()
         {
-            var die = UniformD(1, 2, 3, 4, 5, 6);
+            var die = UniformF(1, 2, 3, 4, 5, 6);
             var threeRolls = from roll1 in die
                              from roll2 in die
                              from roll3 in die

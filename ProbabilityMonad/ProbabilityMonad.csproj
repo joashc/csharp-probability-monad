@@ -60,6 +60,7 @@
     <Compile Include="ItemProb.cs" />
     <Compile Include="Prob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Samples.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

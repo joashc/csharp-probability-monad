@@ -60,6 +60,7 @@
     <Compile Include="ContinuousDistTest.cs" />
     <Compile Include="HiddenMarkovModel.cs" />
     <Compile Include="MetropolisTest.cs" />
+    <Compile Include="Models\Coin.cs" />
     <Compile Include="UniformTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -44,8 +44,8 @@ namespace ProbabilityMonad.Test
         public void MetropolisHastings()
         {
             // Define a prior with heavy tails
-            var prior = from a in Primitive(Normal(20, 10))
-                        from b in Primitive(Normal(1, 10))
+            var prior = from a in Normal(20, 10)
+                        from b in Normal(1, 10)
                         select new Param(a, b);
 
             // Define likelihood function
@@ -53,7 +53,7 @@ namespace ProbabilityMonad.Test
             linRegPoint = (dist, point) =>
             {
                 return from cond in Condition(param =>
-                            Pdf(Normal(param.a * point.x + param.b, 1), point.y), dist)
+                            Pdf(NormalC(param.a * point.x + param.b, 1), point.y), dist)
                        select cond;
             };
 
@@ -75,7 +75,7 @@ namespace ProbabilityMonad.Test
 
             Func<Param, Prob> likelihood = param =>
             {
-                return points.Aggregate(Prob(1), (pr, point) => pr.Mult(Pdf(Normal(param.a * point.x + param.b, 1), point.y)));
+                return points.Aggregate(Prob(1), (pr, point) => pr.Mult(Pdf(NormalC(param.a * point.x + param.b, 1), point.y)));
             };
 
             // Create the linear regression, but don't do any inference yet

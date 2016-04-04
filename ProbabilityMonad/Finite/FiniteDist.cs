@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static ProbabilityMonad.Base;
 
 namespace ProbabilityMonad
@@ -13,17 +10,17 @@ namespace ProbabilityMonad
     /// <typeparam name="A"></typeparam>
     public class FiniteDist<A>
     {
-        public FiniteDist(IEnumerable<ItemProb<A>> probs)
+        public FiniteDist(Samples<A> samples)
         {
-            Distribution = probs;
+            Explicit = samples;
         }
 
-        public FiniteDist(params ItemProb<A>[] probs)
+        public FiniteDist(params ItemProb<A>[] samples)
         {
-            Distribution = probs;
+            Explicit = Samples(samples);
         }
 
-        public IEnumerable<ItemProb<A>> Distribution { get; }
+        public Samples<A> Explicit { get; }
     }
 
 
@@ -33,12 +30,12 @@ namespace ProbabilityMonad
     public static class FiniteDistMonad
     {
         /// <summary>
-        /// fmap f (FiniteDist dist) = FiniteDist $ map (first f) dist
+        /// fmap f (FiniteDist (Samples xs)) = FiniteDist $ Samples $ map (first f) xs
         /// </summary>
         public static FiniteDist<B> Select<A, B>(this FiniteDist<A> self, Func<A, B> select)
         {
-            return new FiniteDist<B>(self.Distribution.Select(i => 
-                new ItemProb<B>(select(i.Item), i.Prob)));
+            return new FiniteDist<B>(Samples(self.Explicit.Weights.Select(i =>
+                ItemProb(select(i.Item), i.Prob))));
         }
 
         /// <summary>
@@ -53,35 +50,12 @@ namespace ProbabilityMonad
             Func<A, B, C> project
         )
         {
-            var itemProbs = 
-                self.Distribution.Select(a => 
-                    ItemProb(bind(a.Item).Select(b => 
-                        project(a.Item, b)), a.Prob));
+            var itemProbs = from xp in self.Explicit.Weights
+                            from yq in bind(xp.Item).Explicit.Weights
+                            select ItemProb(project(xp.Item, yq.Item), xp.Prob.Mult(yq.Prob));
 
-            var dists = new FiniteDist<FiniteDist<C>>(itemProbs);
-            return new FiniteDist<C>(DistJoin(dists));
+            return new FiniteDist<C>(Samples(itemProbs));
         }
-
-        /// <summary>
-        /// Take the cartensian product, multiplying out probabilities
-        /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="distOverDist"></param>
-        /// <returns></returns>
-        public static IEnumerable<ItemProb<A>> DistJoin<A>(FiniteDist<FiniteDist<A>> distOverDist)
-        {
-            foreach (var dist in distOverDist.Distribution)
-            {
-                foreach (var itemProb in dist.Item.Distribution)
-                {
-                    yield return ItemProb(
-                            itemProb.Item,
-                            itemProb.Prob.Mult(dist.Prob)
-                    );
-                }
-            }
-        }
-
     }
 
 }

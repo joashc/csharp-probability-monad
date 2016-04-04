@@ -35,13 +35,13 @@ namespace ProbabilityMonad.Test
                 if (!rain && sprinkler) return Prob(0.9);
                 return Prob(0);
             };
-            var rainDist = Bernoulli(Prob(0.2));
+            var rainDist = BernoulliF(Prob(0.2));
 
             // Bayesian network for sprinkler model
             var sprinklerModel =
                  from rain in rainDist
-                 from sprinkler in Bernoulli(Prob(rain ? 0.01 : 0.4))
-                 from wet in Bernoulli(wetProb(rain, sprinkler))
+                 from sprinkler in BernoulliF(Prob(rain ? 0.01 : 0.4))
+                 from wet in BernoulliF(wetProb(rain, sprinkler))
                  select new SprinklerEvent(rain, sprinkler, wet);
 
             // Probability of raining should be unaffected
@@ -91,13 +91,13 @@ namespace ProbabilityMonad.Test
             // Monty hall without switching
             Func<List<Door>, FiniteDist<MontyHallState>> 
             montyHall = doors =>
-                from winner in EnumUniformD(doors)
-                from picked in EnumUniformD(doors)
+                from winner in EnumUniformF(doors)
+                from picked in EnumUniformF(doors)
                 select new MontyHallState(winner, picked);
 
             // Host has equal chance of opening any non-winning door you didn't pick
             Func<List<Door>, Door, Door, FiniteDist<Door>> 
-            Open = (doors, winner, picked) => EnumUniformD(doors.Where(d => d != picked && d != winner));
+            Open = (doors, winner, picked) => EnumUniformF(doors.Where(d => d != picked && d != winner));
 
             // Monty hall with switching
             Func<List<Door>, FiniteDist<MontyHallState>>
@@ -105,7 +105,7 @@ namespace ProbabilityMonad.Test
                 from initial in montyHall(doors)
                 from opened in Open(doors, initial.Winner, initial.Picked)
                 // Pick one of the closed doors you didn't pick at first
-                from newPick in EnumUniformD(doors.Where(d => d != initial.Picked && d != opened))
+                from newPick in EnumUniformF(doors.Where(d => d != initial.Picked && d != opened))
                 select new MontyHallState(initial.Winner, newPick);
 
             // You won if you picked the winner 
