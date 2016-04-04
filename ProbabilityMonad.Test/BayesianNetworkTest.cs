@@ -6,6 +6,7 @@ using static ProbabilityMonad.Base;
 
 namespace ProbabilityMonad.Test
 {
+
     [TestClass]
     public class BayesianNetworkTest
     {
