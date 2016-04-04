@@ -54,12 +54,14 @@
     <Compile Include="Inference\Importance.cs" />
     <Compile Include="Inference\MetropolisHastings.cs" />
     <Compile Include="Inference\PIMH.cs" />
+    <Compile Include="Inference\Prior.cs" />
+    <Compile Include="Inference\PriorWeighted.cs" />
     <Compile Include="Inference\SMC.cs" />
-    <Compile Include="Interpreters.cs" />
     <Compile Include="Finite\FiniteDist.cs" />
     <Compile Include="ItemProb.cs" />
     <Compile Include="Prob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sampler.cs" />
     <Compile Include="Samples.cs" />
   </ItemGroup>
   <ItemGroup>
