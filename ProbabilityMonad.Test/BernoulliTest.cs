@@ -5,7 +5,6 @@ using System.Diagnostics;
 using static ProbabilityMonad.Base;
 using System.Linq;
 using System.Collections.Generic;
-using CSharpProbabilityMonad;
 
 namespace ProbabilityMonad.Test
 {

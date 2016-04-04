@@ -58,9 +58,11 @@
     <Compile Include="BayesianNetworkTest.cs" />
     <Compile Include="BernoulliTest.cs" />
     <Compile Include="ContinuousDistTest.cs" />
-    <Compile Include="HiddenMarkovModel.cs" />
     <Compile Include="MetropolisTest.cs" />
     <Compile Include="Models\Coin.cs" />
+    <Compile Include="Models\Dice.cs" />
+    <Compile Include="Models\HiddenMarkovModel.cs" />
+    <Compile Include="Models\LinearRegression.cs" />
     <Compile Include="UniformTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
