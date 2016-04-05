@@ -181,6 +181,82 @@ namespace ProbabilityMonad
 
         #region GADT constructors
 
+
+        #region Parallel constructors
+        /// <summary>
+        /// Wraps the distribution to defer evaluation until explicitly parallelized
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="dist"></param>
+        /// <returns></returns>
+        public static Dist<Dist<A>> Independent<A>(Dist<A> dist)
+        {
+            return new Independent<A>(dist);
+        }
+
+        /// <summary>
+        /// Evaluates two distributions in parallel
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="dist1"></param>
+        /// <param name="dist2"></param>
+        /// <param name="run"></param>
+        /// <returns></returns>
+        public static Dist<A> RunIndependentWith<T1, T2, A>(Dist<T1> dist1, Dist<T2> dist2, Func<T1, T2, Dist<A>> run)
+        {
+            return new RunIndependent<T1, T2, A>(dist1, dist2, run);
+        }
+
+        /// <summary>
+        /// Evaluates two distributions in parallel. The results are collected into a tuple.
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <param name="dist1"></param>
+        /// <param name="dist2"></param>
+        /// <returns></returns>
+        public static Dist<Tuple<T1, T2>> RunIndependent<T1, T2>(Dist<T1> dist1, Dist<T2> dist2)
+        {
+            return new RunIndependent<T1, T2, Tuple<T1, T2>>(dist1, dist2, (t1, t2) => Return(new Tuple<T1, T2>(t1, t2)));
+        }
+
+        /// <summary>
+        /// Evaluates three distributions in parallel. The results are collected into a tuple.
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <param name="dist1"></param>
+        /// <param name="dist2"></param>
+        /// <param name="dist3"></param>
+        /// <returns></returns>
+        public static Dist<Tuple<T1, T2, T3>> RunIndependent<T1, T2, T3>(Dist<T1> dist1, Dist<T2> dist2, Dist<T3> dist3)
+        {
+            return new RunIndependent3<T1, T2, T3, Tuple<T1, T2, T3>>(dist1, dist2, dist3, (t1, t2, t3) => Return(new Tuple<T1, T2, T3>(t1, t2, t3)));
+        }
+
+        /// <summary>
+        /// Evaluates three distributions in parallel
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="dist1"></param>
+        /// <param name="dist2"></param>
+        /// <param name="dist3"></param>
+        /// <param name="run"></param>
+        /// <returns></returns>
+        public static Dist<A> RunIndependentWith<T1, T2, T3, A>(Dist<T1> dist1, Dist<T2> dist2, Dist<T3> dist3, Func<T1, T2, T3, Dist<A>> run)
+        {
+            return new RunIndependent3<T1, T2, T3, A>(dist1, dist2, dist3, run);
+        }
+        #endregion
+
+
+
         /// <summary>
         /// Primitive constructor
         /// </summary>

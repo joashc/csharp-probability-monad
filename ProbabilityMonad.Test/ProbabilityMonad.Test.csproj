@@ -63,6 +63,7 @@
     <Compile Include="Models\Dice.cs" />
     <Compile Include="Models\HiddenMarkovModel.cs" />
     <Compile Include="Models\LinearRegression.cs" />
+    <Compile Include="ParallelTest.cs" />
     <Compile Include="UniformTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

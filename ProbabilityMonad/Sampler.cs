@@ -27,6 +27,11 @@ namespace ProbabilityMonad
     /// <typeparam name="A"></typeparam>
     public class Sampler<A> : DistInterpreter<A, A>
     {
+        public DistInterpreter<C, Y> New<C, Y>()
+        {
+            return new Sampler<C>() as DistInterpreter<C, Y>;
+        }
+
         A DistInterpreter<A, A>.Bind<B>(Dist<B> dist, Func<B, Dist<A>> bind)
         {
             var x = dist.Run(new Sampler<B>());

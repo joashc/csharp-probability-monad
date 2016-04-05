@@ -9,12 +9,13 @@ using static ProbabilityMonad.Base;
 namespace ProbabilityMonad
 {
     /// <summary>
-    /// GADT for representing distributions as free monads.
+    /// GADT for representing distributions as operational monad
     /// </summary>
     /// <typeparam name="A"></typeparam>
     public interface Dist<A>
     {
         X Run<X>(DistInterpreter<A, X> interpreter);
+        X RunParallel<X>(ParallelDistInterpreter<A, X> interpreter);
     }
 
     /// <summary>
@@ -23,7 +24,7 @@ namespace ProbabilityMonad
     /// http://research.microsoft.com/pubs/64040/gadtoop.pdf
     /// for the idea of using the visitor pattern to implement GADTS.
     /// </summary>
-    /// <typeparam name="A"></typeparam>
+    /// <typeparam name="A">Sample type of distribution</typeparam>
     /// <typeparam name="X"></typeparam>
     public interface DistInterpreter<A, X>
     {
@@ -31,6 +32,23 @@ namespace ProbabilityMonad
         X Primitive(ContDist<A> dist);
         X Conditional(Func<A, Prob> lik, Dist<A> dist);
         X Bind<B>(Dist<B> dist, Func<B, Dist<A>> bind);
+        DistInterpreter<B, Y> New<B, Y>();
+    }
+
+    /// <summary>
+    /// Parallel interpreter interface
+    /// </summary>
+    /// <typeparam name="A"></typeparam>
+    /// <typeparam name="X"></typeparam>
+    public interface ParallelDistInterpreter<A, X>
+    {
+        X Pure(A value);
+        X Primitive(ContDist<A> dist);
+        X Conditional(Func<A, Prob> lik, Dist<A> dist);
+        X Bind<B>(Dist<B> dist, Func<B, Dist<A>> bind);
+        X Independent(Dist<A> independent);
+        X RunIndependent<T1, T2>(Dist<T1> distB, Dist<T2> distC, Func<T1, T2, Dist<A>> run);
+        X RunIndependent3<T1, T2, T3>(Dist<T1> first, Dist<T2> second, Dist<T3> third, Func<T1, T2, T3, Dist<A>> run);
     }
 
     /// <summary>
@@ -49,6 +67,11 @@ namespace ProbabilityMonad
         {
             return interpreter.Pure(Value);
         }
+
+        public X RunParallel<X>(ParallelDistInterpreter<A, X> interpreter)
+        {
+            return interpreter.Pure(Value);
+        }
     }
 
     /// <summary>
@@ -64,6 +87,11 @@ namespace ProbabilityMonad
         }
 
         public X Run<X>(DistInterpreter<A, X> interpreter)
+        {
+            return interpreter.Primitive(dist);
+        }
+
+        public X RunParallel<X>(ParallelDistInterpreter<A, X> interpreter)
         {
             return interpreter.Primitive(dist);
         }
@@ -87,6 +115,107 @@ namespace ProbabilityMonad
         {
             return interpreter.Conditional(likelihood, dist);
         }
+
+        public X RunParallel<X>(ParallelDistInterpreter<A, X> interpreter)
+        {
+            return interpreter.Conditional(likelihood, dist);
+        }
+    }
+
+    /// <summary>
+    /// Evaluate three independent distributions in parallel
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="A"></typeparam>
+    public class RunIndependent3<T1, T2, T3, A> : Dist<A>
+    {
+        public readonly Dist<T1> first;
+        public readonly Dist<T2> second;
+        public readonly Dist<T3> third;
+        public readonly Func<T1, T2, T3, Dist<A>> run;
+        public RunIndependent3(Dist<T1> first, Dist<T2> second, Dist<T3> third, Func<T1, T2, T3, Dist<A>> run)
+        {
+            this.first = first;
+            this.second = second;
+            this.third = third;
+            this.run = run;
+        }
+
+        // Run sequentially if we're not using a parallel interpreter
+        public X Run<X>(DistInterpreter<A, X> interpreter)
+        {
+            var resultA = from x in first
+                          from y in second
+                          from z in third
+                          from result in run(x, y, z)
+                          select result;
+            return resultA.Run(interpreter);
+        }
+
+        public X RunParallel<X>(ParallelDistInterpreter<A, X> interpreter)
+        {
+            return interpreter.RunIndependent3(first, second, third, run);
+        }
+    }
+
+    /// <summary>
+    /// Evaluate two independent distributions in parallel
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="A"></typeparam>
+    public class RunIndependent<T1, T2, A> : Dist<A>
+    {
+        public readonly Dist<T1> first;
+        public readonly Dist<T2> second;
+        public readonly Func<T1, T2, Dist<A>> run;
+        public RunIndependent(Dist<T1> first, Dist<T2> second, Func<T1, T2, Dist<A>> run)
+        {
+            this.first = first;
+            this.second = second;
+            this.run = run;
+        }
+
+        // Run sequentially if we're not using a parallel interpreter
+        public X Run<X>(DistInterpreter<A, X> interpreter)
+        {
+            var resultA = from x in first
+                          from y in second
+                          from result in run(x, y)
+                          select result;
+            return resultA.Run(interpreter);
+        }
+
+        public X RunParallel<X>(ParallelDistInterpreter<A, X> interpreter)
+        {
+            return interpreter.RunIndependent(first, second, run);
+        }
+    }
+
+    /// <summary>
+    /// Marks independent distributions for parallel evaluation
+    /// </summary>
+    /// <typeparam name="A"></typeparam>
+    /// <typeparam name="B"></typeparam>
+    public class Independent<A> : Dist<Dist<A>>
+    {
+        public readonly Dist<A> dist;
+        public Independent(Dist<A> dist)
+        {
+            this.dist = dist;
+        }
+
+        // Run sequentially if we're not using a parallel interpreter
+        public X Run<X>(DistInterpreter<Dist<A>, X> interpreter)
+        {
+            return Return(dist).Run(interpreter);
+        }
+
+        public X RunParallel<X>(ParallelDistInterpreter<Dist<A>, X> interpreter)
+        {
+            return interpreter.Independent(Return(dist));
+        }
     }
 
     /// <summary>
@@ -105,6 +234,11 @@ namespace ProbabilityMonad
         }
 
         public X Run<X>(DistInterpreter<A, X> interpreter)
+        {
+            return interpreter.Bind(dist, bind);
+        }
+
+        public X RunParallel<X>(ParallelDistInterpreter<A, X> interpreter)
         {
             return interpreter.Bind(dist, bind);
         }
@@ -132,7 +266,7 @@ namespace ProbabilityMonad
             Func<A, B, C> project
         )
         {
-            return 
+            return
                 new Bind<A, C>(dist, a =>
                    new Bind<B, C>(bind(a), b =>
                        new Pure<C>(project(a, b))
@@ -140,6 +274,36 @@ namespace ProbabilityMonad
                 );
         }
 
+        /// <summary>
+        /// Default to using recursion depth limit of 100
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="dists"></param>
+        /// <returns></returns>
+        public static Dist<IEnumerable<A>> Sequence<A>(this IEnumerable<Dist<A>> dists)
+        {
+            return SequenceWithDepth(dists, 100);
+        }
+
+        /// <summary>
+        /// This implementation sort of does trampolining to avoid stack overflows,
+        /// but for performance reasons it recursively divides the list
+        /// into groups up to a recursion depth, instead of trampolining every iteration.
+        ///
+        /// This should limit the recursion depth to around 
+        /// $$s\log_{s}{n}$$
+        /// where s is the specified recursion depth limit
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="dists"></param>
+        /// <returns></returns>
+        public static Dist<IEnumerable<A>> SequenceWithDepth<A>(this IEnumerable<Dist<A>> dists, int recursionDepth)
+        {
+            var sections = dists.Count() / recursionDepth;
+            if (sections <= 1) return RunSequence(dists);
+            return from nested in SequenceWithDepth(SequencePartial(dists, recursionDepth), recursionDepth)
+                   select nested.SelectMany(a => a);
+        }
 
         /// <summary>
         /// `sequence` can be implemented as
@@ -148,14 +312,30 @@ namespace ProbabilityMonad
         /// <typeparam name="A"></typeparam>
         /// <param name="dists"></param>
         /// <returns></returns>
-        public static Dist<IEnumerable<A>> Sequence<A>(this IEnumerable<Dist<A>> dists)
+        private static Dist<IEnumerable<A>> RunSequence<A>(IEnumerable<Dist<A>> dists)
         {
             return dists.Aggregate(
                 Return<IEnumerable<A>>(new List<A>()),
                 (listDist, aDist) => from a in aDist
                                      from list in listDist
-                                     select Append(list, a));
+                                     select Append(list, a)
+            );
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="dists"></param>
+        /// <param name="groupSize"></param>
+        /// <returns></returns>
+        private static IEnumerable<Dist<IEnumerable<A>>> SequencePartial<A>(IEnumerable<Dist<A>> dists, int groupSize)
+        {
+            var numGroups = dists.Count() / groupSize;
+            return Enumerable.Range(0, numGroups)
+                             .Select(groupNum => RunSequence(dists.Skip(groupNum * groupSize).Take(groupSize)));
+        }
+
     }
 
 }

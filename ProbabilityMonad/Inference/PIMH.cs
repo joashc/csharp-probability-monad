@@ -10,7 +10,7 @@ namespace ProbabilityMonad
     {
         public static Dist<IEnumerable<Samples<A>>> Run<A>(int n, int chainLen, Dist<A> dist)
         {
-            return MetropolisHastings.MHPrior(dist.Run(new SMC<A>(n)), chainLen);
+            return MetropolisHastings.MHPrior(dist.Run(new Smc<A>(n)), chainLen);
         }
     }
 }
