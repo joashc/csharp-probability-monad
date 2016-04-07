@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics;
 using static ProbabilityMonad.Base;
 
 namespace ProbabilityMonad.Test
@@ -55,7 +56,7 @@ namespace ProbabilityMonad.Test
             var givenGrassWet = sprinklerModel.ConditionHard(e => e.GrassWet);
             var prRainingGivenWet = givenGrassWet.ProbOf(e => e.Raining);
 
-            Assert.AreEqual("35.7%", prRainingGivenWet.ToString());
+            Assert.AreEqual("35.8%", prRainingGivenWet.ToString());
 
         }
 
@@ -120,7 +121,7 @@ namespace ProbabilityMonad.Test
             var prStayWon = montyHall(threeDoors).ProbOf(won);
             Assert.AreEqual("33.3%", prStayWon.ToString());
             var prSwitchWon = switched(threeDoors).ProbOf(won);
-            Assert.AreEqual("66.6%", prSwitchWon.ToString());
+            Assert.AreEqual("66.7%", prSwitchWon.ToString());
 
             // Four door monty hall
             var fourDoors = new List<Door> {
@@ -131,6 +132,7 @@ namespace ProbabilityMonad.Test
             };
 
             var prStayWon4 = montyHall(fourDoors).ProbOf(won);
+            Debug.WriteLine(montyHall(fourDoors).Histogram(state => won(state) ? "Win" : "Lose"));
             Assert.AreEqual("25%", prStayWon4.ToString());
             var prSwitchWon4 = switched(fourDoors).ProbOf(won);
             Assert.AreEqual("37.5%", prSwitchWon4.ToString());

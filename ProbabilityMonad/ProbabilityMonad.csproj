@@ -59,6 +59,7 @@
     <Compile Include="Inference\Smc.cs" />
     <Compile Include="Finite\FiniteDist.cs" />
     <Compile Include="ItemProb.cs" />
+    <Compile Include="KullbackLeibner.cs" />
     <Compile Include="ParallelSampler.cs" />
     <Compile Include="Prob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

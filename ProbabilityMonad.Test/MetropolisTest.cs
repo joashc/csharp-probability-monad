@@ -25,7 +25,7 @@ namespace ProbabilityMonad.Test
 
             var sumDist = from outer in samples
                           from inner in outer
-                          select (double)inner;
+                          select (double) inner;
 
             Debug.WriteLine(Histogram.Unweighted(sumDist));
         }

@@ -40,7 +40,7 @@ namespace ProbabilityMonad
             while (n > 0)
             {
                 var nextDist = from candidate in proposal()
-                               from accept in Bernoulli(Prob(Math.Min(1.0, candidate.Prob.Div(chainState.Prob).Value)))
+                               from accept in Primitive(BernoulliF(Prob(Math.Min(1.0, candidate.Prob.Div(chainState.Prob).Value))).ToSampleDist())
                                select accept ? candidate : chainState;
                 var next = nextDist.Sample();
                 chainState = next;

@@ -1,4 +1,6 @@
 ﻿using System;
+using static ProbabilityMonad.Base;
+using System.Security.Cryptography;
 
 namespace ProbabilityMonad
 {

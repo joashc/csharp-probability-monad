@@ -15,7 +15,7 @@ namespace ProbabilityMonad
     {
         public DistInterpreter<B, Y> New<B, Y>()
         {
-            return new Prior<B>() as DistInterpreter<B, Y>;
+            return new Prior<B>() as DistInterpreter<B,Y>;
         }
 
         Dist<A> DistInterpreter<A, Dist<A>>.Bind<B>(Dist<B> dist, Func<B, Dist<A>> bind)
@@ -38,4 +38,6 @@ namespace ProbabilityMonad
             return new Pure<A>(value);
         }
     }
+
+
 }

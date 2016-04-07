@@ -13,5 +13,10 @@
             Item = item;
             Prob = prob;
         }
+
+        public override string ToString()
+        {
+            return $"ItemProb ({Item}, {Prob})";
+        }
     }
 }

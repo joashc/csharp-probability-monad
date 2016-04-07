@@ -100,8 +100,8 @@ namespace ProbabilityMonad
                     .Select(p => ItemProb(p.Item, condition(p.Item) ? p.Prob : Prob(0)))
                     .Normalize()
             );
-
-
+                    
+                
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace ProbabilityMonad
         {
             return new FiniteDist<A>(dist.Explicit.Normalize());
         }
-
+        
         /// <summary>
         /// Join two independent distributions
         /// </summary>
@@ -123,7 +123,7 @@ namespace ProbabilityMonad
         /// <param name="self"></param>
         /// <param name="other"></param>
         /// <returns></returns>
-        public static FiniteDist<Tuple<A, B>> Join<A, B>(this FiniteDist<A> self, FiniteDist<B> other)
+        public static FiniteDist<Tuple<A,B>> Join<A, B>(this FiniteDist<A> self, FiniteDist<B> other)
         {
             return from a in self
                    from b in other
@@ -136,14 +136,29 @@ namespace ProbabilityMonad
         /// <typeparam name="A"></typeparam>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static FiniteDist<Tuple<A, IEnumerable<A>>> SelectOne<A>(List<A> list)
+        public static FiniteDist<Tuple<A,IEnumerable<A>>> SelectOne<A>(List<A> list)
         {
             var removedLists = list.Select(a => {
                 var removedList = new List<A>(list);
                 removedList.Remove(a);
                 return new Tuple<A, IEnumerable<A>>(a, removedList);
-            });
+               });
             return EnumUniformF(removedLists);
+        }
+
+
+        /// <summary>
+        /// Display finite distribution as histogram
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="dist"></param>
+        /// <param name="showItem">Specifies a string representation of distribution item. Defaults to ToString.</param>
+        /// <param name="scale"></param>
+        /// <returns></returns>
+        public static string Histogram<A>(this FiniteDist<A> dist, Func<A, string> showItem = null, double scale = 100)
+        {
+            if (showItem == null) showItem = a => a.ToString();
+            return ProbabilityMonad.Histogram.Finite(dist.Explicit, showItem, scale);
         }
 
     }

@@ -8,6 +8,7 @@ using System.Collections;
 
 namespace ProbabilityMonad
 {
+
     /// <summary>
     /// Extension methods for samples
     /// </summary>
@@ -74,5 +75,4 @@ namespace ProbabilityMonad
             return Weights.GetEnumerator();
         }
     }
-
 }

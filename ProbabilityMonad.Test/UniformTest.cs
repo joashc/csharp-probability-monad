@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using ProbabilityMonad;
+using ProbabilityMonad.Test.Models;
 using static ProbabilityMonad.Base;
 using System.Linq;
 using System.Collections.Generic;
@@ -15,14 +16,15 @@ namespace ProbabilityMonad.Test
         public void CoinFlip_SumsToOne()
         {
             var coin = UniformF(1, 2);
-            Assert.AreEqual(1, coin.Explicit.Select(p => p.Prob.Value).Sum());
+            Assert.AreEqual(1, coin.Explicit.Weights.Select(p => p.Prob.Value).Sum());
         }
 
         [TestMethod]
-        public void SingleUniformFie_ProbIsOne()
+        public void SingleUniformDie_ProbIsOne()
         {
             var die = UniformF(1, 2, 3, 4, 5, 6);
-            Assert.AreEqual("16.6%", die.ProbOf(roll => roll == 1).ToString());
+            Debug.WriteLine(Histogram.Finite(die.Explicit));
+            Assert.AreEqual("16.7%", die.ProbOf(roll => roll == 1).ToString());
         }
 
         [TestMethod]
@@ -48,7 +50,35 @@ namespace ProbabilityMonad.Test
                              select roll1 + roll2 + roll3;
 
             var pSumTo8 = threeRolls.ProbOf(s => s == 8);
-            Assert.AreEqual("9.7%", pSumTo8.ToString());
+            var pSumTo8x = Dice.DieExact(3).ProbOf(s => s == 8);
+            Debug.WriteLine(Histogram.Finite(threeRolls.Explicit));
+            Debug.WriteLine(Dice.DieExact(3).Histogram());
+            Assert.AreEqual("9.72%", pSumTo8.ToString());
+            Assert.AreEqual("9.72%", pSumTo8x.ToString());
+        }
+
+        [TestMethod]
+        public void IndependentDieRolls()
+        {
+            // Exact distribution of sum of three three rolls
+            var threeRollsExact = Dice.DieExact(3);
+            Debug.WriteLine(threeRollsExact.Histogram());
+
+            // Stochastic form
+            var threeRolls = Dice.Die(3).SampleNParallel(10).Select(i => (double) i);
+            Debug.WriteLine(Histogram.Unweighted(threeRolls, 15));
+        }
+
+        [TestMethod]
+        public void ConditionalDie()
+        {
+            // Exact posterior conditioned die
+            var twoRollsExact = Dice.ConditionalDieExact(2);
+            Debug.WriteLine(twoRollsExact.Histogram());
+
+            var twoRolls = Dice.ConditionalDie(2);
+            var priorWeights = twoRolls.Prior().SampleNParallel(100).Select(ip => ItemProb((double)ip.Item, ip.Prob));
+            Debug.WriteLine(Histogram.Weighted(priorWeights, scale: 60));
         }
 
     }

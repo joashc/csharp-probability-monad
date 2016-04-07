@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using static ProbabilityMonad.Base;
 
 namespace ProbabilityMonad.Test.Models
@@ -28,8 +33,7 @@ namespace ProbabilityMonad.Test.Models
         public static FiniteDist<int> ConditionalDieExact(int n)
         {
             return DieExact(n).ConditionSoftUnnormalized(
-                x =>
-                {
+                x => {
                     return Prob(1.0 / Math.Pow(x, 2));
                 });
         }
@@ -51,7 +55,7 @@ namespace ProbabilityMonad.Test.Models
         /// <returns></returns>
         public static Dist<int> ConditionalDie(int n)
         {
-            return Condition(x => Prob(1.0 / Math.Pow(x, 2)), Die(n));
+            return Condition(x => Prob(1.0/Math.Pow(x, 2)), Die(n));
         }
     }
 }

@@ -181,7 +181,6 @@ namespace ProbabilityMonad
 
         #region GADT constructors
 
-
         #region Parallel constructors
         /// <summary>
         /// Wraps the distribution to defer evaluation until explicitly parallelized
@@ -254,8 +253,6 @@ namespace ProbabilityMonad
             return new RunIndependent3<T1, T2, T3, A>(dist1, dist2, dist3, run);
         }
         #endregion
-
-
 
         /// <summary>
         /// Primitive constructor

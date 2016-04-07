@@ -53,8 +53,8 @@ namespace ProbabilityMonad
         public static Samples<A> Flatten<A>(Samples<Samples<A>> samples)
         {
             return Samples(from outer in Normalize(samples).Weights
-                           from inner in outer.Item.Weights
-                           select ItemProb(inner.Item, inner.Prob.Mult(outer.Prob)));
+                   from inner in outer.Item.Weights
+                   select ItemProb(inner.Item, inner.Prob.Mult(outer.Prob)));
         }
 
         /// <summary>

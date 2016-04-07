@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProbabilityMonad
 {
-    public static class PIMH
+    public static class Pimh
     {
         public static Dist<IEnumerable<Samples<A>>> Run<A>(int n, int chainLen, Dist<A> dist)
         {

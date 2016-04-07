@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace ProbabilityMonad
 {
@@ -46,7 +47,6 @@ namespace ProbabilityMonad
 
         public Prob Div(Prob other)
         {
-            if (other.Value == 0) return new DoubleProb(0);
             return new DoubleProb(Value / other.Value);
         }
 
@@ -67,6 +67,9 @@ namespace ProbabilityMonad
         public LogProb(double logProb)
         {
             this.logProb = logProb;
+            if (Double.IsNegativeInfinity(logProb)) {
+                this.logProb = -1e300;
+            }
         }
 
         public double Value
@@ -87,8 +90,8 @@ namespace ProbabilityMonad
 
         public override string ToString()
         {
-            var rounded = Math.Floor(Value * 1000) / 1000;
-            return $"{rounded*100}%";
+            var str = $"{Value*100:G3}%";
+            return str;
         }
 
         public int CompareTo(Prob other)
@@ -98,7 +101,6 @@ namespace ProbabilityMonad
 
         public Prob Div(Prob other)
         {
-            if (other.Value == 0) return new LogProb(0);
             return new LogProb(logProb - other.LogValue);
         }
 

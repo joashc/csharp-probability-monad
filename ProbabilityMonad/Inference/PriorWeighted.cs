@@ -36,7 +36,7 @@ namespace ProbabilityMonad
         public Dist<ItemProb<A>> Conditional(Func<A, Prob> lik, Dist<A> dist)
         {
             return from itemProb in dist.Run(new PriorWeighted<A>())
-                   select new ItemProb<A>(itemProb.Item, itemProb.Prob.Mult(lik(itemProb.Item)));
+            select new ItemProb<A>(itemProb.Item, itemProb.Prob.Mult(lik(itemProb.Item)));
         }
 
         public DistInterpreter<B, Y> New<B, Y>()
