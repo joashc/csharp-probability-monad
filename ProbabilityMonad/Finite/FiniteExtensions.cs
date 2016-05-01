@@ -105,6 +105,34 @@ namespace ProbCSharp
         }
 
         /// <summary>
+        /// Computes the posterior distribution, given a piece of data and a likelihood function
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <typeparam name="D"></typeparam>
+        /// <param name="prior"></param>
+        /// <param name="likelihood"></param>
+        /// <param name="datum"></param>
+        /// <returns></returns>
+        public static FiniteDist<A> UpdateOn<A, D>(this FiniteDist<A> prior, Func<A, D, Prob> likelihood, D datum)
+        {
+            return prior.ConditionSoft(w => likelihood(w, datum));
+        }
+
+        /// <summary>
+        /// Computes the posterior distribution, given a list of data and a likelihood function
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <typeparam name="D"></typeparam>
+        /// <param name="prior"></param>
+        /// <param name="likelihood"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static FiniteDist<A> UpdateOn<A, D>(this FiniteDist<A> prior, Func<A, D, Prob> likelihood, IEnumerable<D> data)
+        {
+            return data.Aggregate(prior, (dist, datum) => dist.UpdateOn(likelihood, datum));
+        }
+
+        /// <summary>
         /// Normalize a finite dist
         /// </summary>
         /// <typeparam name="A"></typeparam>

@@ -34,7 +34,7 @@ namespace ProbCSharp.Test.Models
         /// <summary>
         /// Update exact weight distribution based on a series of coin flips
         /// </summary>
-        public static Func<List<Coin>, FiniteDist<double>, FiniteDist<double>>
+        public static Func<IEnumerable<Coin>, FiniteDist<double>, FiniteDist<double>>
         FlipsUpdateExact = (coins, dist) => coins.Aggregate(dist, (d, t) => FlipUpdateExact(t, d));
     }
 
