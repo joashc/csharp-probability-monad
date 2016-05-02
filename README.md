@@ -358,7 +358,7 @@ coinWeightPrior.Histogram();
 
 The likelihood of a weight, given a particular coin flip, is:
 
-```java
+```cs
 Func<double, Coin, Prob> likelihood =
   (weight, coin) => coin.IsHeads ? weight : 1 - weight;
 ```
@@ -423,7 +423,7 @@ var prRainedAndWet = sprinklerModel.ProbOf(e => e.Raining && e.GrassWet);
 
 We can now condition on certain events, to answer questions like *What is the probability it rained, given that the grass is wet?*
 
-```java
+```cs
 var givenGrassWet = sprinklerModel.ConditionHard(e => e.GrassWet);
 
 var prRainingGivenWet = givenGrassWet.ProbOf(e => e.Raining);
@@ -431,6 +431,109 @@ var prRainingGivenWet = givenGrassWet.ProbOf(e => e.Raining);
 ```
 
 Doing this results in 35.7%. This must be correct because it's the same answer that Wikipedia gives.
+
+#### Bayes Point Machines
+
+We can define a Bayes Point Machine to predict if someone will buy a particular product, based on some demographic information about them. Some classes to hold our data:
+
+```cs
+public struct BuyData
+{
+    public BuyData(double income, double age, bool willBuy)
+    {
+        Income = income;
+        Age = age;
+        WillBuy = willBuy;
+    }
+    public double Income;
+    public double Age;
+    public bool WillBuy;
+}
+
+public class BuyWeight
+{
+    public BuyWeight(double incomeWeight, double ageWeight)
+    {
+        IncomeWeight = incomeWeight;
+        AgeWeight = ageWeight;
+    }
+    public double IncomeWeight;
+    public double AgeWeight;
+}
+```
+
+We've got a dataset that associates a person's age and income with their buying decision for our product:
+
+```cs
+var observed = new List<BuyData> {
+        new BuyData(63, 38, true),
+        new BuyData(16, 23, false),
+        new BuyData(28, 40, true),
+        new BuyData(55, 27, true),
+        new BuyData(22, 18, false),
+        new BuyData(20, 40, false)
+    };
+```
+
+If we think of our demographic features as a vector, we want to find a vector of weights where if we take the inner product of the weights and features, we get a positive result if they're buying and a negative result if they're not.
+
+We don't really know what the correct weights should be, so we define a prior with heavy tails:
+
+```cs
+var prior = from ageWeight in Normal(-1, 1)
+            from incomeWeight in Normal(0, 1)
+            select new BuyWeight(incomeWeight, ageWeight);
+```
+
+Now we define our likelihood function:
+
+```cs
+Func<BuyWeight, BuyData, Prob> likelihood = (w, d) =>
+{
+    var lossMagnitude = Pdf(NormalC(0, 0.1), (w.AgeWeight * d.Age) - (w.IncomeWeight * d.Income)).Value;
+    var loss = d.WillBuy ? lossMagnitude : -lossMagnitude;
+    return Prob(loss);
+};
+```
+
+We form our posterior by folding over the data, conditioning with the likelihood function each time:
+
+```cs
+var posterior = data.Aggregate(prior, (dist, datum) => dist.Condition(weight => BpmLikelihood(weight, datum)));
+```
+
+Now we can run an inference algorithm on our posterior:
+
+```cs
+var samples = posterior.SmcMultiple(10000, 10).Sample();
+var approxPosterior = CategoricalF(samples.Normalize());
+```
+
+We're ready to predict if someone is likely to buy our product. We can define a prediction function:
+
+```cs
+Func<FiniteDist<BuyWeight>, BuyData, Prob> predict = (dist, datum) =>
+    dist.ProbOf(w => likelihood(w, datum).Value > 0.5);
+```
+
+and use it to predict for a few people:
+
+```cs
+var person1 = new BuyData(58, 36, true);
+var person2 = new BuyData(18, 24, true);
+var person3 = new BuyData(22, 37, true);
+
+predict(approxPosterior, person1);
+// 95.4%
+
+predict(approxPosterior, person2);
+// 35.9%
+
+predict(approxPosterior, person3);
+// 14%
+```
+
+It looks like the first person is probably going to buy our product, but the other two aren't!
 
 ### Monty Hall problem
 We can naturally model the Monty Hall problem, and generalize it to arbitrary numbers of doors.
