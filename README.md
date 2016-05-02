@@ -400,7 +400,10 @@ Now we define our likelihood function:
 ```cs
 Func<BuyWeight, BuyData, Prob> likelihood = (w, d) =>
 {
-    var lossMagnitude = Pdf(NormalC(0, 0.1), (w.AgeWeight * d.Age) - (w.IncomeWeight * d.Income)).Value;
+    var lossMagnitude = Pdf(
+        NormalC(0, 0.1),
+        (w.AgeWeight * d.Age) - (w.IncomeWeight * d.Income)
+    ).Value;
     var loss = d.WillBuy ? lossMagnitude : -lossMagnitude;
     return Prob(loss);
 };
@@ -409,7 +412,8 @@ Func<BuyWeight, BuyData, Prob> likelihood = (w, d) =>
 We form our posterior by folding over the data, conditioning with the likelihood function each time:
 
 ```cs
-var posterior = data.Aggregate(prior, (dist, datum) => dist.Condition(weight => BpmLikelihood(weight, datum)));
+var posterior = data.Aggregate(prior, (dist, datum) =>
+    dist.Condition(weight => BpmLikelihood(weight, datum)));
 ```
 
 Now we can run an inference algorithm on our posterior:
