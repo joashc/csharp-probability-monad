@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using static ProbabilityMonad.Test.Models.BayesPointMachine;
 using static ProbabilityMonad.Base;
 using ProbabilityMonad;
 using ProbabilityMonad.Test.Models;
@@ -52,6 +53,22 @@ namespace ProbabilityMonad.Test
 
             Debug.WriteLine(Histogram.Unweighted(paramA));
             Debug.WriteLine(Histogram.Unweighted(paramB));
+        }
+
+        [TestMethod]
+        public void Metropolis_BayesPointMachine()
+        {
+            var posterior = BpmUpdate(BpmPrior, BpmObserved);
+            var samples = Samples(MetropolisHastings.MHPrior(posterior, 100)
+                                            .SampleNParallel(10000)
+                                            .SelectMany(d => d)
+                                            .Select(d => ItemProb(d, Prob(1))));
+
+            var approxPosterior = CategoricalF(samples.Normalize());
+
+            Debug.WriteLine(BpmPredict(approxPosterior, Person1));
+            Debug.WriteLine(BpmPredict(approxPosterior, Person2));
+            Debug.WriteLine(BpmPredict(approxPosterior, Person3));
         }
     }
 }

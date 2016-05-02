@@ -26,8 +26,8 @@ namespace ProbabilityMonad.Test
             // We put a prior on the coin being fair with Pr(0.8).
             // If it's biased, we put a prior on its weight with a Beta distribution.
             var prior = from isFair in Bernoulli(Prob(0.8))
-                             from headsProb in isFair ? Return(0.5) : Beta(5, 1)
-                             select headsProb;
+                        from headsProb in isFair ? Return(0.5) : Beta(5, 1)
+                        select headsProb;
 
             // Some coinflips from a fair coin
             var fair = new List<Coin> { Heads, Tails, Tails, Heads, Heads, Tails, Heads, Tails };
@@ -51,8 +51,8 @@ namespace ProbabilityMonad.Test
             // There's an 80% chance we have a fair coin and a 20% chance of a biased coin
             // with an 80% chance of tails.
             var prior = from isFair in BernoulliF(Prob(0.8))
-                             from headsProb in isFair ? UniformF(0.5) : UniformF(0.2)
-                             select headsProb;
+                        from headsProb in isFair ? UniformF(0.5) : UniformF(0.2)
+                        select headsProb;
 
             // Some coinflips from a fair coin
             var fair = new List<Coin> { Heads, Tails, Tails, Heads, Heads, Tails, Heads, Tails };
@@ -67,6 +67,31 @@ namespace ProbabilityMonad.Test
             Debug.WriteLine(biasedPosterior.Histogram());
         }
 
+
+        enum Location { Pub, Starbucks };
+
+        [TestMethod]
+        public void Meet()
+        {
+
+            Func<Prob, FiniteDist<Location>>
+            location = pubPref => from visitPub in BernoulliF(pubPref)
+                                  select visitPub ? Location.Pub : Location.Starbucks;
+
+            var meetByChance = from amy in location(Prob(0.6))
+                               from bob in location(Prob(0.6))
+                               select new Tuple<Location, Location>(amy, bob);
+
+            var amyAtPub = meetByChance.ProbOf(t => t.Item1 == Location.Pub);
+            var meet = meetByChance.ProbOf(t => t.Item1 == t.Item2);
+            Debug.WriteLine(amyAtPub);
+            Debug.WriteLine(meet);
+
+            var meetAtPub = meetByChance.ConditionHard(t => t.Item1 == t.Item2);
+
+            var prPub = meetAtPub.ProbOf(t => t.Item1 == Location.Pub);
+            Debug.WriteLine(prPub);
+        }
     }
 }
 

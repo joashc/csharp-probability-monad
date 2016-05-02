@@ -131,6 +131,26 @@ namespace ProbabilityMonad
         }
 
         /// <summary>
+        /// Bernoulli distribution constructed from success probability
+        /// </summary>
+        /// <param name="prob"></param>
+        /// <returns></returns>
+        public static Dist<bool> Bernoulli(double prob)
+        {
+            return Primitive(BernoulliF(Prob(prob)));
+        }
+
+        /// <summary>
+        /// Bernoulli distribution constructed from two items, and probability of first item
+        /// </summary>
+        /// <param name="prob"></param>
+        /// <returns></returns>
+        public static Dist<A> Bernoulli<A>(double prob, A option1, A option2)
+        {
+            return Primitive(BernoulliF(Prob(prob))).Select(b => b ? option1 : option2);
+        }
+
+        /// <summary>
         /// Normal distribution constructor
         /// </summary>
         /// <param name="mean"></param>
@@ -382,6 +402,16 @@ namespace ProbabilityMonad
             var appendList = new List<A>(list);
             appendList.Add(value);
             return appendList;
+        }
+
+        /// <summary>
+        /// Sigmoid function
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public static double Sigmoid(double x)
+        {
+            return 1 / (1 + Math.Exp(-x));
         }
         #endregion
     }

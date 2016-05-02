@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProbabilityMonad;
 using System.Diagnostics;
 using static ProbabilityMonad.Base;
+using static ProbabilityMonad.Test.Models.IndianGpaModel;
 using ProbabilityMonad.Test.Models;
 using System.Linq;
 using System.Collections.Generic;
@@ -61,6 +62,25 @@ namespace ProbabilityMonad.Test
                              select new List<int>() { roll1, roll2, roll3 };
             var samp3Roll = threeRolls.ToSampleDist();
             var sample = samp3Roll.Sample();
+        }
+
+        [TestMethod]
+        public void IndianGpaTest()
+        {
+            var samples = AmericanGpa.SampleN(10000);
+            Debug.WriteLine(Histogram.Unweighted(samples, numBuckets:40, scale:500));
+
+            var indianSamples = IndianGpa.SampleN(10000);
+            Debug.WriteLine(Histogram.Unweighted(indianSamples, numBuckets:40, scale:500));
+
+            var combined = from indianGpa in Independent(IndianGpa)
+                           from americanGpa in Independent(AmericanGpa)
+                           from isAmerican in Bernoulli(0.25)
+                           from gpa in isAmerican ? americanGpa : indianGpa
+                           select gpa;
+            var combinedSamples = combined.SampleN(10000);
+
+            Debug.WriteLine(Histogram.Unweighted(combinedSamples, numBuckets:40, scale:500));
         }
     }
 }

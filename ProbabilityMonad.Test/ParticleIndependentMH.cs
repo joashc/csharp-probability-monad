@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Collections.Generic;
 using static ProbabilityMonad.Test.Models.LinearRegression;
+using static ProbabilityMonad.Test.Models.BayesPointMachine;
 using static ProbabilityMonad.Test.Models.HiddenMarkovModel;
 
 namespace ProbabilityMonad.Test
@@ -72,6 +73,19 @@ namespace ProbabilityMonad.Test
                 .Take(5).Select(g => g.First()));
 
             Debug.WriteLine(Histogram.Finite(topSamples, ShowLatentList));
+        }
+
+        [TestMethod]
+        public void Pimh_BayesPointMachine()
+        {
+            var posterior = BpmUpdate(BpmPrior, BpmObserved);
+            var samples = Samples(Pimh.Run(500, 50, posterior).SampleNParallel(100).SelectMany(d => d).SelectMany(d => d));
+
+            var approxPosterior = CategoricalF(samples.Normalize());
+
+            Debug.WriteLine(BpmPredict(approxPosterior, Person1));
+            Debug.WriteLine(BpmPredict(approxPosterior, Person2));
+            Debug.WriteLine(BpmPredict(approxPosterior, Person3));
         }
     }
 }

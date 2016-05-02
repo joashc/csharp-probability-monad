@@ -83,9 +83,9 @@ namespace ProbabilityMonad.Test.Models
                 Samples(states.Zip(ps, (s, p) => new ItemProb<int>(s, Prob(p))))
             ).ToSampleDist());
 
-            var tNeg1 = transitionDist(new List<double> { 0.1, 0.4, 0.5 });
-            var t0 = transitionDist(new List<double> { 0.2, 0.6, 0.2 });
-            var t1 = transitionDist(new List<double> { 0.15, 0.7, 0.15 });
+            var tNeg1 = transitionDist(new List<double> { 0.1,  0.4, 0.5  });
+            var t0    = transitionDist(new List<double> { 0.2,  0.6, 0.2  });
+            var t1    = transitionDist(new List<double> { 0.15, 0.7, 0.15 });
 
             Func<int, Dist<int>> transitionMatrix = i =>
             {
