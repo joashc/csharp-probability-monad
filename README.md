@@ -28,7 +28,7 @@ This library is a C# implementation of the approach described in Ścibior, Ghahr
 ## Getting started
 Install from NuGet: [https://www.nuget.org/packages/ProbCSharp/](https://www.nuget.org/packages/ProbCSharp/)
 
-Once installed, you can reference the library by adding this to the top of your source:
+Once installed, you can reference the library by adding this to the top of your C# code:
 
 ```cs
 using ProbCSharp;
@@ -41,6 +41,24 @@ The namespace `ProbCSharp` contains all the types, and `ProbCSharp.ProbBase` con
 Another probabilistic programming language called Anglican has an interesting [example](http://www.robots.ox.ac.uk/~fwood/anglican/examples/viewer/?worksheet=indian-gpa) on their website called the *Indian GPA problem*. It's actually an example of how probabilistic programming techniques fail, but it's a great illustration of the flexibility of the modelling process, so we'll reimplement it here. Here's a description of the problem, quoted verbatim from Anglican's website:
 
 > if you observe that a student GPA is exactly `4.0` in a model of transcripts of students from the USA (GPA's from `0.0` to `4.0` and India (GPA's from `0.0` to `10.0`) what is the probability that the student is from India? This problem gets at the heart of measure theoretic problems arising from combining distribution and density, problems not easy to automatically avoid in a probabilistic programming system. 
+
+#### Setup
+Let's start by defining some simple types to hold our data:
+
+```cs
+public enum Country { USA, India };
+
+public class Grade
+{
+    public double GPA;
+    public Country Country;
+    public Grade(double gpa, Country country)
+    {
+        GPA = gpa;
+        Country = country;
+    }
+}
+```
 
 #### Modelling American GPAs
 We can model the distribution of American GPAs with a Beta distribution, skewed to account for grade inflation:
