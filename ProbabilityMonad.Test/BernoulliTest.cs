@@ -5,6 +5,7 @@ using System.Diagnostics;
 using static ProbabilityMonad.Base;
 using System.Linq;
 using System.Collections.Generic;
+using CSharpProbabilityMonad;
 using static ProbabilityMonad.Test.Models.CoinExt;
 using ProbabilityMonad.Test.Models;
 
@@ -50,23 +51,23 @@ namespace ProbabilityMonad.Test
         {
             // There's an 80% chance we have a fair coin and a 20% chance of a biased coin
             // with an 80% chance of tails.
-            var prior = from isFair in BernoulliF(Prob(0.8))
-                        from headsProb in isFair ? UniformF(0.5) : UniformF(0.2)
-                        select headsProb;
+            var prior = from isFair in BernoulliF(Prob(0.7))
+                             from headsProb in isFair ? UniformF(0.5) : UniformF(0.2)
+                             select headsProb;
+            Debug.WriteLine(prior.Histogram(scale:50));
 
             // Some coinflips from a fair coin
             var fair = new List<Coin> { Heads, Tails, Tails, Heads, Heads, Tails, Heads, Tails };
 
             // The posterior weight distribution given these fair flips
             var exactPosterior = FlipsUpdateExact(fair, prior);
-            Debug.WriteLine(exactPosterior.Histogram());
+            Debug.WriteLine(exactPosterior.Histogram(scale:50));
 
             // Do the same with a biased coin
             var biased = new List<Coin> { Tails, Tails, Tails, Tails, Tails, Tails, Heads, Tails };
             var biasedPosterior = FlipsUpdateExact(biased, prior);
             Debug.WriteLine(biasedPosterior.Histogram());
         }
-
 
         enum Location { Pub, Starbucks };
 

@@ -9,6 +9,8 @@ namespace ProbabilityMonad
 {
     public static class Histogram
     {
+        private const int DEFAULT_SCALE = 40;
+
         internal class Bucket {
             public double Min { get; }
             public double Max { get; }
@@ -22,7 +24,24 @@ namespace ProbabilityMonad
 
             public List<double> Values { get; set; }
             public List<ItemProb<double>> WeightedValues { get; set; }
+            public string Name { get; set; }
             public int BarSize { get; set; }
+        }
+
+        internal struct BucketData
+        {
+            public double Min;
+            public double Max;
+            public double Width;
+            public int NumBuckets;
+
+            internal BucketData(double min, double max, double width, int numBuckets)
+            {
+                Min = min;
+                Max = max;
+                Width = width;
+                NumBuckets = numBuckets;
+            }
         }
 
         /// <summary>
@@ -59,7 +78,7 @@ namespace ProbabilityMonad
             var bucketSize = (max - min) / numBuckets;
             var bucketList = new List<Bucket>();
             var currentMin = min;
-            while (currentMin < max)
+            while (currentMin < max + 1)
             {
                 bucketList.Add(new Bucket(currentMin, currentMin + bucketSize));
                 currentMin += bucketSize;
@@ -72,17 +91,48 @@ namespace ProbabilityMonad
         /// </summary>
         /// <param name="buckets"></param>
         /// <returns></returns>
-        internal static string ShowBuckets(IEnumerable<Bucket> buckets)
+        internal static string ShowBuckets(IEnumerable<Bucket> buckets, double scale)
         {
             var sb = new StringBuilder();
+            Func<double, string> formatDouble = d => $"{d:N2}";
+
+            var minPadding = LongestString(buckets, b => formatDouble(b.Min));
+            var maxPadding = LongestString(buckets, b => formatDouble(b.Max));
+            var barScale = BarScale(buckets.Select(b => b.BarSize), scale);
             foreach (var bucket in buckets)
             {
-                var min = String.Format("{0:N2}", bucket.Min);
-                var max = String.Format("{0:N2}", bucket.Max);
-                sb.AppendLine($"{min,-6} {max,6}\t{Bar(bucket.BarSize)}");
+                var min = formatDouble(bucket.Min).PadLeft(minPadding, ' ');
+                var max = formatDouble(bucket.Max).PadLeft(maxPadding, ' ');
+                sb.AppendLine($"{min} {max} {Bar((int) (bucket.BarSize * barScale))}");
             }
             sb.AppendLine("");
             return sb.ToString();
+        }
+
+        internal static int LongestString<A>(IEnumerable<A> list, Func<A, string> toString)
+        {
+            return list.Select(x => toString(x).Length).Max();
+        }
+
+        internal static double BarScale(IEnumerable<int> barLengths, double scale)
+        {
+            var longestBar = barLengths.Max();
+            return longestBar > scale ? scale / longestBar : 1;
+        }
+
+        /// <summary>
+        /// Draw bar of width n
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        internal static string Bar(int n)
+        {
+            var barBuilder = new StringBuilder();
+            for (var i = 0; i < n; i++)
+            {
+                barBuilder.Append("#");
+            }
+            return barBuilder.ToString();
         }
 
         /// <summary>
@@ -112,9 +162,7 @@ namespace ProbabilityMonad
             return list.Select(getVal).Sum();
         }
 
-
-
-        public static string Weighted(IEnumerable<ItemProb<double>> nums, int numBuckets = 10, int scale = 40)
+        public static string Weighted(IEnumerable<ItemProb<double>> nums, int numBuckets = 10, double scale = DEFAULT_SCALE)
         {
             if (!nums.Any()) return "No data to graph.";
 
@@ -129,10 +177,10 @@ namespace ProbabilityMonad
                 bucket.WeightedValues.AddRange(sorted.Where(x => x.Item >= bucket.Min && x.Item < bucket.Max));
                 bucket.BarSize = (int) Math.Floor(bucket.WeightedValues.Select(x => x.Prob.Value).Sum() / totalMass * scale);
             }
-            return ShowBuckets(bucketList);
+            return ShowBuckets(bucketList, scale);
         }
 
-        public static string Unweighted(IEnumerable<double> nums, int numBuckets = 10, int scale = 40)
+        public static string Unweighted(IEnumerable<double> nums, int numBuckets = 10, double scale = DEFAULT_SCALE)
         {
             if (!nums.Any()) return "No data to graph.";
             var sorted = nums.OrderBy(x => x);
@@ -147,10 +195,10 @@ namespace ProbabilityMonad
                 bucket.Values.AddRange(sorted.Where(x => x >= bucket.Min && x < bucket.Max));
                 bucket.BarSize = (int) Math.Floor((double)bucket.Values.Count() / sorted.Count() * scale);
             }
-            return ShowBuckets(bucketList);
+            return ShowBuckets(bucketList, scale);
         }
 
-        public static string Finite<A>(Samples<A> itemProbs, Func<A, string> showFunc = null, double scale = 100)
+        public static string Finite<A>(Samples<A> itemProbs, Func<A, string> showFunc = null, double scale = DEFAULT_SCALE)
         {
             if (!itemProbs.Weights.Any()) return "No data to graph.";
             if (showFunc == null) showFunc = a => a.ToString();
@@ -159,10 +207,12 @@ namespace ProbabilityMonad
             var sb = new StringBuilder();
             var display = normalized.Weights.Select(ip => new Tuple<string, int, Prob>(showFunc(ip.Item), (int) Math.Floor(ip.Prob.Value * scale), ip.Prob));
             var maxWidth = display.Select(d => d.Item1.Length).Max();
+            var barScale = BarScale(display.Select(d => d.Item2), scale);
             foreach (var line in display)
             {
                 var item = line.Item1;
-                sb.AppendLine($"{item.PadLeft(maxWidth)} {line.Item3,5} {Bar(line.Item2)}");
+                var barLength = (int) (line.Item2 * barScale);
+                sb.AppendLine($"{item.PadLeft(maxWidth)} {line.Item3,6} {Bar(barLength)}");
             }
             return sb.ToString();
         }

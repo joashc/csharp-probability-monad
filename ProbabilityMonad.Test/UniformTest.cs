@@ -51,7 +51,7 @@ namespace ProbabilityMonad.Test
 
             var pSumTo8 = threeRolls.ProbOf(s => s == 8);
             var pSumTo8x = Dice.DieExact(3).ProbOf(s => s == 8);
-            Debug.WriteLine(Histogram.Finite(threeRolls.Explicit));
+            Debug.WriteLine(threeRolls.Histogram());
             Debug.WriteLine(Dice.DieExact(3).Histogram());
             Assert.AreEqual("9.72%", pSumTo8.ToString());
             Assert.AreEqual("9.72%", pSumTo8x.ToString());

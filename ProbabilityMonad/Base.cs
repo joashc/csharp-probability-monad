@@ -129,6 +129,7 @@ namespace ProbabilityMonad
         {
             return Primitive(BernoulliF(prob));
         }
+<<<<<<< HEAD
 
         /// <summary>
         /// Bernoulli distribution constructed from success probability
@@ -149,6 +150,8 @@ namespace ProbabilityMonad
         {
             return Primitive(BernoulliF(Prob(prob))).Select(b => b ? option1 : option2);
         }
+=======
+>>>>>>> 489fc
 
         /// <summary>
         /// Normal distribution constructor
@@ -157,6 +160,7 @@ namespace ProbabilityMonad
         /// <param name="variance"></param>
         /// <returns></returns>
         public static NormalC NormalC(double mean, double variance)
+<<<<<<< HEAD
         {
             return new NormalC(mean, variance, Gen);
         }
@@ -229,6 +233,80 @@ namespace ProbabilityMonad
         }
 
         /// <summary>
+=======
+        {
+            return new NormalC(mean, variance, Gen);
+        }
+
+        public static Dist<double> Normal(double mean, double variance)
+        {
+            return Primitive(NormalC(mean, variance));
+        }
+
+        /// <summary>
+        /// Beta distribution
+        /// </summary>
+        public static BetaC BetaC(double alpha, double beta)
+        {
+            return new BetaC(beta, alpha, Gen);
+        }
+
+        /// <summary>
+        /// Beta distribution
+        /// </summary>
+        public static Dist<double> Beta(double alpha, double beta)
+        {
+            return Primitive(BetaC(alpha, beta));
+        }
+
+        public static FiniteDist<A> CategoricalF<A>(Samples<A> samples)
+        {
+            return new FiniteDist<A>(samples);
+        }
+
+        /// <summary>
+        /// Lift a list of samples into the GADT dist type
+        /// </summary> 
+        /// <typeparam name="A"></typeparam>
+        /// <param name="samples"></param>
+        /// <returns></returns>
+        public static Dist<A> Categorical<A>(Samples<A> samples)
+        {
+            return Primitive(CategoricalF(samples).ToSampleDist());
+        }
+        #endregion
+
+        #region GADT constructors
+
+        #region Parallel constructors
+        /// <summary>
+        /// Wraps the distribution to defer evaluation until explicitly parallelized
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="dist"></param>
+        /// <returns></returns>
+        public static Dist<Dist<A>> Independent<A>(Dist<A> dist)
+        {
+            return new Independent<A>(dist);
+        }
+
+        /// <summary>
+        /// Evaluates two distributions in parallel
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="dist1"></param>
+        /// <param name="dist2"></param>
+        /// <param name="run"></param>
+        /// <returns></returns>
+        public static Dist<A> RunIndependentWith<T1, T2, A>(Dist<T1> dist1, Dist<T2> dist2, Func<T1, T2, Dist<A>> run)
+        {
+            return new RunIndependent<T1, T2, A>(dist1, dist2, run);
+        }
+
+        /// <summary>
+>>>>>>> 489fc
         /// Evaluates two distributions in parallel. The results are collected into a tuple.
         /// </summary>
         /// <typeparam name="T1"></typeparam>
