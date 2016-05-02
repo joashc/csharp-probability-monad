@@ -26,7 +26,6 @@ One of the most elegant approaches to probabilistic programming is described in 
 This library is a C# implementation of the approach described in Ścibior, Ghahramani, and Gordon (2015). It also extends the paper's implementation to allow parallel sampling from independent distributions.
 
 ## Getting started
-(update with correct link once uploaded)
 Install from NuGet: [https://www.nuget.org/packages/ProbCSharp/](https://www.nuget.org/packages/ProbCSharp/)
 
 Once installed, you can reference the library by adding this to the top of your source:
