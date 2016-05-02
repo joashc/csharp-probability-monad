@@ -342,97 +342,7 @@ class Smc<A> : DistInterpreter<A, Dist<Samples<A>>>
 
 ## More examples
 
-
-### Bayesian coin
-**We are given a coin. There's a 70% chance the coin is fair, and a 30% chance it's biased. If the coin is biased, it will land on heads 20% of the time. If we flip the coin 8 times and get the sequence HTTHHTHT, what is the chance that we received a fair coin?**
-
-We can represent our prior on the weight of the coin like this:
-
-```cs
-var coinWeightPrior = from isFair in BernoulliF(Prob(0.7))
-                      select isFair ? 0.5 : 0.2;
-coinWeightPrior.Histogram();
-// 0.5    70% ###################################
-// 0.2    30% ###############
-```
-
-The likelihood of a weight, given a particular coin flip, is:
-
-```cs
-Func<double, Coin, Prob> likelihood =
-  (weight, coin) => coin.IsHeads ? weight : 1 - weight;
-```
-
-Now we can calculate the probability that our coin is fair, given these flips:
-
-```cs
-var flips = new List<Coin> 
-{
-  Heads, Tails, Tails, Heads,
-  Heads, Tails, Heads, Tails
-};
-
-var posterior = coinWeightPrior.UpdateOn(likelihood, flips);
-posterior.Histogram();
-// 0.5 93.3% ##############################################
-// 0.2 6.71% ###
-```
-
-There's only a 6.71% chance that the coin is biased.
-
-**What if we flip the same coin 8 more times, and it comes up tails every time?**
-
-We can take the posterior distribution we've created and update on it with another set of coin flips:
-
-```cs
-var moreFlips  = Enumerable.Repeat(Tails, 8);
-
-var newPosterior = posterior.UpdateOn(likelihood, moreFlips);
-newPosterior.Histogram();
-// 0.5 24.5% ############
-// 0.2 75.5% #####################################
-```
-
-Even though we used to be 93% sure that the coin was fair, observing 8 tails in a row means it's far more likely that we have a biased coin than a fair one.
-
-### Bayesian networks
-```cs
-// Truth table for grass being wet
-Func<bool, bool, Prob> wetProb = (rain, sprinkler) =>
-{
-    if (rain && sprinkler) return Prob(0.98);
-    if (rain && !sprinkler) return Prob(0.8);
-    if (!rain && sprinkler) return Prob(0.9);
-    return Prob(0);
-};
-
-// Bayesian network for sprinkler model
-var sprinklerModel =
-     from rain in Bernoulli(Prob(0.2))
-     from sprinkler in Bernoulli(Prob(rain ? 0.01 : 0.4))
-     from wet in Bernoulli(wetProb(rain, sprinkler))
-     select new SprinklerEvent(rain, sprinkler, wet);
-
-// Probability it rained should still be 20%
-var prRained = sprinklerModel.ProbOf(e => e.Raining);
-// 20%
-
-var prRainedAndWet = sprinklerModel.ProbOf(e => e.Raining && e.GrassWet);
-// 16%
-```
-
-We can now condition on certain events, to answer questions like *What is the probability it rained, given that the grass is wet?*
-
-```cs
-var givenGrassWet = sprinklerModel.ConditionHard(e => e.GrassWet);
-
-var prRainingGivenWet = givenGrassWet.ProbOf(e => e.Raining);
-// 35.7%
-```
-
-Doing this results in 35.7%. This must be correct because it's the same answer that Wikipedia gives.
-
-#### Bayes Point Machines
+### Bayes Point Machines
 
 We can define a Bayes Point Machine to predict if someone will buy a particular product, based on some demographic information about them. Some classes to hold our data:
 
@@ -534,6 +444,95 @@ predict(approxPosterior, person3);
 ```
 
 It looks like the first person is probably going to buy our product, but the other two aren't!
+
+### Bayesian networks
+```cs
+// Truth table for grass being wet
+Func<bool, bool, Prob> wetProb = (rain, sprinkler) =>
+{
+    if (rain && sprinkler) return Prob(0.98);
+    if (rain && !sprinkler) return Prob(0.8);
+    if (!rain && sprinkler) return Prob(0.9);
+    return Prob(0);
+};
+
+// Bayesian network for sprinkler model
+var sprinklerModel =
+     from rain in Bernoulli(Prob(0.2))
+     from sprinkler in Bernoulli(Prob(rain ? 0.01 : 0.4))
+     from wet in Bernoulli(wetProb(rain, sprinkler))
+     select new SprinklerEvent(rain, sprinkler, wet);
+
+// Probability it rained should still be 20%
+var prRained = sprinklerModel.ProbOf(e => e.Raining);
+// 20%
+
+var prRainedAndWet = sprinklerModel.ProbOf(e => e.Raining && e.GrassWet);
+// 16%
+```
+
+We can now condition on certain events, to answer questions like *What is the probability it rained, given that the grass is wet?*
+
+```cs
+var givenGrassWet = sprinklerModel.ConditionHard(e => e.GrassWet);
+
+var prRainingGivenWet = givenGrassWet.ProbOf(e => e.Raining);
+// 35.7%
+```
+
+Doing this results in 35.7%. This must be correct because it's the same answer that Wikipedia gives.
+
+### Bayesian coin
+**We are given a coin. There's a 70% chance the coin is fair, and a 30% chance it's biased. If the coin is biased, it will land on heads 20% of the time. If we flip the coin 8 times and get the sequence HTTHHTHT, what is the chance that we received a fair coin?**
+
+We can represent our prior on the weight of the coin like this:
+
+```cs
+var coinWeightPrior = from isFair in BernoulliF(Prob(0.7))
+                      select isFair ? 0.5 : 0.2;
+coinWeightPrior.Histogram();
+// 0.5    70% ###################################
+// 0.2    30% ###############
+```
+
+The likelihood of a weight, given a particular coin flip, is:
+
+```cs
+Func<double, Coin, Prob> likelihood =
+  (weight, coin) => coin.IsHeads ? weight : 1 - weight;
+```
+
+Now we can calculate the probability that our coin is fair, given these flips:
+
+```cs
+var flips = new List<Coin> 
+{
+  Heads, Tails, Tails, Heads,
+  Heads, Tails, Heads, Tails
+};
+
+var posterior = coinWeightPrior.UpdateOn(likelihood, flips);
+posterior.Histogram();
+// 0.5 93.3% ##############################################
+// 0.2 6.71% ###
+```
+
+There's only a 6.71% chance that the coin is biased.
+
+**What if we flip the same coin 8 more times, and it comes up tails every time?**
+
+We can take the posterior distribution we've created and update on it with another set of coin flips:
+
+```cs
+var moreFlips  = Enumerable.Repeat(Tails, 8);
+
+var newPosterior = posterior.UpdateOn(likelihood, moreFlips);
+newPosterior.Histogram();
+// 0.5 24.5% ############
+// 0.2 75.5% #####################################
+```
+
+Even though we used to be 93% sure that the coin was fair, observing 8 tails in a row means it's far more likely that we have a biased coin than a fair one.
 
 ### Monty Hall problem
 We can naturally model the Monty Hall problem, and generalize it to arbitrary numbers of doors.
