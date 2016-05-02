@@ -1,9 +1,9 @@
 ﻿using System;
-using static ProbabilityMonad.Base;
+using static ProbCSharp.ProbBase;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ProbabilityMonad
+namespace ProbCSharp
 {
     /// <summary>
     /// Useful extension methods for finite distributions.
@@ -158,7 +158,7 @@ namespace ProbabilityMonad
         public static string Histogram<A>(this FiniteDist<A> dist, Func<A, string> showItem = null, double scale = 100)
         {
             if (showItem == null) showItem = a => a.ToString();
-            return ProbabilityMonad.Histogram.Finite(dist.Explicit, showItem, scale);
+            return ProbCSharp.Histogram.Finite(dist.Explicit, showItem, scale);
         }
 
     }

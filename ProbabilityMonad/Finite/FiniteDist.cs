@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static ProbabilityMonad.Base;
+using static ProbCSharp.ProbBase;
 
-namespace ProbabilityMonad
+namespace ProbCSharp
 {
     /// <summary>
     /// Discrete distribution monad

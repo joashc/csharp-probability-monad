@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace ProbabilityMonad
+namespace ProbCSharp
 {
     /// <summary>
     /// Interface for probability wrapper so we can easily switch to log likelihoods

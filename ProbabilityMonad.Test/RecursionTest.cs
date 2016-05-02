@@ -1,10 +1,10 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ProbabilityMonad.Test.Models;
-using static ProbabilityMonad.Base;
+using ProbCSharp.Test.Models;
+using static ProbCSharp.ProbBase;
 using System.Diagnostics;
 
-namespace ProbabilityMonad.Test
+namespace ProbCSharp.Test
 {
     [TestClass]
     public class RecursionTest

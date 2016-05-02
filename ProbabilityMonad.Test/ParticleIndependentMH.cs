@@ -1,15 +1,15 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static ProbabilityMonad.Base;
-using ProbabilityMonad.Test.Models;
+using static ProbCSharp.ProbBase;
+using ProbCSharp.Test.Models;
 using System.Diagnostics;
 using System.Linq;
 using System.Collections.Generic;
-using static ProbabilityMonad.Test.Models.LinearRegression;
-using static ProbabilityMonad.Test.Models.BayesPointMachine;
-using static ProbabilityMonad.Test.Models.HiddenMarkovModel;
+using static ProbCSharp.Test.Models.LinearRegression;
+using static ProbCSharp.Test.Models.BayesPointMachine;
+using static ProbCSharp.Test.Models.HiddenMarkovModel;
 
-namespace ProbabilityMonad.Test
+namespace ProbCSharp.Test
 {
     [TestClass]
     public class ParticleIndependentMH

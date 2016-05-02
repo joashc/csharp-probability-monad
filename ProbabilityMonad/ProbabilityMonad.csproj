@@ -7,8 +7,8 @@
     <ProjectGuid>{4D86FC3E-B938-4E4D-8016-CE473A8B42B4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ProbabilityMonad</RootNamespace>
-    <AssemblyName>ProbabilityMonad</AssemblyName>
+    <RootNamespace>ProbCSharp</RootNamespace>
+    <AssemblyName>ProbCSharp</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -64,10 +64,7 @@
     <Compile Include="Models\BayesPointMachine.cs" />
     <Compile Include="Models\ClinicalTrial.cs" />
     <Compile Include="Models\Coin.cs" />
-    <Compile Include="Models\Dice.cs" />
-    <Compile Include="Models\HiddenMarkovModel.cs" />
     <Compile Include="Models\IndianGpa.cs" />
-    <Compile Include="Models\Coin.cs" />
     <Compile Include="Models\Dice.cs" />
     <Compile Include="Models\HiddenMarkovModel.cs" />
     <Compile Include="Models\LinearRegression.cs" />

@@ -1,14 +1,14 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
-using ProbabilityMonad.Test.Models;
-using static ProbabilityMonad.Base;
+using ProbCSharp.Test.Models;
+using static ProbCSharp.ProbBase;
 using System.Threading;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace ProbabilityMonad.Test
+namespace ProbCSharp.Test
 {
     /// <summary>
     /// Tests parallel evaluation of distributions.

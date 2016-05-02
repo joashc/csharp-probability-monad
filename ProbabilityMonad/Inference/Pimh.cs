@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProbabilityMonad
+namespace ProbCSharp
 {
     public static class Pimh
     {

@@ -1,9 +1,9 @@
 ﻿using System;
-using static ProbabilityMonad.Base;
+using static ProbCSharp.ProbBase;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ProbabilityMonad
+namespace ProbCSharp
 {
     public static class MetropolisHastings
     {

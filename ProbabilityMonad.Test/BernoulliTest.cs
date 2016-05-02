@@ -1,15 +1,14 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ProbabilityMonad;
+using ProbCSharp;
 using System.Diagnostics;
-using static ProbabilityMonad.Base;
+using static ProbCSharp.ProbBase;
 using System.Linq;
 using System.Collections.Generic;
-using CSharpProbabilityMonad;
-using static ProbabilityMonad.Test.Models.CoinExt;
-using ProbabilityMonad.Test.Models;
+using static ProbCSharp.Test.Models.CoinExt;
+using ProbCSharp.Test.Models;
 
-namespace ProbabilityMonad.Test
+namespace ProbCSharp.Test
 {
     [TestClass]
     public class BernoulliTest

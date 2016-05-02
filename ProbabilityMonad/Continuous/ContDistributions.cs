@@ -1,8 +1,8 @@
 ﻿using System;
-using static ProbabilityMonad.Base;
+using static ProbCSharp.ProbBase;
 using System.Security.Cryptography;
 
-namespace ProbabilityMonad
+namespace ProbCSharp
 {
     /// <summary>
     /// Normal dist

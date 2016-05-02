@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ProbabilityMonad.Test
+namespace ProbCSharp.Test
 {
     [TestClass]
     public class ProbTest

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ProbabilityMonad;
-using static ProbabilityMonad.Base;
+using ProbCSharp;
+using static ProbCSharp.ProbBase;
 
-namespace ProbabilityMonad
+namespace ProbCSharp
 {
     public static class KullbackLeibner
     {

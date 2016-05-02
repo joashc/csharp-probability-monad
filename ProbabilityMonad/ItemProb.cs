@@ -1,4 +1,4 @@
-﻿namespace ProbabilityMonad
+﻿namespace ProbCSharp
 {
     /// <summary>
     /// Tuple class since C# tuples cause a few issues

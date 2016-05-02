@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using static ProbabilityMonad.Base;
+using static ProbCSharp.ProbBase;
 
-namespace ProbabilityMonad
+namespace ProbCSharp
 {
     public static class Histogram
     {
@@ -26,22 +25,6 @@ namespace ProbabilityMonad
             public List<ItemProb<double>> WeightedValues { get; set; }
             public string Name { get; set; }
             public int BarSize { get; set; }
-        }
-
-        internal struct BucketData
-        {
-            public double Min;
-            public double Max;
-            public double Width;
-            public int NumBuckets;
-
-            internal BucketData(double min, double max, double width, int numBuckets)
-            {
-                Min = min;
-                Max = max;
-                Width = width;
-                NumBuckets = numBuckets;
-            }
         }
 
         /// <summary>
@@ -136,21 +119,6 @@ namespace ProbabilityMonad
         }
 
         /// <summary>
-        /// Draw bar of width n
-        /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
-        internal static string Bar(int n)
-        {
-            var barBuilder = new StringBuilder();
-            for (var i = 0; i < n; i++)
-            {
-                barBuilder.Append("#");
-            }
-            return barBuilder.ToString();
-        }
-
-        /// <summary>
         /// Return sum of list with a given value function
         /// </summary>
         /// <typeparam name="A"></typeparam>
@@ -162,6 +130,13 @@ namespace ProbabilityMonad
             return list.Select(getVal).Sum();
         }
 
+        /// <summary>
+        /// Generates a weighted histogram from a list of ItemProbs
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <param name="numBuckets"></param>
+        /// <param name="scale"></param>
+        /// <returns></returns>
         public static string Weighted(IEnumerable<ItemProb<double>> nums, int numBuckets = 10, double scale = DEFAULT_SCALE)
         {
             if (!nums.Any()) return "No data to graph.";
@@ -180,12 +155,31 @@ namespace ProbabilityMonad
             return ShowBuckets(bucketList, scale);
         }
 
+        /// <summary>
+        /// Generates a weighted histogram from some samples
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <param name="numBuckets"></param>
+        /// <param name="scale"></param>
+        /// <returns></returns>
+        public static string Weighted(Samples<double> nums, int numBuckets = 10, double scale = DEFAULT_SCALE)
+        {
+            return Weighted(nums.Weights, numBuckets, scale);
+        }
+
+        /// <summary>
+        /// Generates an unweigted histogram for a list of numbers
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <param name="numBuckets"></param>
+        /// <param name="scale"></param>
+        /// <returns></returns>
         public static string Unweighted(IEnumerable<double> nums, int numBuckets = 10, double scale = DEFAULT_SCALE)
         {
             if (!nums.Any()) return "No data to graph.";
             var sorted = nums.OrderBy(x => x);
             var min = sorted.First();
-            var max = sorted.Last();
+            var max = sorted.Last() + 10e-10;
             var total = Sum(x => x, sorted);
 
             var bucketList = MakeBucketList(min, max, numBuckets);
@@ -198,6 +192,26 @@ namespace ProbabilityMonad
             return ShowBuckets(bucketList, scale);
         }
 
+        /// <summary>
+        /// Generates an unweigted histogram for a list of numbers
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <param name="numBuckets"></param>
+        /// <param name="scale"></param>
+        /// <returns></returns>
+        public static string Unweighted(IEnumerable<int> nums, int numBuckets = 10, double scale = DEFAULT_SCALE)
+        {
+            return Unweighted(nums.Select(x => (double)x), numBuckets, scale);
+        }
+
+        /// <summary>
+        /// Generates a histogram from some samples, grouping by a show function. 
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <param name="itemProbs"></param>
+        /// <param name="showFunc">Used to display and group samples. Defaults to ToString() if not specified.</param>
+        /// <param name="scale"></param>
+        /// <returns></returns>
         public static string Finite<A>(Samples<A> itemProbs, Func<A, string> showFunc = null, double scale = DEFAULT_SCALE)
         {
             if (!itemProbs.Weights.Any()) return "No data to graph.";

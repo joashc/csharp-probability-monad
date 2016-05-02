@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ProbabilityMonad;
-using static ProbabilityMonad.Base;
+using ProbCSharp;
+using static ProbCSharp.ProbBase;
 
-namespace ProbabilityMonad.Test.Models
+namespace ProbCSharp.Test.Models
 {
     public struct BuyData
     {

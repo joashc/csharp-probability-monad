@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static ProbabilityMonad.Base;
-using ProbabilityMonad.Test.Models;
+using static ProbCSharp.ProbBase;
+using ProbCSharp.Test.Models;
 using System.Diagnostics;
-using static ProbabilityMonad.Test.Models.LinearRegression;
-using static ProbabilityMonad.Test.Models.HiddenMarkovModel;
-using static ProbabilityMonad.Test.Models.BayesPointMachine;
-using ProbabilityMonad;
+using static ProbCSharp.Test.Models.LinearRegression;
+using static ProbCSharp.Test.Models.HiddenMarkovModel;
+using static ProbCSharp.Test.Models.BayesPointMachine;
+using ProbCSharp;
 
-namespace ProbabilityMonad.Test
+namespace ProbCSharp.Test
 {
     [TestClass]
     public class SequentialMonteCarloTest

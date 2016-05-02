@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using static ProbabilityMonad.Base;
+using static ProbCSharp.ProbBase;
 
-namespace ProbabilityMonad
+namespace ProbCSharp
 {
     /// <summary>
     /// SMC Extension methods

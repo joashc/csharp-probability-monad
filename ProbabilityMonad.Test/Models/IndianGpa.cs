@@ -1,28 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static ProbabilityMonad.Base;
+﻿using static ProbCSharp.ProbBase;
 
-namespace ProbabilityMonad.Test.Models
+namespace ProbCSharp.Test.Models
 {
+    public class Grade
+    {
+        public double GPA;
+        public Country Country;
+        public Grade(double gpa, Country country)
+        {
+            GPA = gpa;
+            Country = country;
+        }
+    }
+
+    public enum Country { USA, India };
+
     public static class IndianGpaModel
     {
-        public static Dist<double>
-        AmericanGpa =
-            from minMax in Independent(Bernoulli(0.85, 1.0, 0.0))
-            from dist in Independent(Beta(2, 8))
+        public static Dist<Grade>
+        UsaGpa =
             from atMinMax in Bernoulli(0.05)
-            from gpa in atMinMax ? minMax : dist
-            select gpa * 4;
+            from gpa in atMinMax ? Bernoulli(0.85, 1.0, 0.0): Beta(2, 8)
+            select new Grade(gpa * 4, Country.USA);
 
-        public static Dist<double>
-        IndianGpa =
-            from minMax in Independent(Bernoulli(0.9, 1.0, 0.0))
-            from dist in Independent(Beta(5, 5))
-            from atMinMax in Bernoulli(0.1)
-            from gpa in atMinMax ? minMax : dist
-            select gpa * 10;
+        public static Dist<Grade>
+        IndiaGpa =
+            from atMinMax in Bernoulli(0.01)
+            from gpa in atMinMax ? Bernoulli(0.9, 1.0, 0.0): Beta(5, 5)
+            select new Grade(gpa * 10, Country.India);
     }
 }

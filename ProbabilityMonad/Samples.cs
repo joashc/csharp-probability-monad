@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using static ProbabilityMonad.Base;
+using static ProbCSharp.ProbBase;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
 
-namespace ProbabilityMonad
+namespace ProbCSharp
 {
 
     /// <summary>

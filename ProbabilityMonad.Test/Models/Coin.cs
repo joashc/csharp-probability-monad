@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static ProbabilityMonad.Base;
+using static ProbCSharp.ProbBase;
 
-namespace ProbabilityMonad.Test.Models
+namespace ProbCSharp.Test.Models
 {
     public static class CoinExt
     {

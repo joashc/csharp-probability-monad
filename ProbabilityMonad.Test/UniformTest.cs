@@ -1,13 +1,13 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
-using ProbabilityMonad;
-using ProbabilityMonad.Test.Models;
-using static ProbabilityMonad.Base;
+using ProbCSharp;
+using ProbCSharp.Test.Models;
+using static ProbCSharp.ProbBase;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace ProbabilityMonad.Test
+namespace ProbCSharp.Test
 {
     [TestClass]
     public class UniformTests

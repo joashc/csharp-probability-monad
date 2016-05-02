@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static ProbabilityMonad.Test.Models.BayesPointMachine;
-using static ProbabilityMonad.Base;
-using ProbabilityMonad;
-using ProbabilityMonad.Test.Models;
+using static ProbCSharp.Test.Models.BayesPointMachine;
+using static ProbCSharp.ProbBase;
+using ProbCSharp;
+using ProbCSharp.Test.Models;
 
-namespace ProbabilityMonad.Test
+namespace ProbCSharp.Test
 {
 
     [TestClass]

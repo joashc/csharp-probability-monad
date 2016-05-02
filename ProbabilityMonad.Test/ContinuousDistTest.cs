@@ -1,14 +1,14 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ProbabilityMonad;
+using ProbCSharp;
 using System.Diagnostics;
-using static ProbabilityMonad.Base;
-using static ProbabilityMonad.Test.Models.IndianGpaModel;
-using ProbabilityMonad.Test.Models;
+using static ProbCSharp.ProbBase;
+using static ProbCSharp.Test.Models.IndianGpaModel;
+using ProbCSharp.Test.Models;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace ProbabilityMonad.Test
+namespace ProbCSharp.Test
 {
     [TestClass]
     public class ContinuousDistTest
@@ -64,23 +64,35 @@ namespace ProbabilityMonad.Test
             var sample = samp3Roll.Sample();
         }
 
+
         [TestMethod]
         public void IndianGpaTest()
         {
-            var samples = AmericanGpa.SampleN(10000);
-            Debug.WriteLine(Histogram.Unweighted(samples, numBuckets:40, scale:500));
 
-            var indianSamples = IndianGpa.SampleN(10000);
-            Debug.WriteLine(Histogram.Unweighted(indianSamples, numBuckets:40, scale:500));
+            var indiaSamples = IndiaGpa.SampleN(10000);
+            Debug.WriteLine(Histogram.Unweighted(indiaSamples.Select(g => g.GPA), numBuckets: 30, scale: 400));
 
-            var combined = from indianGpa in Independent(IndianGpa)
-                           from americanGpa in Independent(AmericanGpa)
-                           from isAmerican in Bernoulli(0.25)
-                           from gpa in isAmerican ? americanGpa : indianGpa
+            var combined = from isAmerican in Bernoulli(0.25)
+                           from gpa in isAmerican ? UsaGpa : IndiaGpa
                            select gpa;
             var combinedSamples = combined.SampleN(10000);
 
-            Debug.WriteLine(Histogram.Unweighted(combinedSamples, numBuckets:40, scale:500));
+            Func<Grade, Prob> PrIs4 = gpa => Pdf(NormalC(4, 0.00001), gpa.GPA);
+
+            Debug.WriteLine(Histogram.Unweighted(combinedSamples.Select(g => g.GPA), numBuckets: 30, scale: 400));
+
+            var countryGiven4Gpa = from gpa in Condition(PrIs4, combined)
+                                   select gpa.Country;
+
+            var whichCountry = countryGiven4Gpa.SmcMultiple(1000, 100).Sample();
+
+            Debug.WriteLine(Histogram.Finite(whichCountry));
+
+            var hardConditioned = from grade in combined.Condition(g => g.GPA == 4.0 ? Prob(1.0) : Prob(0.0))
+                                  select grade.Country;
+
+            Debug.WriteLine(Histogram.Finite(hardConditioned.SmcMultiple(1000, 100).Sample()));
+
         }
     }
 }
