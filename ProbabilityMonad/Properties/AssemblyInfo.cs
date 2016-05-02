@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ProbCSharp")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A monadic probabilistic programming framework for C#")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("joashc")]
 [assembly: AssemblyProduct("ProbCSharp")]
 [assembly: AssemblyCopyright("Copyright © Joash Chong 2016")]
 [assembly: AssemblyTrademark("")]
