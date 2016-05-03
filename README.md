@@ -294,7 +294,7 @@ var combined = from d1 in smc
 combined.SmcMultiple(1000, 100).Sample();
 ```
 
-In this example, we're sampling from two independent distributions. Even though they're independent, inference algorithm will still wait until sampling from `smc` is complete before beginning to sample from `imp`.
+In this example, we're sampling from two independent distributions. Even though they're independent, inference algorithms will still wait until sampling from `smc` is complete before beginning to sample from `imp`.
 
 We can solve this by marking certain distributions as independent, and then running them in parallel:
 
@@ -302,7 +302,7 @@ We can solve this by marking certain distributions as independent, and then runn
 var combinedPar = from d1 in Independent(smc)
                   from d2 in Independent(imp)
                   from pair in RunIndependent(d1, d2)
-                  select Math.min(pair.Item1, pair.Item2);
+                  select Math.Min(pair.Item1, pair.Item2);
 
 combined.SmcMultiple(1000, 100).SampleParallel();
 ```
@@ -311,7 +311,7 @@ We can also write the above like this:
 
 ```cs
 var combinedPar = from pair in RunIndependent(smc, imp)
-                  select Math.min(pair.Item1, pair.Item2);
+                  select Math.Min(pair.Item1, pair.Item2);
 ```
 
 Inference algorithms that are run against these parallelized distributions will automatically spawn copies of themselves in a Task whenever they encounter independent distributions. This can lead to speedups of around 40% - 100%, depending on the number of cores in your system.
@@ -390,8 +390,8 @@ If we think of our demographic features as a vector, we want to find a vector of
 We don't really know what the correct weights should be, so we define a prior with heavy tails:
 
 ```cs
-var prior = from ageWeight in Normal(-1, 1)
-            from incomeWeight in Normal(0, 1)
+var prior = from ageWeight in Normal(0, 100)
+            from incomeWeight in Normal(0, 100)
             select new BuyWeight(incomeWeight, ageWeight);
 ```
 
