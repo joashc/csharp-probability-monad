@@ -36,12 +36,12 @@ namespace ProbCSharp.Test
             var posteriorWeight = FlipsUpdate(fair, prior);
 
             // Use a weighted prior to infer the posterior
-            var inferredWeight = posteriorWeight.Prior().SampleNParallel(100);
+            var inferredWeight = posteriorWeight.WeightedPrior().SampleNParallel(100);
             Debug.WriteLine(Histogram.Weighted(inferredWeight));
 
             // Do the same with a biased coin
             var biased = new List<Coin> { Tails, Tails, Tails, Tails, Tails, Tails, Heads, Tails };
-            var inferredBiasedWeight = FlipsUpdate(biased, prior).Prior().SampleNParallel(100);
+            var inferredBiasedWeight = FlipsUpdate(biased, prior).WeightedPrior().SampleNParallel(100);
             Debug.WriteLine(Histogram.Weighted(inferredBiasedWeight));
         }
 

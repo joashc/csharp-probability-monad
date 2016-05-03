@@ -1,9 +1,8 @@
 ﻿namespace ProbCSharp
 {
     /// <summary>
-    /// Tuple class since C# tuples cause a few issues
+    /// Represents an item and associated probability
     /// </summary>
-    /// <typeparam name="A"></typeparam>
     public class ItemProb<A>
     {
         public A Item { get; }

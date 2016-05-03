@@ -6,9 +6,8 @@ using static ProbCSharp.ProbBase;
 namespace ProbCSharp
 {
     /// <summary>
-    /// GADT for representing distributions as operational monad
+    /// GADT for representing distributions as an operational monad
     /// </summary>
-    /// <typeparam name="A"></typeparam>
     public interface Dist<A>
     {
         X Run<X>(DistInterpreter<A, X> interpreter);
@@ -22,11 +21,11 @@ namespace ProbCSharp
     /// for the idea of using the visitor pattern to implement GADTS.
     /// </summary>
     /// <typeparam name="A">Sample type of distribution</typeparam>
-    /// <typeparam name="X"></typeparam>
+    /// <typeparam name="X">The type the distribution will be interpreted into</typeparam>
     public interface DistInterpreter<A, X>
     {
         X Pure(A value);
-        X Primitive(ContDist<A> dist);
+        X Primitive(SampleableDist<A> dist);
         X Conditional(Func<A, Prob> lik, Dist<A> dist);
         X Bind<B>(Dist<B> dist, Func<B, Dist<A>> bind);
         DistInterpreter<B, Y> New<B, Y>();
@@ -35,12 +34,12 @@ namespace ProbCSharp
     /// <summary>
     /// Parallel interpreter interface
     /// </summary>
-    /// <typeparam name="A"></typeparam>
-    /// <typeparam name="X"></typeparam>
+    /// <typeparam name="A">Sample type of distribution</typeparam>
+    /// <typeparam name="X">The type the distribution will be interpreted into</typeparam>
     public interface ParallelDistInterpreter<A, X>
     {
         X Pure(A value);
-        X Primitive(ContDist<A> dist);
+        X Primitive(SampleableDist<A> dist);
         X Conditional(Func<A, Prob> lik, Dist<A> dist);
         X Bind<B>(Dist<B> dist, Func<B, Dist<A>> bind);
         X Independent(Dist<A> independent);
@@ -49,7 +48,7 @@ namespace ProbCSharp
     }
 
     /// <summary>
-    /// This is basically `return` (the Haskell return)
+    /// A value lifted into the Dist type
     /// </summary>
     /// <typeparam name="A"></typeparam>
     public class Pure<A> : Dist<A>
@@ -72,13 +71,12 @@ namespace ProbCSharp
     }
 
     /// <summary>
-    /// Primitive distribution
+    /// A distribution that can be directly sampled
     /// </summary>
-    /// <typeparam name="A"></typeparam>
     public class Primitive<A> : Dist<A>
     {
-        public readonly ContDist<A> dist;
-        public Primitive(ContDist<A> dist)
+        public readonly SampleableDist<A> dist;
+        public Primitive(SampleableDist<A> dist)
         {
             this.dist = dist;
         }
@@ -95,9 +93,8 @@ namespace ProbCSharp
     }
 
     /// <summary>
-    /// Conditional 
+    /// A distribution conditioned on a likelihood function
     /// </summary>
-    /// <typeparam name="A"></typeparam>
     public class Conditional<A> : Dist<A>
     {
         public readonly Func<A, Prob> likelihood;
@@ -122,9 +119,6 @@ namespace ProbCSharp
     /// <summary>
     /// Evaluate three independent distributions in parallel
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
-    /// <typeparam name="A"></typeparam>
     public class RunIndependent3<T1, T2, T3, A> : Dist<A>
     {
         public readonly Dist<T1> first;
@@ -159,9 +153,6 @@ namespace ProbCSharp
     /// <summary>
     /// Evaluate two independent distributions in parallel
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
-    /// <typeparam name="A"></typeparam>
     public class RunIndependent<T1, T2, A> : Dist<A>
     {
         public readonly Dist<T1> first;
@@ -193,8 +184,6 @@ namespace ProbCSharp
     /// <summary>
     /// Marks independent distributions for parallel evaluation
     /// </summary>
-    /// <typeparam name="A"></typeparam>
-    /// <typeparam name="B"></typeparam>
     public class Independent<A> : Dist<Dist<A>>
     {
         public readonly Dist<A> dist;
@@ -218,8 +207,6 @@ namespace ProbCSharp
     /// <summary>
     /// Bind type. Equivalent to Free f a
     /// </summary>
-    /// <typeparam name="Y"></typeparam>
-    /// <typeparam name="A"></typeparam>
     public class Bind<Y, A> : Dist<A>
     {
         public readonly Dist<Y> dist;
@@ -274,9 +261,6 @@ namespace ProbCSharp
         /// <summary>
         /// Default to using recursion depth limit of 100
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="dists"></param>
-        /// <returns></returns>
         public static Dist<IEnumerable<A>> Sequence<A>(this IEnumerable<Dist<A>> dists)
         {
             return SequenceWithDepth(dists, 100);
@@ -291,9 +275,6 @@ namespace ProbCSharp
         /// $$s\log_{s}{n}$$
         /// where s is the specified recursion depth limit
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="dists"></param>
-        /// <returns></returns>
         public static Dist<IEnumerable<A>> SequenceWithDepth<A>(this IEnumerable<Dist<A>> dists, int recursionDepth)
         {
             var sections = dists.Count() / recursionDepth;
@@ -306,9 +287,6 @@ namespace ProbCSharp
         /// `sequence` can be implemented as
         /// sequence xs = foldr (liftM2 (:)) (return []) xs
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="dists"></param>
-        /// <returns></returns>
         private static Dist<IEnumerable<A>> RunSequence<A>(IEnumerable<Dist<A>> dists)
         {
             return dists.Aggregate(
@@ -320,12 +298,9 @@ namespace ProbCSharp
         }
 
         /// <summary>
-        /// 
+        /// Divide a list of distributions into groups of given size, then runs sequence on each group
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="dists"></param>
-        /// <param name="groupSize"></param>
-        /// <returns></returns>
+        /// <returns>The list of sequenced distribution groups</returns>
         private static IEnumerable<Dist<IEnumerable<A>>> SequencePartial<A>(IEnumerable<Dist<A>> dists, int groupSize)
         {
             var numGroups = dists.Count() / groupSize;

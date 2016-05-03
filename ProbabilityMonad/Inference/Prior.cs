@@ -10,7 +10,6 @@ namespace ProbCSharp
     /// <summary>
     /// Draw samples from prior and discard likelihood scores
     /// </summary>
-    /// <typeparam name="A"></typeparam>
     public class Prior<A> : DistInterpreter<A, Dist<A>>
     {
         public DistInterpreter<B, Y> New<B, Y>()
@@ -28,7 +27,7 @@ namespace ProbCSharp
             return dist.Run(new Prior<A>());
         }
 
-        Dist<A> DistInterpreter<A, Dist<A>>.Primitive(ContDist<A> dist)
+        Dist<A> DistInterpreter<A, Dist<A>>.Primitive(SampleableDist<A> dist)
         {
             return new Pure<A>(dist.Sample());
         }

@@ -6,19 +6,13 @@ using static ProbCSharp.ProbBase;
 
 namespace ProbCSharp
 {
-    /// <summary>
-    /// SMC Extension methods
-    /// </summary>
+    // SMC Extension methods
     public static class SmcExtensions
     {
 
         /// <summary>
-        /// SMC that just discards pseudo-marginal likelihood
+        /// SMC that discards pseudo-marginal likelihoods
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="n"></param>
-        /// <param name="dist"></param>
-        /// <returns></returns>
         public static Dist<Samples<A>> SmcStandard<A>(this Dist<A> dist, int n)
         {
             return dist.Run(new Smc<A>(n)).Run(new Prior<Samples<A>>());
@@ -27,11 +21,6 @@ namespace ProbCSharp
         /// <summary>
         /// SMC that does importance sampling
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="dist"></param>
-        /// <param name="numSamples">Number of importance samples</param>
-        /// <param name="numParticles"></param>
-        /// <returns></returns>
         public static Dist<Samples<A>> SmcMultiple<A>(this Dist<A> dist, int numSamples, int numParticles)
         {
             return dist.Run(new Smc<A>(numParticles)).ImportanceSamples(numSamples).Select(Importance.Flatten);
@@ -41,7 +30,6 @@ namespace ProbCSharp
     /// <summary>
     /// Sequential Monte Carlo
     /// </summary>
-    /// <typeparam name="A"></typeparam>
     public class Smc<A> : DistInterpreter<A, Dist<Samples<A>>>
     {
         public int numParticles;
@@ -76,9 +64,9 @@ namespace ProbCSharp
             return new Smc<B>(numParticles) as DistInterpreter<B, Y>;
         }
 
-        public Dist<Samples<A>> Primitive(ContDist<A> dist)
+        public Dist<Samples<A>> Primitive(SampleableDist<A> dist)
         {
-            var d = new Primitive<ItemProb<A>>(new ContDistImpl<ItemProb<A>>(() => ItemProb(dist.Sample(), Prob(1))));
+            var d = new Primitive<ItemProb<A>>(new SampleDist<ItemProb<A>>(() => ItemProb(dist.Sample(), Prob(1))));
             return Enumerable.Repeat(d, numParticles).Sequence().Select(Samples);
         }
 

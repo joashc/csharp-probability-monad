@@ -39,7 +39,7 @@ namespace ProbCSharp.Test
             var linReg = LinearRegression.CreateLinearRegression(prior, LinearRegression.LinearData);
 
             // Basically do importance sampling using the prior
-            var samples = linReg.Prior().SampleNParallel(1000);
+            var samples = linReg.WeightedPrior().SampleNParallel(1000);
 
             var posteriorA = samples.Select(sample => ItemProb(sample.Item.a, sample.Prob));
             var posteriorB = samples.Select(sample => ItemProb(sample.Item.b, sample.Prob));

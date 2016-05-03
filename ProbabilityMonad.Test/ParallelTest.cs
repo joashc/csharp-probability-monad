@@ -20,7 +20,7 @@ namespace ProbCSharp.Test
         // Initialize common objects
         private static int waitMillis = 100;
         private Func<int, int, Dist<int>> Add = (a, b) => Return(a + b);
-        private Dist<int> LaggyDist = Primitive(new ContDistImpl<int>(() =>
+        private Dist<int> LaggyDist = Primitive(new SampleDist<int>(() =>
         {
             Thread.Sleep(waitMillis);
             return 5;
@@ -146,7 +146,7 @@ namespace ProbCSharp.Test
 
             var parTimer = new Stopwatch();
             parTimer.Start();
-            var total = parallelSum.Prior().RunParallel(new ParallelSampler<ItemProb<int>>());
+            var total = parallelSum.WeightedPrior().RunParallel(new ParallelSampler<ItemProb<int>>());
             parTimer.Stop();
 
             Assert.AreEqual(total.Item, 10);

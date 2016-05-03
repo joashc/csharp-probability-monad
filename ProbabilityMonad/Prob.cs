@@ -61,6 +61,9 @@ namespace ProbCSharp
         }
     }
 
+    /// <summary>
+    /// Probability wrapper using log probabilities
+    /// </summary>
     public class LogProb : Prob
     {
         public double logProb;

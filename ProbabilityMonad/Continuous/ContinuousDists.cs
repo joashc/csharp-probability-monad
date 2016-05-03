@@ -5,9 +5,9 @@ using System.Security.Cryptography;
 namespace ProbCSharp
 {
     /// <summary>
-    /// Normal dist
+    /// Normal distribution
     /// </summary>
-    public class NormalC : ContDist<double>
+    public class NormalC : SampleableDist<double>
     {
         public double Mean { get; }
         public double Variance { get; }
@@ -31,9 +31,9 @@ namespace ProbCSharp
     }
 
     /// <summary>
-    /// Beta dist
+    /// Beta distribution
     /// </summary>
-    public class BetaC : ContDist<double>
+    public class BetaC : SampleableDist<double>
     {
         public double alpha;
         public double beta;

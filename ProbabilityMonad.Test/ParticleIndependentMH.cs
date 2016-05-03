@@ -23,7 +23,7 @@ namespace ProbCSharp.Test
 
             // Posterior inferred with SMC
             var twoRolls = Dice.ConditionalDie(2);
-            var pimhPosterior = Pimh.Run(100, 1000, twoRolls).Sample();
+            var pimhPosterior = Pimh.Create(100, 1000, twoRolls).Sample();
             var weights = from samples in pimhPosterior
                           from sample in samples
                           select sample;
@@ -44,7 +44,7 @@ namespace ProbCSharp.Test
 
             var sandLinReg = CreateLinearRegression(prior, BeachSandData);
 
-            var pimhLinReg = Pimh.Run(100, 1000, sandLinReg).Sample();
+            var pimhLinReg = Pimh.Create(100, 1000, sandLinReg).Sample();
 
             var paramA = from samples in pimhLinReg
                          from aProb in samples.MapSample(param => param.a)
@@ -63,7 +63,7 @@ namespace ProbCSharp.Test
         {
             var hmmModel = Hmm(ObservedHmmData1);
 
-            var smcHmmSamples = Pimh.Run(100, 100, hmmModel).Sample();
+            var smcHmmSamples = Pimh.Create(100, 100, hmmModel).Sample();
 
             var topSamples = Samples((from samples in smcHmmSamples
                                       from sample in samples.Weights
@@ -79,7 +79,7 @@ namespace ProbCSharp.Test
         public void Pimh_BayesPointMachine()
         {
             var posterior = BpmUpdate(BpmPrior, BpmObserved);
-            var samples = Samples(Pimh.Run(500, 50, posterior).SampleNParallel(100).SelectMany(d => d).SelectMany(d => d));
+            var samples = Samples(Pimh.Create(500, 50, posterior).SampleNParallel(100).SelectMany(d => d).SelectMany(d => d));
 
             var approxPosterior = CategoricalF(samples.Normalize());
 

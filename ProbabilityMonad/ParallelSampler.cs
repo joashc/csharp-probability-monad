@@ -8,11 +8,21 @@ namespace ProbCSharp
 {
     public static class ParallelSampleExtensions
     {
+        /// <summary>
+        /// Samples from a distribution 
+        /// Samples from independent distributions in parallel
+        /// This will throw an exception if the distribution contains any conditionals.
+        /// </summary>
         public static A SampleParallel<A>(this Dist<A> dist)
         {
             return dist.RunParallel(new ParallelSampler<A>());
         }
 
+        /// <summary>
+        /// Draws n samples from a distribution in parallel
+        /// Samples from independent distributions in parallel
+        /// This will throw an exception if the distribution contains any conditionals.
+        /// </summary>
         public static IEnumerable<A> SampleNParallel<A>(this Dist<A> dist, int n)
         {
             var results = Enumerable.Range(0, n).AsParallel().Select(_ => dist.SampleParallel());
@@ -20,19 +30,9 @@ namespace ProbCSharp
         }
     }
 
-    public class IndependentDist<A>
-    {
-        public readonly Dist<A> dist;
-        public IndependentDist(Dist<A> dist)
-        {
-            this.dist = dist;
-        }
-    }
-
     /// <summary>
     /// Allows sampling from distributions in parallel
     /// </summary>
-    /// <typeparam name="A"></typeparam>
     public class ParallelSampler<A> : ParallelDistInterpreter<A, A>
     {
         private Task<T> StartTask<T>(Func<T> func)
@@ -48,10 +48,10 @@ namespace ProbCSharp
 
         public A Conditional(Func<A, Prob> lik, Dist<A> dist)
         {
-            throw new ArgumentException("Can't sample from conditional");
+            throw new ArgumentException("Cannot sample from conditional distribution.");
         }
 
-        public A Primitive(ContDist<A> dist)
+        public A Primitive(SampleableDist<A> dist)
         {
             return dist.Sample();
         }

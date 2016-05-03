@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static ProbCSharp.ProbBase;
 
 namespace ProbCSharp.Test.Models
 {
-    public static class ClinicalTrial
+    public static class SchellingGame
     {
         public static Func<Prob, FiniteDist<string>>
         location = pubPref => from visitPub in BernoulliF(pubPref)

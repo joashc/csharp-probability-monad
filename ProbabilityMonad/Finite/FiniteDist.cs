@@ -27,9 +27,7 @@ namespace ProbCSharp
     }
 
 
-    /// <summary>
-    /// Monad instance for discrete distributions 
-    /// </summary>
+    // Monad instance for discrete distributions 
     public static class FiniteDistMonad
     {
         /// <summary>

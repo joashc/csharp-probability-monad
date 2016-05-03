@@ -13,8 +13,6 @@ namespace ProbCSharp.Test.Models
         /// <summary>
         /// Exact distribution of sum of n independent die rolls
         /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
         public static FiniteDist<int> DieExact(int n)
         {
             if (n == 0) return UniformF(0);
@@ -28,8 +26,6 @@ namespace ProbCSharp.Test.Models
         /// <summary>
         /// Exact distribution of sum of n independent die rolls, conditioned with likelihood inversely proportional to the sum
         /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
         public static FiniteDist<int> ConditionalDieExact(int n)
         {
             return DieExact(n).ConditionSoftUnnormalized(
@@ -41,8 +37,6 @@ namespace ProbCSharp.Test.Models
         /// <summary>
         /// Stochastic version of DieExact
         /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
         public static Dist<int> Die(int n)
         {
             return Primitive(DieExact(n));
@@ -51,8 +45,6 @@ namespace ProbCSharp.Test.Models
         /// <summary>
         /// Stochastic version of ConditionalDieExact
         /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
         public static Dist<int> ConditionalDie(int n)
         {
             return Condition(x => Prob(1.0/Math.Pow(x, 2)), Die(n));

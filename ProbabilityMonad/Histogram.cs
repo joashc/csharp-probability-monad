@@ -30,10 +30,6 @@ namespace ProbCSharp
         /// <summary>
         /// Make n evenly spaced buckets in a range
         /// </summary>
-        /// <param name="min"></param>
-        /// <param name="max"></param>
-        /// <param name="numBuckets"></param>
-        /// <returns></returns>
         internal static List<Bucket> MakeBucketList(double min, double max, int numBuckets)
         {
             if (max == min) return new List<Bucket> { new Bucket(min, max) };
@@ -49,12 +45,8 @@ namespace ProbCSharp
         }
 
         /// <summary>
-        /// Make n evenly spaced buckets in a range
+        /// Make n evenly spaced buckets in a range with ints
         /// </summary>
-        /// <param name="min"></param>
-        /// <param name="max"></param>
-        /// <param name="numBuckets"></param>
-        /// <returns></returns>
         internal static List<Bucket> MakeIntBucketList(int min, int max, int numBuckets)
         {
             if (max == min) return new List<Bucket> { new Bucket(min, max) };
@@ -70,10 +62,8 @@ namespace ProbCSharp
         }
 
         /// <summary>
-        /// Print a bucket
+        /// Creates a string representation of a bucket
         /// </summary>
-        /// <param name="buckets"></param>
-        /// <returns></returns>
         internal static string ShowBuckets(IEnumerable<Bucket> buckets, double scale)
         {
             var sb = new StringBuilder();
@@ -92,11 +82,17 @@ namespace ProbCSharp
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Returns the size of the longest string representation of an item in a list
+        /// </summary>
         internal static int LongestString<A>(IEnumerable<A> list, Func<A, string> toString)
         {
             return list.Select(x => toString(x).Length).Max();
         }
 
+        /// <summary>
+        /// Calculate scale factor for a list of bar lengths
+        /// </summary>
         internal static double BarScale(IEnumerable<int> barLengths, double scale)
         {
             var longestBar = barLengths.Max();
@@ -106,8 +102,6 @@ namespace ProbCSharp
         /// <summary>
         /// Draw bar of width n
         /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
         internal static string Bar(int n)
         {
             var barBuilder = new StringBuilder();
@@ -121,10 +115,6 @@ namespace ProbCSharp
         /// <summary>
         /// Return sum of list with a given value function
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="getVal"></param>
-        /// <param name="list"></param>
-        /// <returns></returns>
         internal static double Sum<A>(Func<A, double> getVal, IEnumerable<A> list)
         {
             return list.Select(getVal).Sum();
@@ -133,10 +123,7 @@ namespace ProbCSharp
         /// <summary>
         /// Generates a weighted histogram from a list of ItemProbs
         /// </summary>
-        /// <param name="nums"></param>
-        /// <param name="numBuckets"></param>
-        /// <param name="scale"></param>
-        /// <returns></returns>
+        /// <param name="scale">Scale factor. Defaults to 40</param>
         public static string Weighted(IEnumerable<ItemProb<double>> nums, int numBuckets = 10, double scale = DEFAULT_SCALE)
         {
             if (!nums.Any()) return "No data to graph.";
@@ -158,10 +145,7 @@ namespace ProbCSharp
         /// <summary>
         /// Generates a weighted histogram from some samples
         /// </summary>
-        /// <param name="nums"></param>
-        /// <param name="numBuckets"></param>
-        /// <param name="scale"></param>
-        /// <returns></returns>
+        /// <param name="scale">Scale factor. Defaults to 40</param>
         public static string Weighted(Samples<double> nums, int numBuckets = 10, double scale = DEFAULT_SCALE)
         {
             return Weighted(nums.Weights, numBuckets, scale);
@@ -170,10 +154,7 @@ namespace ProbCSharp
         /// <summary>
         /// Generates an unweigted histogram for a list of numbers
         /// </summary>
-        /// <param name="nums"></param>
-        /// <param name="numBuckets"></param>
-        /// <param name="scale"></param>
-        /// <returns></returns>
+        /// <param name="scale">Scale factor. Defaults to 40</param>
         public static string Unweighted(IEnumerable<double> nums, int numBuckets = 10, double scale = DEFAULT_SCALE)
         {
             if (!nums.Any()) return "No data to graph.";
@@ -195,10 +176,7 @@ namespace ProbCSharp
         /// <summary>
         /// Generates an unweigted histogram for a list of numbers
         /// </summary>
-        /// <param name="nums"></param>
-        /// <param name="numBuckets"></param>
-        /// <param name="scale"></param>
-        /// <returns></returns>
+        /// <param name="scale">Scale factor. Defaults to 40</param>
         public static string Unweighted(IEnumerable<int> nums, int numBuckets = 10, double scale = DEFAULT_SCALE)
         {
             return Unweighted(nums.Select(x => (double)x), numBuckets, scale);
@@ -207,11 +185,7 @@ namespace ProbCSharp
         /// <summary>
         /// Generates a histogram from some samples, grouping by a show function. 
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="itemProbs"></param>
-        /// <param name="showFunc">Used to display and group samples. Defaults to ToString() if not specified.</param>
-        /// <param name="scale"></param>
-        /// <returns></returns>
+        /// <param name="scale">Scale factor. Defaults to 40</param>
         public static string Finite<A>(Samples<A> itemProbs, Func<A, string> showFunc = null, double scale = DEFAULT_SCALE)
         {
             if (!itemProbs.Weights.Any()) return "No data to graph.";

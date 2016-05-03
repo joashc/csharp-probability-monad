@@ -9,29 +9,17 @@ namespace ProbCSharp
     {
         /// <summary>
         /// The metropolis algorithm with prior as proposal dist.
-        /// This isn't that useful on its own, it's a really slow mixing chain
-        /// if the prior is too different from the posterior.
-        /// It's more to show off the SMC composition!
+        /// It's a really slow mixing chain if the prior is too different from the posterior.
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="dist"></param>
-        /// <param name="n"></param>
-        /// <returns></returns>
+        /// <returns>A distribution of Markov chains</returns>
         public static Dist<IEnumerable<A>> MHPrior<A>(Dist<A> dist, int n)
         {
-            var initial = new List<ItemProb<A>> { dist.Prior().Sample() };
-            var chain = Iterate(n, () => dist.Prior(), initial);
+            var initial = new List<ItemProb<A>> { dist.WeightedPrior().Sample() };
+            var chain = Iterate(n, () => dist.WeightedPrior(), initial);
             return chain.Select(ipList => ipList.Select(ip => ip.Item));
         }
 
-        /// <summary>
-        /// Performs n iterations of MH
-        /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="n"></param>
-        /// <param name="proposal"></param>
-        /// <param name="chain"></param>
-        /// <returns></returns>
+        // Performs n iterations of MH
         private static Dist<IEnumerable<ItemProb<A>>> Iterate<A>(int n, Func<Dist<ItemProb<A>>> proposal, List<ItemProb<A>> chain)
         {
             if (n <= 0) return new Pure<IEnumerable<ItemProb<A>>>(chain);
@@ -50,6 +38,9 @@ namespace ProbCSharp
             return new Pure<IEnumerable<ItemProb<A>>>(newChain);
         }
 
+        /// <summary>
+        /// Returns the value of the metropolis chain at specified index
+        /// </summary>
         public static Dist<A> MHIndex<A>(Dist<A> dist, int n, int index)
         {
             return MHPrior(dist, n).Select(list => list.ElementAt(index));

@@ -10,12 +10,7 @@ namespace ProbCSharp
         /// <summary>
         /// Calculates KL divergence of two finite distributions
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <typeparam name="Key"></typeparam>
-        /// <param name="distQ"></param>
-        /// <param name="distP"></param>
-        /// <param name="keyFunc"></param>
-        /// <returns></returns>
+        /// <param name="keyFunc">Groups identical samples</param>
         public static double KLDivergenceF<A, Key>(FiniteDist<A> distQ, FiniteDist<A> distP, Func<A, Key> keyFunc) where A : IComparable<A>
         {
             var qWeights = Enumerate(distQ, keyFunc);
@@ -36,12 +31,7 @@ namespace ProbCSharp
         /// <summary>
         /// Calculates KL divergence from list of samples and a finite distribution
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <typeparam name="Key"></typeparam>
-        /// <param name="samples"></param>
-        /// <param name="dist"></param>
-        /// <param name="keyFunc"></param>
-        /// <returns></returns>
+        /// <param name="keyFunc">Groups identical samples</param>
         public static double KLDivergence<A, Key>(Samples<A> samples, FiniteDist<A> dist, Func<A, Key> keyFunc) where A : IComparable<A>
         {
             var sampleDist = CategoricalF(samples);

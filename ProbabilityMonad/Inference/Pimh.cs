@@ -8,9 +8,12 @@ namespace ProbCSharp
 {
     public static class Pimh
     {
-        public static Dist<IEnumerable<Samples<A>>> Run<A>(int n, int chainLen, Dist<A> dist)
+        /// <summary>
+        /// Particle indepedent Metropolis-Hastings
+        /// </summary>
+        public static Dist<IEnumerable<Samples<A>>> Create<A>(int numParticles, int chainLen, Dist<A> dist)
         {
-            return MetropolisHastings.MHPrior(dist.Run(new Smc<A>(n)), chainLen);
+            return MetropolisHastings.MHPrior(dist.Run(new Smc<A>(numParticles)), chainLen);
         }
     }
 }

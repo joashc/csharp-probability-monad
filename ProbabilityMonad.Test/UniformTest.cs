@@ -77,7 +77,7 @@ namespace ProbCSharp.Test
             Debug.WriteLine(twoRollsExact.Histogram());
 
             var twoRolls = Dice.ConditionalDie(2);
-            var priorWeights = twoRolls.Prior().SampleNParallel(100).Select(ip => ItemProb((double)ip.Item, ip.Prob));
+            var priorWeights = twoRolls.WeightedPrior().SampleNParallel(100).Select(ip => ItemProb((double)ip.Item, ip.Prob));
             Debug.WriteLine(Histogram.Weighted(priorWeights, scale: 60));
         }
 

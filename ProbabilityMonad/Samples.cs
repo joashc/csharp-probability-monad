@@ -27,9 +27,6 @@ namespace ProbCSharp
         /// <summary>
         /// Sum all probabilities in samples
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="self"></param>
-        /// <returns></returns>
         public static Prob SumProbs<A>(this Samples<A> self)
         {
             return Prob(self.Weights.Select(ip => ip.Prob.Value).Sum());
@@ -43,20 +40,17 @@ namespace ProbCSharp
         /// <summary>
         /// Unzip samples into items and weights
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="samples"></param>
-        /// <returns></returns>
         public static Tuple<IEnumerable<A>, IEnumerable<Prob>> Unzip<A>(this Samples<A> samples)
         {
             return new Tuple<IEnumerable<A>, IEnumerable<Prob>>(samples.Weights.Select(ip => ip.Item), samples.Weights.Select(ip => ip.Prob));
         }
     }
 
+    // This is a Wrapper class for IEnumerable<ItemProb<A>>
+    // Working with the unwrapped type is pretty unwieldy, especially when nested.
     /// <summary>
-    /// Wrapper class for IEnumerable<ItemProb<A>>
-    /// Working with the unwrapped type is pretty unwieldy, especially when nested.
+    /// Represents a list of samples
     /// </summary>
-    /// <typeparam name="A"></typeparam>
     public class Samples<A> : IEnumerable<ItemProb<A>>
     {
         public readonly IEnumerable<ItemProb<A>> Weights;

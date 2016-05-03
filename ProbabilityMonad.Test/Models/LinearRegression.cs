@@ -7,9 +7,6 @@ using static ProbCSharp.ProbBase;
 
 namespace ProbCSharp.Test.Models
 {
-    /// <summary>
-    /// Param class
-    /// </summary>
     public class Param
     {
         public double a { get; }
@@ -26,9 +23,6 @@ namespace ProbCSharp.Test.Models
         }
     }
 
-    /// <summary>
-    /// Point class
-    /// </summary>
     public class Point
     {
         public double x { get; }
@@ -40,9 +34,6 @@ namespace ProbCSharp.Test.Models
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     public static class LinearRegression
     {
         public static Func<double, double, Point> Point = (x, y) => new Point(x, y);
@@ -75,9 +66,6 @@ namespace ProbCSharp.Test.Models
         /// <summary>
         /// Represents posterior distribution after updating on one point
         /// </summary>
-        /// <param name="prior"></param>
-        /// <param name="point"></param>
-        /// <returns></returns>
         public static Dist<Param> LinearRegressionPoint(Dist<Param> prior, Point point)
         {
             return Condition(param => Pdf(NormalC(param.a * point.x + param.b, 10), point.y), prior);
@@ -86,9 +74,6 @@ namespace ProbCSharp.Test.Models
         /// <summary>
         /// Represents posterior distribution after updating on a list of points
         /// </summary>
-        /// <param name="prior"></param>
-        /// <param name="points"></param>
-        /// <returns></returns>
         public static Dist<Param> CreateLinearRegression(Dist<Param> prior, List<Point> points)
         {
             return points.Aggregate(prior, LinearRegressionPoint);

@@ -12,13 +12,6 @@ namespace ProbCSharp.Test.Models
         /// <summary>
         /// Generates data for the hidden markov model
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <typeparam name="B"></typeparam>
-        /// <param name="emissionDist"></param>
-        /// <param name="startDist"></param>
-        /// <param name="transitionDist"></param>
-        /// <param name="numSamples"></param>
-        /// <returns></returns>
         public static Dist<List<Tuple<A, B>>> Sample<A, B>(
             Func<A, Dist<B>> emissionDist,
             Dist<List<A>> startDist,
@@ -46,8 +39,6 @@ namespace ProbCSharp.Test.Models
         /// <summary>
         /// Converts a list of ints into a string
         /// </summary>
-        /// <param name="latent"></param>
-        /// <returns></returns>
         public static string ShowLatentList(List<int> latent)
         {
             var sb = new StringBuilder();
@@ -71,8 +62,6 @@ namespace ProbCSharp.Test.Models
         /// <summary>
         /// An example hidden Markov model
         /// </summary>
-        /// <param name="observed"></param>
-        /// <returns></returns>
         public static Dist<List<int>> Hmm(List<double> observed)
         {
             // Latent variables are discrete

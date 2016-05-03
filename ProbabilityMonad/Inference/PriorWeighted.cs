@@ -7,12 +7,10 @@ using static ProbCSharp.ProbBase;
 
 namespace ProbCSharp
 {
-    /// <summary>
-    /// Extension methods for prior
-    /// </summary>
+    // Extension methods for prior
     public static class PriorWeightedExtensions
     {
-        public static Dist<ItemProb<A>> Prior<A>(this Dist<A> dist)
+        public static Dist<ItemProb<A>> WeightedPrior<A>(this Dist<A> dist)
         {
             return dist.Run(new PriorWeighted<A>());
         }
@@ -23,7 +21,6 @@ namespace ProbCSharp
     /// We do *not* remove conditionals from the right of a bind.
     /// This is so that the presence of a conditional is independent of random choices in the model.
     /// </summary>
-    /// <typeparam name="A"></typeparam>
     public class PriorWeighted<A> : DistInterpreter<A, Dist<ItemProb<A>>>
     {
         public Dist<ItemProb<A>> Bind<B>(Dist<B> dist, Func<B, Dist<A>> bind)
@@ -44,7 +41,7 @@ namespace ProbCSharp
             return new PriorWeighted<B>() as DistInterpreter<B, Y>;
         }
 
-        public Dist<ItemProb<A>> Primitive(ContDist<A> dist)
+        public Dist<ItemProb<A>> Primitive(SampleableDist<A> dist)
         {
             return new Primitive<ItemProb<A>>(dist.Select(a => ItemProb(a, Prob(1))));
         }

@@ -4,23 +4,21 @@ using System.Collections.Generic;
 namespace ProbCSharp
 {
     /// <summary>
-    /// Continuous distribution
+    /// A distribution that can be sampled from
     /// </summary>
-    /// <typeparam name="A"></typeparam>
-    public interface ContDist<A>
+    public interface SampleableDist<A>
     {
         Func<A> Sample { get; }
     }
 
     /// <summary>
-    /// Most basic continuous distribution.
-    /// Almost like a monad return
+    /// Lifts a sampling function into a sampleable distribution
     /// </summary>
     /// <typeparam name="A"></typeparam>
-    public class ContDistImpl<A> : ContDist<A>
+    public class SampleDist<A> : SampleableDist<A>
     {
         private readonly Func<A> _sample;
-        public ContDistImpl(Func<A> sample)
+        public SampleDist(Func<A> sample)
         {
             _sample = sample;
         }
@@ -32,23 +30,21 @@ namespace ProbCSharp
     }
 
 
-    /// <summary>
-    /// Continuous dist monad instance
-    /// </summary>
-    public static class ContDistMonad
+    // Sampleable distribution monad instance
+    public static class SampleableDistMonad
     {
-        public static ContDist<B> Select<A, B>(this ContDist<A> self, Func<A, B> f)
+        public static SampleableDist<B> Select<A, B>(this SampleableDist<A> self, Func<A, B> f)
         {
-            return new ContDistImpl<B>(() => f(self.Sample()));
+            return new SampleDist<B>(() => f(self.Sample()));
         }
 
-        public static ContDist<C> SelectMany<A, B, C>(
-            this ContDist<A> self,
-            Func<A, ContDist<B>> bind,
+        public static SampleableDist<C> SelectMany<A, B, C>(
+            this SampleableDist<A> self,
+            Func<A, SampleableDist<B>> bind,
             Func<A, B, C> project
         )
         {
-            return new ContDistImpl<C>(() =>
+            return new SampleDist<C>(() =>
             {
                 var firstSample = self.Sample();
                 var secondSample = bind(firstSample).Sample();

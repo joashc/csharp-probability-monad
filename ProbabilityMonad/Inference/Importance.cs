@@ -7,18 +7,12 @@ using static ProbCSharp.ProbBase;
 
 namespace ProbCSharp
 {
-    /// <summary>
-    /// Extension methods for importance sampling
-    /// </summary>
+    // Extension methods for importance sampling
     public static class ImportanceExt
     {
         /// <summary>
         /// Importance sample with given number of samples
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="dist"></param>
-        /// <param name="numSamples"></param>
-        /// <returns></returns>
         public static Dist<Samples<A>> ImportanceSamples<A>(this Dist<A> dist, int numSamples)
         {
             return Importance.ImportanceSamples(numSamples, dist);
@@ -34,9 +28,6 @@ namespace ProbCSharp
         /// Resamples from a group of samples, with the probability of
         /// a particular value given by the number of times it appears in the sample.
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="samples"></param>
-        /// <returns></returns>
         public static Dist<Samples<A>> Resample<A>(Samples<A> samples)
         {
             var resamples = samples.Select(s => ItemProb(s, Prob(1)));
@@ -45,11 +36,8 @@ namespace ProbCSharp
         }
 
         /// <summary>
-        /// 
+        /// Flattens nested samples
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="samples"></param>
-        /// <returns></returns>
         public static Samples<A> Flatten<A>(Samples<Samples<A>> samples)
         {
             return Samples(from outer in Normalize(samples).Weights
@@ -58,39 +46,30 @@ namespace ProbCSharp
         }
 
         /// <summary>
-        /// 
+        /// Performs importance sampling on a distribution
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="n"></param>
-        /// <param name="dist"></param>
-        /// <returns></returns>
-        public static Dist<Samples<A>> ImportanceSamples<A>(int n, Dist<A> dist)
+        /// <returns>A distribution of importance samples</returns>
+        public static Dist<Samples<A>> ImportanceSamples<A>(int numSamples, Dist<A> dist)
         {
-            var prior = dist.Prior();
-            return Enumerable.Repeat(prior, n).Sequence().Select(Samples);
+            var prior = dist.WeightedPrior();
+            return Enumerable.Repeat(prior, numSamples).Sequence().Select(Samples);
         }
 
 
         /// <summary>
-        /// 
+        /// Performs importance sampling on a distribution
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="n"></param>
-        /// <param name="dist"></param>
-        /// <returns></returns>
-        public static Dist<A> ImportanceDist<A>(int n, Dist<A> dist)
+        /// <returns>An importance sampled distribution</returns>
+        public static Dist<A> ImportanceDist<A>(int numSamples, Dist<A> dist)
         {
-            return from probs in ImportanceSamples(n, dist)
+            return from probs in ImportanceSamples(numSamples, dist)
                    from resampled in Categorical(probs)
                    select resampled;
         }
 
         /// <summary>
-        /// Normalize a list of samples
+        /// Normalizes a list of samples
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="samples"></param>
-        /// <returns></returns>
         public static Samples<A> Normalize<A>(Samples<A> samples)
         {
             var normConst = samples.SumProbs();

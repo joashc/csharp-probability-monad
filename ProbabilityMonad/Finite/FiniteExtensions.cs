@@ -5,9 +5,7 @@ using System.Linq;
 
 namespace ProbCSharp
 {
-    /// <summary>
-    /// Useful extension methods for finite distributions.
-    /// </summary>
+    // Useful extension methods for finite distributions.
     public static class FiniteExtensions
     {
         /// <summary>
@@ -28,14 +26,11 @@ namespace ProbCSharp
         }
 
         /// <summary>
-        /// 
+        /// Lifts a FiniteDist<A> into a SampleableDist<A>
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="dist"></param>
-        /// <returns></returns>
-        public static ContDist<A> ToSampleDist<A>(this FiniteDist<A> dist)
+        public static SampleableDist<A> ToSampleDist<A>(this FiniteDist<A> dist)
         {
-            return new ContDistImpl<A>(() =>
+            return new SampleDist<A>(() =>
             {
                 var rand = new MathNet.Numerics.Distributions.ContinuousUniform().Sample();
                 return dist.Pick(Prob(rand));
@@ -45,10 +40,6 @@ namespace ProbCSharp
         /// <summary>
         /// Returns the probability of a certain event
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="distribution"></param>
-        /// <param name="eventTest"></param>
-        /// <returns></returns>
         public static Prob ProbOf<A>(this FiniteDist<A> dist, Func<A, bool> eventTest)
         {
             var matches = dist.Explicit.Weights.Where(p => eventTest(p.Item));
@@ -59,10 +50,6 @@ namespace ProbCSharp
         /// <summary>
         /// Reweight by a probability that depends on associated item
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="distribution"></param>
-        /// <param name="likelihood"></param>
-        /// <returns></returns>
         public static FiniteDist<A> ConditionSoft<A>(this FiniteDist<A> distribution, Func<A, Prob> likelihood)
         {
             return new FiniteDist<A>(
@@ -75,10 +62,6 @@ namespace ProbCSharp
         /// <summary>
         /// Reweight by a probability that depends on associated item, without normalizing
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="distribution"></param>
-        /// <param name="likelihood"></param>
-        /// <returns></returns>
         public static FiniteDist<A> ConditionSoftUnnormalized<A>(this FiniteDist<A> distribution, Func<A, Prob> likelihood)
         {
             return new FiniteDist<A>(
@@ -89,10 +72,6 @@ namespace ProbCSharp
         /// <summary>
         /// Hard reweight by a condition that depends on associated item
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="distribution"></param>
-        /// <param name="condition"></param>
-        /// <returns></returns>
         public static FiniteDist<A> ConditionHard<A>(this FiniteDist<A> distribution, Func<A, bool> condition)
         {
             return new FiniteDist<A>(
@@ -107,12 +86,6 @@ namespace ProbCSharp
         /// <summary>
         /// Computes the posterior distribution, given a piece of data and a likelihood function
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <typeparam name="D"></typeparam>
-        /// <param name="prior"></param>
-        /// <param name="likelihood"></param>
-        /// <param name="datum"></param>
-        /// <returns></returns>
         public static FiniteDist<A> UpdateOn<A, D>(this FiniteDist<A> prior, Func<A, D, Prob> likelihood, D datum)
         {
             return prior.ConditionSoft(w => likelihood(w, datum));
@@ -121,23 +94,14 @@ namespace ProbCSharp
         /// <summary>
         /// Computes the posterior distribution, given a list of data and a likelihood function
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <typeparam name="D"></typeparam>
-        /// <param name="prior"></param>
-        /// <param name="likelihood"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
         public static FiniteDist<A> UpdateOn<A, D>(this FiniteDist<A> prior, Func<A, D, Prob> likelihood, IEnumerable<D> data)
         {
             return data.Aggregate(prior, (dist, datum) => dist.UpdateOn(likelihood, datum));
         }
 
         /// <summary>
-        /// Normalize a finite dist
+        /// Normalize a finite distribution
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="dist"></param>
-        /// <returns></returns>
         public static FiniteDist<A> Normalize<A>(this FiniteDist<A> dist)
         {
             return new FiniteDist<A>(dist.Explicit.Normalize());
@@ -146,11 +110,6 @@ namespace ProbCSharp
         /// <summary>
         /// Join two independent distributions
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <typeparam name="B"></typeparam>
-        /// <param name="self"></param>
-        /// <param name="other"></param>
-        /// <returns></returns>
         public static FiniteDist<Tuple<A,B>> Join<A, B>(this FiniteDist<A> self, FiniteDist<B> other)
         {
             return from a in self
@@ -161,9 +120,6 @@ namespace ProbCSharp
         /// <summary>
         /// Returns all elements, and the collection without that element
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="list"></param>
-        /// <returns></returns>
         public static FiniteDist<Tuple<A,IEnumerable<A>>> SelectOne<A>(List<A> list)
         {
             var removedLists = list.Select(a => {
@@ -178,11 +134,7 @@ namespace ProbCSharp
         /// <summary>
         /// Display finite distribution as histogram
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="dist"></param>
         /// <param name="showItem">Specifies a string representation of distribution item. Defaults to ToString.</param>
-        /// <param name="scale"></param>
-        /// <returns></returns>
         public static string Histogram<A>(this FiniteDist<A> dist, Func<A, string> showItem = null, double scale = 100)
         {
             if (showItem == null) showItem = a => a.ToString();

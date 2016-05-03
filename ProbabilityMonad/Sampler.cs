@@ -5,16 +5,21 @@ using System.Threading.Tasks;
 
 namespace ProbCSharp
 {
-    /// <summary>
-    /// Sampler extension methods
-    /// </summary>
     public static class SamplerExt
     {
+        /// <summary>
+        /// Samples from a distribution.
+        /// This will throw an exception if the distribution contains any conditionals.
+        /// </summary>
         public static A Sample<A>(this Dist<A> dist)
         {
             return dist.Run(new Sampler<A>());
         }
 
+        /// <summary>
+        /// Draws n samples from a distribution.
+        /// This will throw an exception if the distribution contains any conditionals.
+        /// </summary>
         public static IEnumerable<A> SampleN<A>(this Dist<A> dist, int n)
         {
             return Enumerable.Range(0, n).Select(_ => dist.Sample());
@@ -24,7 +29,6 @@ namespace ProbCSharp
     /// <summary>
     /// Sample from a distribution
     /// </summary>
-    /// <typeparam name="A"></typeparam>
     public class Sampler<A> : DistInterpreter<A, A>
     {
         public DistInterpreter<C, Y> New<C, Y>()
@@ -41,15 +45,12 @@ namespace ProbCSharp
         /// <summary>
         /// All conditionals must be removed before sampling.
         /// </summary>
-        /// <param name="lik"></param>
-        /// <param name="dist"></param>
-        /// <returns></returns>
         A DistInterpreter<A, A>.Conditional(Func<A, Prob> lik, Dist<A> dist)
         {
             throw new ArgumentException("Cannot sample from conditional distribution.");
         }
 
-        A DistInterpreter<A, A>.Primitive(ContDist<A> dist)
+        A DistInterpreter<A, A>.Primitive(SampleableDist<A> dist)
         {
             return dist.Sample();
         }
