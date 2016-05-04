@@ -315,6 +315,20 @@ namespace ProbCSharp
         }
 
         /// <summary>
+        /// The probability mass function for a primitive distribution and point.
+        /// Throws NotImplementedException if no PMF is defined for given distribution.
+        /// </summary>
+        public static Prob Pmf(PrimitiveDist<int> dist, int y)
+        {
+            if (dist is PoissonPrimitive)
+            {
+                var poisson = dist as PoissonPrimitive;
+                return Prob(MathNet.Numerics.Distributions.Poisson.PMF(poisson.Lambda, y));
+            }
+            throw new NotImplementedException("No PDF for this distribution implemented");
+        }
+
+        /// <summary>
         /// The probability density function for a distribution and point.
         /// Throws ArgumentException if the distribution is not a Primitive.
         /// </summary>
