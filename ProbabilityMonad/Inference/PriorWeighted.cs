@@ -41,7 +41,7 @@ namespace ProbCSharp
             return new PriorWeighted<B>() as DistInterpreter<B, Y>;
         }
 
-        public Dist<ItemProb<A>> Primitive(SampleableDist<A> dist)
+        public Dist<ItemProb<A>> Primitive(PrimitiveDist<A> dist)
         {
             return new Primitive<ItemProb<A>>(dist.Select(a => ItemProb(a, Prob(1))));
         }

@@ -50,7 +50,7 @@ namespace ProbCSharp
             throw new ArgumentException("Cannot sample from conditional distribution.");
         }
 
-        A DistInterpreter<A, A>.Primitive(SampleableDist<A> dist)
+        A DistInterpreter<A, A>.Primitive(PrimitiveDist<A> dist)
         {
             return dist.Sample();
         }

@@ -47,8 +47,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base.cs" />
-    <Compile Include="Continuous\ContDist.cs" />
-    <Compile Include="Continuous\ContDistributions.cs" />
+    <Compile Include="Primitive\Beta.cs" />
+    <Compile Include="Primitive\Normal.cs" />
+    <Compile Include="Primitive\Poisson.cs" />
+    <Compile Include="Primitive\PrimitiveDist.cs" />
     <Compile Include="DistGadt.cs" />
     <Compile Include="Finite\FiniteExtensions.cs" />
     <Compile Include="Histogram.cs" />

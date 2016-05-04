@@ -68,7 +68,7 @@ namespace ProbCSharp.Test.Models
         /// </summary>
         public static Dist<Param> LinearRegressionPoint(Dist<Param> prior, Point point)
         {
-            return Condition(param => Pdf(NormalC(param.a * point.x + param.b, 10), point.y), prior);
+            return Condition(param => Pdf(NormalPrimitive(param.a * point.x + param.b, 10), point.y), prior);
         }
 
         /// <summary>

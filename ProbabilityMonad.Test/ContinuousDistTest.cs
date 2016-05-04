@@ -77,7 +77,7 @@ namespace ProbCSharp.Test
                            select gpa;
             var combinedSamples = combined.SampleN(10000);
 
-            Func<Grade, Prob> PrIs4 = gpa => Pdf(NormalC(4, 0.00001), gpa.GPA);
+            Func<Grade, Prob> PrIs4 = gpa => Pdf(NormalPrimitive(4, 0.00001), gpa.GPA);
 
             Debug.WriteLine(Histogram.Unweighted(combinedSamples.Select(g => g.GPA), numBuckets: 30, scale: 400));
 

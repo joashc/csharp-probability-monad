@@ -25,7 +25,7 @@ namespace ProbCSharp
     public interface DistInterpreter<A, X>
     {
         X Pure(A value);
-        X Primitive(SampleableDist<A> dist);
+        X Primitive(PrimitiveDist<A> dist);
         X Conditional(Func<A, Prob> lik, Dist<A> dist);
         X Bind<B>(Dist<B> dist, Func<B, Dist<A>> bind);
         DistInterpreter<B, Y> New<B, Y>();
@@ -39,7 +39,7 @@ namespace ProbCSharp
     public interface ParallelDistInterpreter<A, X>
     {
         X Pure(A value);
-        X Primitive(SampleableDist<A> dist);
+        X Primitive(PrimitiveDist<A> dist);
         X Conditional(Func<A, Prob> lik, Dist<A> dist);
         X Bind<B>(Dist<B> dist, Func<B, Dist<A>> bind);
         X Independent(Dist<A> independent);
@@ -75,8 +75,8 @@ namespace ProbCSharp
     /// </summary>
     public class Primitive<A> : Dist<A>
     {
-        public readonly SampleableDist<A> dist;
-        public Primitive(SampleableDist<A> dist)
+        public readonly PrimitiveDist<A> dist;
+        public Primitive(PrimitiveDist<A> dist)
         {
             this.dist = dist;
         }

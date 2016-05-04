@@ -88,7 +88,7 @@ namespace ProbCSharp.Test.Models
 
             // Model the observed values as latent variables with gaussian noise
             Func<int, double, Prob>
-            emission = (x, y) => Pdf(NormalC(x, 1), y);
+            emission = (x, y) => Pdf(NormalPrimitive(x, 1), y);
 
             Func<Dist<List<int>>, double, Dist<List<int>>>
             expand = (d, y) =>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ProbCSharp
@@ -51,7 +50,7 @@ namespace ProbCSharp
             throw new ArgumentException("Cannot sample from conditional distribution.");
         }
 
-        public A Primitive(SampleableDist<A> dist)
+        public A Primitive(PrimitiveDist<A> dist)
         {
             return dist.Sample();
         }

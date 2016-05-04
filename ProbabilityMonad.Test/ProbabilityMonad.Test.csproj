@@ -63,7 +63,7 @@
     <Compile Include="ContinuousDistTest.cs" />
     <Compile Include="MetropolisTest.cs" />
     <Compile Include="Models\BayesPointMachine.cs" />
-    <Compile Include="Models\ClinicalTrial.cs" />
+    <Compile Include="Models\SchellingGame.cs" />
     <Compile Include="Models\Coin.cs" />
     <Compile Include="Models\IndianGpa.cs" />
     <Compile Include="Models\Dice.cs" />

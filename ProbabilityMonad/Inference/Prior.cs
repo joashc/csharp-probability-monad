@@ -27,7 +27,7 @@ namespace ProbCSharp
             return dist.Run(new Prior<A>());
         }
 
-        Dist<A> DistInterpreter<A, Dist<A>>.Primitive(SampleableDist<A> dist)
+        Dist<A> DistInterpreter<A, Dist<A>>.Primitive(PrimitiveDist<A> dist)
         {
             return new Pure<A>(dist.Sample());
         }

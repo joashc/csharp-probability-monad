@@ -53,7 +53,7 @@ namespace ProbCSharp.Test.Models
 
         public static Func<BuyWeight, BuyData, Prob> BpmLikelihood2 = (w, d) =>
         {
-            var lossMagnitude = Pdf(NormalC(0, 0.1), (w.AgeWeight * d.Age) - (w.IncomeWeight * d.Income)).Value;
+            var lossMagnitude = Pdf(NormalPrimitive(0, 0.1), (w.AgeWeight * d.Age) - (w.IncomeWeight * d.Income)).Value;
             var loss = d.WillBuy ? lossMagnitude : -lossMagnitude;
             return Prob(loss);
         };

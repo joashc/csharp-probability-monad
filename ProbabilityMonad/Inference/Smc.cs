@@ -64,7 +64,7 @@ namespace ProbCSharp
             return new Smc<B>(numParticles) as DistInterpreter<B, Y>;
         }
 
-        public Dist<Samples<A>> Primitive(SampleableDist<A> dist)
+        public Dist<Samples<A>> Primitive(PrimitiveDist<A> dist)
         {
             var d = new Primitive<ItemProb<A>>(new SampleDist<ItemProb<A>>(() => ItemProb(dist.Sample(), Prob(1))));
             return Enumerable.Repeat(d, numParticles).Sequence().Select(Samples);

@@ -137,12 +137,12 @@ namespace ProbCSharp
         }
 
         /// <summary>
-        /// Normal distribution
-        /// Only composable with other continuous distributions
+        /// Primitive Normal distribution
+        /// Only composable with other primitive distributions
         /// </summary>
-        public static NormalC NormalC(double mean, double variance)
+        public static NormalPrimitive NormalPrimitive(double mean, double variance)
         {
-            return new NormalC(mean, variance, Gen);
+            return new NormalPrimitive(mean, variance, Gen);
         }
 
         /// <summary>
@@ -150,16 +150,16 @@ namespace ProbCSharp
         /// </summary>
         public static Dist<double> Normal(double mean, double variance)
         {
-            return Primitive(NormalC(mean, variance));
+            return Primitive(NormalPrimitive(mean, variance));
         }
 
         /// <summary>
-        /// Beta distribution
-        /// Only composable with other continuous distributions
+        /// Primitive Beta distribution
+        /// Only composable with other primitive distributions
         /// </summary>
-        public static BetaC BetaC(double alpha, double beta)
+        public static BetaPrimitive BetaPrimitive(double alpha, double beta)
         {
-            return new BetaC(beta, alpha, Gen);
+            return new BetaPrimitive(beta, alpha, Gen);
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace ProbCSharp
         /// </summary>
         public static Dist<double> Beta(double alpha, double beta)
         {
-            return Primitive(BetaC(alpha, beta));
+            return Primitive(BetaPrimitive(alpha, beta));
         }
         #endregion
 
@@ -218,7 +218,7 @@ namespace ProbCSharp
         /// <summary>
         /// Primitive constructor for continuous dists
         /// </summary>
-        public static Dist<A> Primitive<A>(SampleableDist<A> dist)
+        public static Dist<A> Primitive<A>(PrimitiveDist<A> dist)
         {
             return new Primitive<A>(dist);
         }
@@ -296,21 +296,36 @@ namespace ProbCSharp
         }
 
         /// <summary>
-        /// The probability density function for a continuous distribution and point
+        /// The probability density function for a primitive distribution and point.
+        /// Throws NotImplementedException if no PDF is defined for given distribution.
         /// </summary>
-        public static Prob Pdf(SampleableDist<double> dist, double y)
+        public static Prob Pdf(PrimitiveDist<double> dist, double y)
         {
-            if (dist is NormalC)
+            if (dist is NormalPrimitive)
             {
-                var normal = dist as NormalC;
+                var normal = dist as NormalPrimitive;
                 return Prob(MathNet.Numerics.Distributions.Normal.PDF(normal.Mean, Math.Sqrt(normal.Variance), y));
             }
-            if (dist is BetaC)
+            if (dist is BetaPrimitive)
             {
-                var beta = dist as BetaC;
+                var beta = dist as BetaPrimitive;
                 return Prob(MathNet.Numerics.Distributions.Beta.PDF(beta.alpha, beta.beta, y));
             }
             throw new NotImplementedException("No PDF for this distribution implemented");
+        }
+
+        /// <summary>
+        /// The probability density function for a distribution and point.
+        /// Throws ArgumentException if the distribution is not a Primitive.
+        /// </summary>
+        public static Prob Pdf(Dist<double> dist, double y)
+        {
+            if (dist is Primitive<double>)
+            {
+                var primitive = dist as Primitive<double>;
+                return Pdf(primitive.dist, y);
+            }
+            throw new ArgumentException("Can only calculate PDF for primitive distributions");
         }
 
         /// <summary>

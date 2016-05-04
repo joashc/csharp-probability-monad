@@ -1,21 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace ProbCSharp
 {
     /// <summary>
-    /// A distribution that can be sampled from
+    /// A distribution that can be sampled from.
+    /// These distributions are "primitive" in that they can only be composed with other primitive distributions.
+    /// Lifting this into the Dist<A> GADT allows free composition with any distribution.
     /// </summary>
-    public interface SampleableDist<A>
+    public interface PrimitiveDist<A>
     {
         Func<A> Sample { get; }
     }
 
     /// <summary>
-    /// Lifts a sampling function into a sampleable distribution
+    /// Construct a primitive distribution from a sampling function
     /// </summary>
     /// <typeparam name="A"></typeparam>
-    public class SampleDist<A> : SampleableDist<A>
+    public class SampleDist<A> : PrimitiveDist<A>
     {
         private readonly Func<A> _sample;
         public SampleDist(Func<A> sample)
@@ -30,17 +31,17 @@ namespace ProbCSharp
     }
 
 
-    // Sampleable distribution monad instance
-    public static class SampleableDistMonad
+    // Primitive distribution monad instance
+    public static class PrimitiveDistMonad
     {
-        public static SampleableDist<B> Select<A, B>(this SampleableDist<A> self, Func<A, B> f)
+        public static PrimitiveDist<B> Select<A, B>(this PrimitiveDist<A> self, Func<A, B> f)
         {
             return new SampleDist<B>(() => f(self.Sample()));
         }
 
-        public static SampleableDist<C> SelectMany<A, B, C>(
-            this SampleableDist<A> self,
-            Func<A, SampleableDist<B>> bind,
+        public static PrimitiveDist<C> SelectMany<A, B, C>(
+            this PrimitiveDist<A> self,
+            Func<A, PrimitiveDist<B>> bind,
             Func<A, B, C> project
         )
         {

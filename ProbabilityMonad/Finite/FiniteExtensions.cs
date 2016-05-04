@@ -28,7 +28,7 @@ namespace ProbCSharp
         /// <summary>
         /// Lifts a FiniteDist<A> into a SampleableDist<A>
         /// </summary>
-        public static SampleableDist<A> ToSampleDist<A>(this FiniteDist<A> dist)
+        public static PrimitiveDist<A> ToSampleDist<A>(this FiniteDist<A> dist)
         {
             return new SampleDist<A>(() =>
             {
