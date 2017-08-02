@@ -27,7 +27,7 @@ namespace ProbCSharp.Test
             var weights = from samples in pimhPosterior
                           from sample in samples
                           select sample;
-            var klDivergence = KullbackLeibner.KLDivergence(Samples(weights), twoRollsExact, d => d);
+            var klDivergence = KullbackLeibler.KLDivergence(Samples(weights), twoRollsExact, d => d);
             Debug.WriteLine($"KL divergence: {klDivergence}");
             Assert.IsTrue(klDivergence < 0.5);
 
