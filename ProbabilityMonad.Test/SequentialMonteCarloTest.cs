@@ -31,7 +31,7 @@ namespace ProbCSharp.Test
             var weights = sampled.MapSample(sum => (double) sum)
                                  .Weights;
 
-            var klDivergence = KullbackLeibner.KLDivergence(sampled, twoRollsExact, d => d);
+            var klDivergence = KullbackLeibler.KLDivergence(sampled, twoRollsExact, d => d);
             Assert.IsTrue(klDivergence < 0.5);
             Debug.WriteLine($"KL divergence: {klDivergence}");
             Debug.WriteLine(Histogram.Weighted(weights, scale: 60));
