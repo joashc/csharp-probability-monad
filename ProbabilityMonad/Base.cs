@@ -147,12 +147,21 @@ namespace ProbCSharp
         }
 
         /// <summary>
-        /// Primitive Normal distribution
+        /// Primitive studentT distribution
         /// Only composable with other primitive distributions
         /// </summary>
         public static StudentTPrimitive StudentTPrimitive(double location, double scale, double normality)
         {
             return new StudentTPrimitive(location, scale, normality, Gen);
+        }
+
+        /// <summary>
+        /// Primitive Exponential distribution
+        /// Only composable with other primitive distributions
+        /// </summary>
+        public static ExponentialPrimitive ExponentialPrimitive(double rate)
+        {
+            return new ExponentialPrimitive(rate);
         }
         /// <summary>
         /// Primitive Normal distribution
@@ -175,9 +184,20 @@ namespace ProbCSharp
             return Primitive(NormalPrimitive(mean, variance));
         }
 
+        /// <summary>
+        /// StudenT distribution
+        /// </summary>
         public static Dist<double> StudentT(double location, double scale, double normality)
         {
             return Primitive(StudentTPrimitive(location, scale, normality));
+        }
+
+        /// <summary>
+        /// Exponential distribution
+        /// </summary>
+        public static Dist<double> Exponential(double rate)
+        {
+            return Primitive(ExponentialPrimitive(rate));
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using static ProbCSharp.Test.Models.IndianGpaModel;
 using ProbCSharp.Test.Models;
 using System.Linq;
 using System.Collections.Generic;
+using MathNet.Numerics.Distributions;
 
 namespace ProbCSharp.Test
 {
@@ -25,14 +26,21 @@ namespace ProbCSharp.Test
 
         [TestMethod]
         public void StudentTTest()
-        {
-            var hist = from n in StudentT(0.0, 1.0, 500.0)
+        {               
+            var hist = from nu in Exponential(1.0/29)
+                       from n in StudentT(0.0,1.0,nu)
                        select n;
 
-            var samples = hist.SampleN(1000);
-            Debug.WriteLine(Histogram.Unweighted(samples));
+            Debug.WriteLine(Histogram.Unweighted(hist.SampleN(1000)));
         }
 
+        [TestMethod]
+        public void ETest()
+        {
+            var hist = new Exponential(1.0/29).Samples().Take(1000);
+
+            Debug.WriteLine(Histogram.Unweighted(hist));
+        }
         [TestMethod]
         public void LinReg()
         {

@@ -49,6 +49,7 @@
     <Compile Include="LogNormalCreate.cs" />
     <Compile Include="Primitive\Beta.cs" />
     <Compile Include="Primitive\Dirichlet.cs" />
+    <Compile Include="Primitive\Exponential.cs" />
     <Compile Include="Primitive\Gamma.cs" />
     <Compile Include="Primitive\LogNormal.cs" />
     <Compile Include="Primitive\MultiVariateNormal.cs" />
