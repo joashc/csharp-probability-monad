@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ProbCSharp;
 using System.Diagnostics;
 using static ProbCSharp.ProbBase;
 using static ProbCSharp.Test.Models.IndianGpaModel;
@@ -16,11 +15,18 @@ namespace ProbCSharp.Test
         [TestMethod]
         public void NormalTest()
         {
-            var normalDist = from n in Normal(0, 1)
-                             from n2 in Normal(0, 1)
-                             select $"{n}, {n2}";
 
-            var hist = from n in Normal(0, 1000)
+            var hist = from n in Normal(0, 10)
+                       select n;
+
+            var samples = hist.SampleN(1000);
+            Debug.WriteLine(Histogram.Unweighted(samples));
+        }
+
+        [TestMethod]
+        public void StudentTTest()
+        {
+            var hist = from n in StudentT(0.0, 1.0, 500.0)
                        select n;
 
             var samples = hist.SampleN(1000);

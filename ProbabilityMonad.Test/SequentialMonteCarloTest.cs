@@ -1,16 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static ProbCSharp.ProbBase;
 using ProbCSharp.Test.Models;
 using System.Diagnostics;
 using static ProbCSharp.Test.Models.LinearRegression;
 using static ProbCSharp.Test.Models.HiddenMarkovModel;
 using static ProbCSharp.Test.Models.BayesPointMachine;
-using ProbCSharp;
 
 namespace ProbCSharp.Test
 {

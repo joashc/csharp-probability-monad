@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ProbCSharp;
 using System;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
@@ -151,6 +150,14 @@ namespace ProbCSharp
         /// Primitive Normal distribution
         /// Only composable with other primitive distributions
         /// </summary>
+        public static StudentTPrimitive StudentTPrimitive(double location, double scale, double normality)
+        {
+            return new StudentTPrimitive(location, scale, normality, Gen);
+        }
+        /// <summary>
+        /// Primitive Normal distribution
+        /// Only composable with other primitive distributions
+        /// </summary>
         public static LogNormalPrimitive LogNormalPrimitive(double mean, double variance) {
             return new LogNormalPrimitive(mean, variance, Gen);
         }
@@ -166,6 +173,11 @@ namespace ProbCSharp
       public static Dist<double> Normal(double mean, double variance)
         {
             return Primitive(NormalPrimitive(mean, variance));
+        }
+
+        public static Dist<double> StudentT(double location, double scale, double normality)
+        {
+            return Primitive(StudentTPrimitive(location, scale, normality));
         }
 
         /// <summary>

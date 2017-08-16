@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ProbCSharp;
 using static ProbCSharp.ProbBase;
 
 namespace ProbCSharp.Test.Models

@@ -1,7 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
-using ProbCSharp;
 using ProbCSharp.Test.Models;
 using static ProbCSharp.ProbBase;
 using System.Linq;
