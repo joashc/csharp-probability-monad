@@ -7,6 +7,7 @@ using ProbCSharp.Test.Models;
 using System.Linq;
 using System.Collections.Generic;
 using MathNet.Numerics.Distributions;
+using MathNet.Numerics.Statistics;
 
 namespace ProbCSharp.Test
 {
@@ -17,21 +18,46 @@ namespace ProbCSharp.Test
         public void NormalTest()
         {
 
-            var hist = from n in Normal(0, 10)
-                       select n;
-
+            var hist =
+                from m in Normal(0.0, 1.0)
+                select m;
             var samples = hist.SampleN(1000);
+            Debug.WriteLine(Histogram.Unweighted(samples));
+
+        }
+        [TestMethod]
+        public void UniformTest()
+        {
+
+            var hist =
+                from m in Uniform(0.0, 10.0)
+                select m;
+            var samples = hist.SampleN(100);
             Debug.WriteLine(Histogram.Unweighted(samples));
         }
 
         [TestMethod]
         public void StudentTTest()
-        {               
-            var hist = from nu in Exponential(1.0/29)
-                       from n in StudentT(0.0,1.0,nu)
-                       select n;
+        {
+            var y = new Normal(10.0, 1.0).Samples().Take(1000).ToArray();
 
-            Debug.WriteLine(Histogram.Unweighted(hist.SampleN(1000)));
+            var muM = y.Mean();
+            var muP = 0.000001*1/(Math.Pow(y.StandardDeviation(), 2.0));
+            var sigmaLow = y.StandardDeviation()/1000.0;
+            var sigmaHigh = y.StandardDeviation()*1000.0;
+
+
+            var hist = from nu in Exponential(1.0/29)
+                       from mu in Normal(muM, muP)
+                       from tau in (from m in Uniform(sigmaLow, sigmaHigh)
+                                    select 1 / Math.Pow(m, 2.0))
+                       from n in StudentT(mu, tau, nu + 1)
+                       select n;
+            var smcPosterior = hist.SmcStandard(1000);
+            var samples = smcPosterior.Sample();
+
+
+            Debug.WriteLine(Histogram.Weighted(samples));
         }
 
         [TestMethod]

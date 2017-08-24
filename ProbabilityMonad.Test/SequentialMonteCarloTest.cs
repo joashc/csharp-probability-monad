@@ -41,7 +41,7 @@ namespace ProbCSharp.Test
 
             var sandLinReg = CreateLinearRegression(prior, BeachSandData);
 
-            var smcLinReg = sandLinReg.SmcMultiple(1000, 50).Sample();
+            var smcLinReg = sandLinReg.SmcMultiple(100, 50).Sample();
 
             var paramA = smcLinReg.MapSample(param => param.a);
             var paramB = smcLinReg.MapSample(param => param.b);

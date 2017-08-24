@@ -80,11 +80,19 @@ namespace ProbCSharp
         }
 
         /// <summary>
-        /// Uniform distribution over parameter items
+        /// Continuous Uniform distribution with lower bound 0 and upper bound 1
         /// </summary>
-        public static Dist<A> Uniform<A>(params A[] items)
+        public static Dist<double> Uniform()
         {
-            return Primitive(UniformF(items));
+            return Primitive(UniformPrimitive());
+        }
+
+        /// <summary>
+        /// Continuous Uniform distribution with lower bound 0 and upper bound 1
+        /// </summary>
+        public static Dist<double> Uniform(double lower, double upper)
+        {
+            return Primitive(UniformPrimitive(lower, upper));
         }
 
         /// <summary>
@@ -153,6 +161,24 @@ namespace ProbCSharp
         public static StudentTPrimitive StudentTPrimitive(double location, double scale, double normality)
         {
             return new StudentTPrimitive(location, scale, normality, Gen);
+        }
+
+        /// <summary>
+        /// Primitive uniform distribution with lower bound 0 and upper bound 1
+        /// Only composable with other primitive distributions
+        /// </summary>
+        public static UniformPrimitive UniformPrimitive()
+        {
+            return new UniformPrimitive();
+        }
+
+        /// <summary>
+        /// Primitive uniform distribution with lower bound 0 and upper bound 1
+        /// Only composable with other primitive distributions
+        /// </summary>
+        public static UniformPrimitive UniformPrimitive(double lower, double upper)
+        {
+            return new UniformPrimitive(lower, upper);
         }
 
         /// <summary>
