@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ProbCSharp;
 using System;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
@@ -81,11 +80,19 @@ namespace ProbCSharp
         }
 
         /// <summary>
-        /// Uniform distribution over parameter items
+        /// Continuous Uniform distribution with lower bound 0 and upper bound 1
         /// </summary>
-        public static Dist<A> Uniform<A>(params A[] items)
+        public static Dist<double> Uniform()
         {
-            return Primitive(UniformF(items));
+            return Primitive(UniformPrimitive());
+        }
+
+        /// <summary>
+        /// Continuous Uniform distribution with lower bound 0 and upper bound 1
+        /// </summary>
+        public static Dist<double> Uniform(double lower, double upper)
+        {
+            return Primitive(UniformPrimitive(lower, upper));
         }
 
         /// <summary>
@@ -148,6 +155,41 @@ namespace ProbCSharp
         }
 
         /// <summary>
+        /// Primitive studentT distribution
+        /// Only composable with other primitive distributions
+        /// </summary>
+        public static StudentTPrimitive StudentTPrimitive(double location, double scale, double normality)
+        {
+            return new StudentTPrimitive(location, scale, normality, Gen);
+        }
+
+        /// <summary>
+        /// Primitive uniform distribution with lower bound 0 and upper bound 1
+        /// Only composable with other primitive distributions
+        /// </summary>
+        public static UniformPrimitive UniformPrimitive()
+        {
+            return new UniformPrimitive();
+        }
+
+        /// <summary>
+        /// Primitive uniform distribution with lower bound 0 and upper bound 1
+        /// Only composable with other primitive distributions
+        /// </summary>
+        public static UniformPrimitive UniformPrimitive(double lower, double upper)
+        {
+            return new UniformPrimitive(lower, upper);
+        }
+
+        /// <summary>
+        /// Primitive Exponential distribution
+        /// Only composable with other primitive distributions
+        /// </summary>
+        public static ExponentialPrimitive ExponentialPrimitive(double rate)
+        {
+            return new ExponentialPrimitive(rate);
+        }
+        /// <summary>
         /// Primitive Normal distribution
         /// Only composable with other primitive distributions
         /// </summary>
@@ -166,6 +208,22 @@ namespace ProbCSharp
       public static Dist<double> Normal(double mean, double variance)
         {
             return Primitive(NormalPrimitive(mean, variance));
+        }
+
+        /// <summary>
+        /// StudenT distribution
+        /// </summary>
+        public static Dist<double> StudentT(double location, double scale, double normality)
+        {
+            return Primitive(StudentTPrimitive(location, scale, normality));
+        }
+
+        /// <summary>
+        /// Exponential distribution
+        /// </summary>
+        public static Dist<double> Exponential(double rate)
+        {
+            return Primitive(ExponentialPrimitive(rate));
         }
 
         /// <summary>

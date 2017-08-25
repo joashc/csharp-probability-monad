@@ -1,16 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static ProbCSharp.ProbBase;
 using ProbCSharp.Test.Models;
 using System.Diagnostics;
 using static ProbCSharp.Test.Models.LinearRegression;
 using static ProbCSharp.Test.Models.HiddenMarkovModel;
 using static ProbCSharp.Test.Models.BayesPointMachine;
-using ProbCSharp;
 
 namespace ProbCSharp.Test
 {
@@ -46,7 +41,7 @@ namespace ProbCSharp.Test
 
             var sandLinReg = CreateLinearRegression(prior, BeachSandData);
 
-            var smcLinReg = sandLinReg.SmcMultiple(1000, 50).Sample();
+            var smcLinReg = sandLinReg.SmcMultiple(100, 50).Sample();
 
             var paramA = smcLinReg.MapSample(param => param.a);
             var paramB = smcLinReg.MapSample(param => param.b);

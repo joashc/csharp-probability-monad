@@ -1,10 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
 using ProbCSharp.Test.Models;
 using static ProbCSharp.ProbBase;
 using System.Threading;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 

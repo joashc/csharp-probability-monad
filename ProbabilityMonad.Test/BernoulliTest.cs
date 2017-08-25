@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ProbCSharp;
 using System.Diagnostics;
 using static ProbCSharp.ProbBase;
 using System.Linq;
