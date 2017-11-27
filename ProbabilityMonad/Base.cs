@@ -142,7 +142,7 @@ namespace ProbCSharp
       /// Primitive Poisson distribution
       /// Only composable with other primitive distributions
       /// </summary>
-      public static PoissonPrimitive PoissonPrimitive(int lambda)
+      public static PoissonPrimitive PoissonPrimitive(double lambda)
       {
          return new PoissonPrimitive(lambda, Gen);
       }
@@ -173,7 +173,7 @@ namespace ProbCSharp
       /// <summary>
       /// Poisson distribution
       /// </summary>
-      public static Dist<int> Poisson(int lambda)
+      public static Dist<int> Poisson(double lambda)
       {
          return Primitive(PoissonPrimitive(lambda));
       }
@@ -450,7 +450,7 @@ namespace ProbCSharp
             var poisson = dist as PoissonPrimitive;
             return Prob(MathNet.Numerics.Distributions.Poisson.PMF(poisson.Lambda, y));
          }
-         throw new NotImplementedException("No PDF for this distribution implemented");
+         throw new NotImplementedException("No PMF for this distribution implemented");
       }
 
       /// <summary>
@@ -475,6 +475,16 @@ namespace ProbCSharp
             return Pdf(primitive.dist, y);
          }
          throw new ArgumentException("Can only calculate PDF for primitive distributions");
+      }
+
+      public static Prob Pmf(Dist<int> dist, int y)
+      {
+         if (dist is Primitive<int>)
+         {
+            var primitive = dist as Primitive<int>;
+            return Pmf(primitive.dist, y);
+         }
+         throw new ArgumentException("Can only calculate pmf for primitive distributions");
       }
 
 
