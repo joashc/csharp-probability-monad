@@ -139,6 +139,14 @@ namespace ProbCSharp
       }
 
       /// <summary>
+      /// Categorical distribution
+      /// </summary> 
+      public static CategoricalPrimitive<A> CategoricalPrimitive<A>(A[] items, double [] probabilities)
+      {
+         return new CategoricalPrimitive<A>(items, probabilities, Gen);
+      }
+
+      /// <summary>
       /// Primitive Poisson distribution
       /// Only composable with other primitive distributions
       /// </summary>
@@ -169,36 +177,6 @@ namespace ProbCSharp
       {
          return new LogNormalPrimitive(mu, sigma, true, Gen);
       }
-
-      /// <summary>
-      /// Poisson distribution
-      /// </summary>
-      public static Dist<int> Poisson(double lambda)
-      {
-         return Primitive(PoissonPrimitive(lambda));
-      }
-
-      /// <summary>
-      /// Normal distribution
-      /// </summary>
-      public static Dist<double> Normal(double mean, double variance)
-      {
-         return Primitive(NormalPrimitive(mean, variance));
-      }
-
-      /// <summary>
-      /// Log Normal distribution
-      /// </summary>
-      public static Dist<double> LogNormal(double mean, double variance)
-      {
-         return Primitive(LogNormalPrimitive(mean, variance));
-      }
-
-      public static Dist<double> LogNormalMu(double mu, double sigma)
-      {
-         return Primitive(LogNormalPrimitiveMu(mu, sigma));
-      }
-
 
       /// <summary>
       /// Primitive Beta distribution
@@ -233,11 +211,48 @@ namespace ProbCSharp
       }
 
       /// <summary>
+      /// Poisson distribution
+      /// </summary>
+      public static Dist<int> Poisson(double lambda)
+      {
+         return Primitive(PoissonPrimitive(lambda));
+      }
+
+      /// <summary>
+      /// Normal distribution
+      /// </summary>
+      public static Dist<double> Normal(double mean, double variance)
+      {
+         return Primitive(NormalPrimitive(mean, variance));
+      }
+
+      /// <summary>
+      /// Log Normal distribution
+      /// </summary>
+      public static Dist<double> LogNormal(double mean, double variance)
+      {
+         return Primitive(LogNormalPrimitive(mean, variance));
+      }
+
+      public static Dist<double> LogNormalMu(double mu, double sigma)
+      {
+         return Primitive(LogNormalPrimitiveMu(mu, sigma));
+      }
+
+      /// <summary>
       /// Gamma distribution
       /// </summary>
       public static Dist<double> Gamma(double shape, double rate)
       {
          return Primitive(GammaPrimitive(shape, rate));
+      }
+
+      /// <summary>
+      /// Categorical distribution
+      /// </summary>
+      public static Dist<T> Categorical<T>(T[] items, double[] probabilities)
+      {
+         return Primitive(CategoricalPrimitive<T>(items, probabilities));
       }
 
       /// <summary>
@@ -453,6 +468,17 @@ namespace ProbCSharp
          throw new NotImplementedException("No PMF for this distribution implemented");
       }
 
+      public static Prob Pmf<T>(PrimitiveDist<T> dist, T k)
+      {
+         if (dist is CategoricalPrimitive<T>)
+         {
+            var cat = dist as CategoricalPrimitive<T>;
+            
+            return Prob(MathNet.Numerics.Distributions.Categorical.PMF(cat.ProbabilityMass, cat.ItemIndex[k]));
+         }
+         throw new NotImplementedException("No PMF for this distribution implemented");
+      }
+
       /// <summary>
       /// The probability density function for a distribution and point.
       /// Throws ArgumentException if the distribution is not a Primitive.
@@ -473,6 +499,16 @@ namespace ProbCSharp
          {
             var primitive = dist as Primitive<double[]>;
             return Pdf(primitive.dist, y);
+         }
+         throw new ArgumentException("Can only calculate PDF for primitive distributions");
+      }
+
+      public static Prob Pmf<T>(Dist<T> dist, T k)
+      {
+         if (dist is Primitive<T>)
+         {
+            var primitive = dist as Primitive<T>;
+            return Pmf(primitive.dist, k);
          }
          throw new ArgumentException("Can only calculate PDF for primitive distributions");
       }
