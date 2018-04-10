@@ -21,9 +21,10 @@ namespace ProbCSharp
       public CategoricalPrimitive(T[] items , double[] probabilities, Random gen)
       {
          Gen = gen;
-
+         Items = items;
          categorical = new Categorical(ProbabilityMass, gen);
-         for(int c = 0; c < items.Length; c++)
+         ItemIndex = new Dictionary<T, int>();
+         for (int c = 0; c < items.Length; c++)
          {
             ItemIndex.Add(items[c],c);
          }
