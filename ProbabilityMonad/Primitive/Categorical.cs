@@ -22,6 +22,7 @@ namespace ProbCSharp
       {
          Gen = gen;
          Items = items;
+         ProbabilityMass = probabilities;
          categorical = new Categorical(ProbabilityMass, gen);
          ItemIndex = new Dictionary<T, int>();
          for (int c = 0; c < items.Length; c++)
