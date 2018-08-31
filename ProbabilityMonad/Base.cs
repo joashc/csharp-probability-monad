@@ -147,6 +147,25 @@ namespace ProbCSharp
       }
 
       /// <summary>
+      /// Primitive Contiuous Uniform distribution
+      /// Only composable with other primitive distributions
+      /// </summary>
+      public static ContinuousUniformPrimitive ContinuousUniformPrimitive()
+      {
+         return new ContinuousUniformPrimitive(Gen);
+      }
+
+      /// <summary>
+      /// Primitive Contiuous Uniform distribution
+      /// Only composable with other primitive distributions
+      /// </summary>
+      public static ContinuousUniformPrimitive ContinuousUniformPrimitive(double lower, double upper)
+      {
+         return new ContinuousUniformPrimitive(lower,upper, Gen);
+      }
+
+
+      /// <summary>
       /// Primitive Poisson distribution
       /// Only composable with other primitive distributions
       /// </summary>
@@ -253,6 +272,16 @@ namespace ProbCSharp
       public static Dist<T> Categorical<T>(T[] items, double[] probabilities)
       {
          return Primitive(CategoricalPrimitive<T>(items, probabilities));
+      }
+
+      public static Dist<double> UniformC()
+      {
+         return Primitive(ContinuousUniformPrimitive());
+      }
+
+      public static Dist<double> UniformC(double lower, double upper)
+      {
+         return Primitive(ContinuousUniformPrimitive(lower,upper));
       }
 
       /// <summary>
