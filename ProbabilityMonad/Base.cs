@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ProbCSharp;
 using System;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
@@ -146,10 +145,28 @@ namespace ProbCSharp
          return new CategoricalPrimitive<A>(items, probabilities, Gen);
       }
 
-      /// <summary>
-      /// Primitive Contiuous Uniform distribution
-      /// Only composable with other primitive distributions
-      /// </summary>
+        /// <summary>
+        /// Primitive studentT distribution
+        /// Only composable with other primitive distributions
+        /// </summary>
+        public static StudentTPrimitive StudentTPrimitive(double location, double scale, double normality)
+        {
+            return new StudentTPrimitive(location, scale, normality, Gen);
+        }
+
+        /// <summary>
+        /// Primitive Exponential distribution
+        /// Only composable with other primitive distributions
+        /// </summary>
+        public static ExponentialPrimitive ExponentialPrimitive(double rate)
+        {
+            return new ExponentialPrimitive(rate);
+        }
+
+        /// <summary>
+        /// Primitive Contiuous Uniform distribution
+        /// Only composable with other primitive distributions
+        /// </summary>
       public static ContinuousUniformPrimitive ContinuousUniformPrimitive()
       {
          return new ContinuousUniformPrimitive(Gen);
@@ -274,20 +291,36 @@ namespace ProbCSharp
          return Primitive(CategoricalPrimitive<T>(items, probabilities));
       }
 
-      public static Dist<double> UniformC()
+      public static Dist<double> Uniform()
       {
          return Primitive(ContinuousUniformPrimitive());
       }
 
-      public static Dist<double> UniformC(double lower, double upper)
+      public static Dist<double> Uniform(double lower, double upper)
       {
          return Primitive(ContinuousUniformPrimitive(lower,upper));
       }
 
-      /// <summary>
-      /// Beta distribution
-      /// </summary>
-      public static Dist<double> Beta(double alpha, double beta)
+        /// <summary>
+        /// StudenT distribution
+        /// </summary>
+        public static Dist<double> StudentT(double location, double scale, double normality)
+        {
+            return Primitive(StudentTPrimitive(location, scale, normality));
+        }
+
+        /// <summary>
+        /// Exponential distribution
+        /// </summary>
+        public static Dist<double> Exponential(double rate)
+        {
+            return Primitive(ExponentialPrimitive(rate));
+        }
+
+        /// <summary>
+        /// Beta distribution
+        /// </summary>
+        public static Dist<double> Beta(double alpha, double beta)
       {
          return Primitive(BetaPrimitive(alpha, beta));
       }

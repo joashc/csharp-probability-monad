@@ -1,11 +1,10 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
-using ProbCSharp;
 using ProbCSharp.Test.Models;
 using static ProbCSharp.ProbBase;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace ProbCSharp.Test
 {
@@ -79,6 +78,25 @@ namespace ProbCSharp.Test
             var twoRolls = Dice.ConditionalDie(2);
             var priorWeights = twoRolls.WeightedPrior().SampleNParallel(100).Select(ip => ItemProb((double)ip.Item, ip.Prob));
             Debug.WriteLine(Histogram.Weighted(priorWeights, scale: 60));
+        }
+
+        [TestMethod]
+        public void SelectTest()
+        {
+            var Suggestion = CategoricalF(
+                ItemProb("TellJoke", Prob(0.8)),
+                ItemProb("SuggestGoOut", Prob(0.4)),
+                ItemProb("SuggestToWatchMovie", Prob(0.3)),
+                ItemProb("TellWeatherForecast", Prob(0.6))
+            ).Normalize();
+
+            Console.WriteLine(Suggestion.Histogram());
+
+            var sampleDist = Suggestion.ToSampleDist();
+            for (var i = 0; i < 100; i++)
+            {
+                Console.WriteLine(sampleDist.Sample());
+            }
         }
 
     }

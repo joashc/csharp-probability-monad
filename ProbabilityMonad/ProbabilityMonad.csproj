@@ -49,7 +49,9 @@
     <Compile Include="LogNormalCreate.cs" />
     <Compile Include="Primitive\Beta.cs" />
     <Compile Include="Primitive\Categorical.cs" />
+    <Compile Include="Primitive\Uniform.cs" />
     <Compile Include="Primitive\Dirichlet.cs" />
+    <Compile Include="Primitive\Exponential.cs" />
     <Compile Include="Primitive\Gamma.cs" />
     <Compile Include="Primitive\LogNormal.cs" />
     <Compile Include="Primitive\MultiVariateNormal.cs" />
@@ -69,7 +71,7 @@
     <Compile Include="ItemProb.cs" />
     <Compile Include="KullbackLeibler.cs" />
     <Compile Include="ParallelSampler.cs" />
-    <Compile Include="Primitive\Uniform.cs" />
+    <Compile Include="Primitive\StudentT.cs" />
     <Compile Include="Prob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sampler.cs" />

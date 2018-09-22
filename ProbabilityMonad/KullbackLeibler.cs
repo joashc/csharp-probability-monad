@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using ProbCSharp;
 using static ProbCSharp.ProbBase;
 
 namespace ProbCSharp

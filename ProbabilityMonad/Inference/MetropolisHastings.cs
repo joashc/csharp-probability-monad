@@ -15,7 +15,7 @@ namespace ProbCSharp
         public static Dist<IEnumerable<A>> MHPrior<A>(Dist<A> dist, int n)
         {
             var initial = new List<ItemProb<A>> { dist.WeightedPrior().Sample() };
-            var chain = Iterate(n, () => dist.WeightedPrior(), initial);
+            var chain = Iterate(n, dist.WeightedPrior, initial);
             return chain.Select(ipList => ipList.Select(ip => ip.Item));
         }
 

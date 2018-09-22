@@ -1,17 +1,18 @@
-﻿using System; 
+﻿using System;
+using MathNet.Numerics.Distributions;
 
 namespace ProbCSharp
 {
    public class ContinuousUniformPrimitive : PrimitiveDist<double>
    {
-      public MathNet.Numerics.Distributions.ContinuousUniform dist;
+      public ContinuousUniform dist;
       public ContinuousUniformPrimitive(double lower, double upper, Random gen)
       { 
-         dist = new MathNet.Numerics.Distributions.ContinuousUniform(lower,upper);
+         dist = new ContinuousUniform(lower,upper);
       }
       public ContinuousUniformPrimitive(Random gen)
       {
-         dist = new MathNet.Numerics.Distributions.ContinuousUniform();
+         dist = new ContinuousUniform();
       }
       public Func<double> Sample
       {
