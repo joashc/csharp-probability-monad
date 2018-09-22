@@ -145,28 +145,28 @@ namespace ProbCSharp
          return new CategoricalPrimitive<A>(items, probabilities, Gen);
       }
 
-        /// <summary>
-        /// Primitive studentT distribution
-        /// Only composable with other primitive distributions
-        /// </summary>
-        public static StudentTPrimitive StudentTPrimitive(double location, double scale, double normality)
-        {
-            return new StudentTPrimitive(location, scale, normality, Gen);
-        }
+      /// <summary>
+      /// Primitive studentT distribution
+      /// Only composable with other primitive distributions
+      /// </summary>
+      public static StudentTPrimitive StudentTPrimitive(double location, double scale, double normality)
+      {
+          return new StudentTPrimitive(location, scale, normality, Gen);
+      }
 
-        /// <summary>
-        /// Primitive Exponential distribution
-        /// Only composable with other primitive distributions
-        /// </summary>
-        public static ExponentialPrimitive ExponentialPrimitive(double rate)
-        {
-            return new ExponentialPrimitive(rate);
-        }
+      /// <summary>
+      /// Primitive Exponential distribution
+      /// Only composable with other primitive distributions
+      /// </summary>
+      public static ExponentialPrimitive ExponentialPrimitive(double rate)
+      {
+          return new ExponentialPrimitive(rate);
+      }
 
-        /// <summary>
-        /// Primitive Contiuous Uniform distribution
-        /// Only composable with other primitive distributions
-        /// </summary>
+      /// <summary>
+      /// Primitive Contiuous Uniform distribution
+      /// Only composable with other primitive distributions
+      /// </summary>
       public static ContinuousUniformPrimitive ContinuousUniformPrimitive()
       {
          return new ContinuousUniformPrimitive(Gen);
@@ -301,26 +301,26 @@ namespace ProbCSharp
          return Primitive(ContinuousUniformPrimitive(lower,upper));
       }
 
-        /// <summary>
-        /// StudenT distribution
-        /// </summary>
-        public static Dist<double> StudentT(double location, double scale, double normality)
-        {
-            return Primitive(StudentTPrimitive(location, scale, normality));
-        }
+      /// <summary>
+      /// StudenT distribution
+      /// </summary>
+      public static Dist<double> StudentT(double location, double scale, double normality)
+      {
+          return Primitive(StudentTPrimitive(location, scale, normality));
+      }
 
-        /// <summary>
-        /// Exponential distribution
-        /// </summary>
-        public static Dist<double> Exponential(double rate)
-        {
-            return Primitive(ExponentialPrimitive(rate));
-        }
+      /// <summary>
+      /// Exponential distribution
+      /// </summary>
+      public static Dist<double> Exponential(double rate)
+      {
+          return Primitive(ExponentialPrimitive(rate));
+      }
 
-        /// <summary>
-        /// Beta distribution
-        /// </summary>
-        public static Dist<double> Beta(double alpha, double beta)
+      /// <summary>
+      /// Beta distribution
+      /// </summary>
+      public static Dist<double> Beta(double alpha, double beta)
       {
          return Primitive(BetaPrimitive(alpha, beta));
       }
