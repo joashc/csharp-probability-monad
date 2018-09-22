@@ -124,6 +124,15 @@ namespace ProbCSharp
       /// Categorical distribution
       /// Only composable with other finite distributions
       /// </summary>
+      public static FiniteDist<A> CategoricalF<A>(params ItemProb<A>[] itemProbs)
+      {
+        return new FiniteDist<A>(Samples(itemProbs));
+      }
+
+      /// <summary>
+      /// Categorical distribution
+      /// Only composable with other finite distributions
+      /// </summary>
       public static FiniteDist<A> CategoricalF<A>(Samples<A> samples)
       {
          return new FiniteDist<A>(samples);
