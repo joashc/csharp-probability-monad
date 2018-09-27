@@ -5,16 +5,17 @@ namespace ProbCSharp
 {
     /// <summary>
     /// Primitive Poisson distribution
+    /// If lambda is non-integer, note it is subject to a floor operation
     /// </summary>
     public class PoissonPrimitive : PrimitiveDist<int>
     {
-        public int Lambda;
+        public double Lambda;  
         public Poisson Dist;
         public Random Gen;
-        public PoissonPrimitive(int lambda, Random gen)
+        public PoissonPrimitive(double lambda, Random gen)
         {
             Lambda = lambda;
-            Dist = new Poisson(lambda);
+            Dist = new Poisson(Math.Floor(lambda));
             Gen = gen;
         }
 

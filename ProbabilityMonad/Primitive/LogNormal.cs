@@ -14,7 +14,7 @@ namespace ProbCSharp {
       public LogNormal dist;
       public LogNormalPrimitive(double mu, double sigma, bool dummy, Random gen)
       {
-         dist = new MathNet.Numerics.Distributions.LogNormal(mu, sigma);
+         dist = new LogNormal(mu, sigma);
          mu = dist.Mu;
          sigma = dist.Sigma;
       }
