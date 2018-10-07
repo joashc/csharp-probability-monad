@@ -3,7 +3,7 @@ using MathNet.Numerics.Distributions;
 
 namespace ProbCSharp {
    /// <summary>
-   /// Primitive Beta distribution
+   /// Primitive Lognormal distribution
    /// </summary>
    public class LogNormalPrimitive : PrimitiveDist<double>
    {

@@ -2,7 +2,7 @@
 
 namespace ProbCSharp {
     /// <summary>
-    /// Primitive Beta distribution
+    /// Primitive Gamma distribution
     /// </summary>
     public class GammaPrimitive : PrimitiveDist<double> {
         public double shape;

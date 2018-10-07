@@ -6,7 +6,7 @@ using System;
 namespace ProbCSharp
 {
    /// <summary>
-   /// Primitive Normal distribution
+   /// Primitive Multivariate Normal distribution
    /// </summary>
    public class MultiVariateNormalPrimitive : PrimitiveDist<double[]>
    {

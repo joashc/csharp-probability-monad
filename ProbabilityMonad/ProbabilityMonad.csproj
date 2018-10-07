@@ -72,6 +72,7 @@
     <Compile Include="KullbackLeibler.cs" />
     <Compile Include="ParallelSampler.cs" />
     <Compile Include="Primitive\StudentT.cs" />
+    <Compile Include="Primitive\Wishart.cs" />
     <Compile Include="Prob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sampler.cs" />
