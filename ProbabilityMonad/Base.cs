@@ -246,6 +246,11 @@ namespace ProbCSharp
          return new MultiVariateNormalPrimitive(mean, covariance, Gen);
       }
 
+      public static WishartPrimitive WishartPrimitive(double dof, Matrix<double> scale)
+      {
+        return new WishartPrimitive(dof, scale, Gen);
+      }
+
       /// <summary>
       /// Primitive Dirichlet distribution
       /// Only composable with other primitive distributions
@@ -345,6 +350,11 @@ namespace ProbCSharp
       public static Dist<double[]> MultiVariateNormal(double[] mean, Matrix<double> covariance)
       {
          return Primitive(MultiVariateNormalPrimitive(mean, covariance));
+      }
+
+      public static Dist<Matrix<double>> Wishart(double dof, Matrix<double> scale)
+      {
+        return Primitive(WishartPrimitive(dof, scale));
       }
       #endregion
 
@@ -495,7 +505,21 @@ namespace ProbCSharp
          }
          throw new NotImplementedException("No PDF for this distribution implemented");
       }
+      /// <summary>
+      /// The probability density function for a primitive distribution and point.
+      /// Throws NotImplementedException if no PDF is defined for given distribution.
+      /// </summary>
+      public static Prob Pdf(PrimitiveDist<Matrix<double>> dist, Matrix<double> x)
+      {
 
+        if (dist is WishartPrimitive)
+        {
+          var wish = dist as WishartPrimitive;           
+          return Prob(wish.Wishart.Density(x));
+        }
+         
+        throw new NotImplementedException("No PDF for this distribution implemented");
+      }
       /// <summary>
       /// The probability density function for a primitive distribution and point.
       /// Throws NotImplementedException if no PDF is defined for given distribution.
@@ -572,6 +596,15 @@ namespace ProbCSharp
             return Pdf(primitive.dist, y);
          }
          throw new ArgumentException("Can only calculate PDF for primitive distributions");
+      }
+      public static Prob Pdf(Dist<Matrix<double>> dist, Matrix<double> y)
+      {
+        if (dist is Primitive<Matrix<double>>)
+        {
+          var primitive = dist as Primitive<Matrix<double>>;
+          return Pdf(primitive.dist, y);
+        }
+        throw new ArgumentException("Can only calculate PDF for primitive distributions");
       }
 
       public static Prob Pmf<T>(Dist<T> dist, T k)
