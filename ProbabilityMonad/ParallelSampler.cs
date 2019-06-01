@@ -1,4 +1,5 @@
-﻿using System;
+﻿﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,8 +25,7 @@ namespace ProbCSharp
         /// </summary>
         public static IEnumerable<A> SampleNParallel<A>(this Dist<A> dist, int n)
         {
-            var results = Enumerable.Range(0, n).AsParallel().Select(_ => dist.SampleParallel());
-            return results.AsEnumerable();
+            return Enumerable.Range(0, n).Select(_ => dist.SampleParallel());
         }
     }
 
@@ -34,11 +34,6 @@ namespace ProbCSharp
     /// </summary>
     public class ParallelSampler<A> : ParallelDistInterpreter<A, A>
     {
-        private Task<T> StartTask<T>(Func<T> func)
-        {
-            return Task.Factory.StartNew(func);
-        }
-
         public A Bind<B>(Dist<B> dist, Func<B, Dist<A>> bind)
         {
             var x = dist.RunParallel(new ParallelSampler<B>());
@@ -67,17 +62,17 @@ namespace ProbCSharp
 
         public A RunIndependent<B, C>(Dist<B> distB, Dist<C> distC, Func<B, C, Dist<A>> run)
         {
-            var taskB = StartTask(() => distB.RunParallel(new ParallelSampler<B>()));
-            var taskC = StartTask(() => distC.RunParallel(new ParallelSampler<C>()));
+            var taskB = Task.Run(() => distB.RunParallel(new ParallelSampler<B>()));
+            var taskC = Task.Run(() => distC.RunParallel(new ParallelSampler<C>()));
             Task.WaitAll(taskB, taskC);
             return run(taskB.Result, taskC.Result).RunParallel(new ParallelSampler<A>());
         }
 
         public A RunIndependent3<B, C, D>(Dist<B> distB, Dist<C> distC, Dist<D> distD, Func<B, C, D, Dist<A>> run)
         {
-            var taskB = StartTask(() => distB.RunParallel(new ParallelSampler<B>()));
-            var taskC = StartTask(() => distC.RunParallel(new ParallelSampler<C>()));
-            var taskD = StartTask(() => distD.RunParallel(new ParallelSampler<D>()));
+            var taskB = Task.Run(() => distB.RunParallel(new ParallelSampler<B>()));
+            var taskC = Task.Run(() => distC.RunParallel(new ParallelSampler<C>()));
+            var taskD = Task.Run(() => distD.RunParallel(new ParallelSampler<D>()));
             Task.WaitAll(taskB, taskC, taskD);
             return run(taskB.Result, taskC.Result, taskD.Result).RunParallel(new ParallelSampler<A>());
         }

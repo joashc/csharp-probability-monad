@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProbCSharp", "ProbabilityMonad\ProbCSharp.csproj", "{0783F80A-69D1-48E0-961B-F7F2CFEB055F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProbCSharp.Test", "ProbabilityMonad.Test\ProbCSharp.Test.csproj", "{39FA90E7-3D79-48E0-8ADF-DCC4369121EF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0783F80A-69D1-48E0-961B-F7F2CFEB055F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0783F80A-69D1-48E0-961B-F7F2CFEB055F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0783F80A-69D1-48E0-961B-F7F2CFEB055F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0783F80A-69D1-48E0-961B-F7F2CFEB055F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39FA90E7-3D79-48E0-8ADF-DCC4369121EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39FA90E7-3D79-48E0-8ADF-DCC4369121EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39FA90E7-3D79-48E0-8ADF-DCC4369121EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39FA90E7-3D79-48E0-8ADF-DCC4369121EF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

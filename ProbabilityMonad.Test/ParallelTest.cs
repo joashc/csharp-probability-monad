@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProbCSharp.Test.Models;
 using static ProbCSharp.ProbBase;
@@ -16,13 +16,18 @@ namespace ProbCSharp.Test
     public class ParallelTest
     {
         // Initialize common objects
-        private static int waitMillis = 100;
-        private Func<int, int, Dist<int>> Add = (a, b) => Return(a + b);
+        private static int waitMillis = 200;
         private Dist<int> LaggyDist = Primitive(new SampleDist<int>(() =>
         {
             Thread.Sleep(waitMillis);
             return 5;
         }));
+
+        [TestInitialize]
+        public void InitTest()
+        {
+            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
+        }
 
         /// <summary>
         /// This compares the time it takes to sample from a slow distribution
@@ -48,8 +53,8 @@ namespace ProbCSharp.Test
             // Define parallelized distribution
             var parallelSum = from first in Independent(LaggyDist)
                               from second in Independent(LaggyDist)
-                              from pair in RunIndependent(first, second)
-                              select pair.Item1 + pair.Item2;
+                              from tup in RunIndependent(first, second)
+                              select tup.Item1 + tup.Item2;
 
             // Time parallel execution
             var parTimer = new Stopwatch();
@@ -61,11 +66,11 @@ namespace ProbCSharp.Test
 
             // Check both answers are correct
             Assert.AreEqual(10, parTotal);
-            Assert.AreEqual(10, seqTotal);
+            Assert.AreEqual(parTotal, seqTotal);
 
             // Check parallelization
-            Debug.WriteLine($"Sequential: {seqTime}ms, Parallel: {parTime}ms");
-            Assert.IsTrue(seqTime > parTime + (waitMillis - 10));
+            Trace.WriteLine($"Sequential: {seqTime}ms, Parallel: {parTime}ms");
+            Assert.IsTrue(seqTime > parTime + (waitMillis - 30));
         }
 
         /// <summary>
@@ -78,7 +83,7 @@ namespace ProbCSharp.Test
                         from b in Normal(0, 100)
                         select new Param(a, b);
 
-            var smc = LinearRegression.CreateLinearRegression(prior, LinearRegression.BeachSandData).SmcStandard(100);
+            var smc = LinearRegression.CreateLinearRegression(prior, LinearRegression.BeachSandData).SmcStandard(5000);
 
             var sTimer = new Stopwatch();
             sTimer.Start();
@@ -86,7 +91,7 @@ namespace ProbCSharp.Test
                          from s2 in smc
                          from s3 in smc
                          select new Tuple<Samples<Param>, Samples<Param>, Samples<Param>>(s1, s2, s3);
-            var result = serial.SampleN(100).ToList();
+            var result = serial.SampleN(2).ToList();
             sTimer.Stop();
 
             var pTimer = new Stopwatch();
@@ -96,11 +101,11 @@ namespace ProbCSharp.Test
                            from s3 in Independent(smc)
                            from triple in RunIndependent(s1, s2, s3)
                            select triple;
-            var thing = parallel.SampleNParallel(100).ToList();
+            var thing = parallel.SampleNParallel(2).ToList();
             pTimer.Stop();
 
 
-            Debug.WriteLine($"parallel: {pTimer.ElapsedMilliseconds}ms, serial: {sTimer.ElapsedMilliseconds}ms");
+            Trace.WriteLine($"parallel: {pTimer.ElapsedMilliseconds}ms, serial: {sTimer.ElapsedMilliseconds}ms");
             Assert.IsTrue(pTimer.ElapsedMilliseconds < sTimer.ElapsedMilliseconds);
         }
 
@@ -148,7 +153,7 @@ namespace ProbCSharp.Test
             parTimer.Stop();
 
             Assert.AreEqual(total.Item, 10);
-            Assert.IsTrue(parTimer.ElapsedMilliseconds < 200);
+            Assert.IsTrue(parTimer.ElapsedMilliseconds < 300);
         }
 
         /// <summary>
