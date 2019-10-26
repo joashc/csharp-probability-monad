@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System;
 using MathNet.Numerics.LinearAlgebra;
@@ -467,7 +467,7 @@ namespace ProbCSharp
                  .Select(g =>
                      ItemProb(
                          g.First().Item,
-                         Prob(g.Select(ip => ip.Prob.Value).Sum())
+                         Prob(g.Sum(ip => ip.Prob.Value))
                      )
                  );
          return Samples(compacted);

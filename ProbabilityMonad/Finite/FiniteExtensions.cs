@@ -44,7 +44,7 @@ namespace ProbCSharp
         {
             var matches = dist.Explicit.Weights.Where(p => eventTest(p.Item));
             if (!matches.Any()) return Prob(0);
-            return Prob(matches.Select(p => p.Prob.Value).Sum());
+            return Prob(matches.Sum(p => p.Prob.Value));
         }
 
         /// <summary>

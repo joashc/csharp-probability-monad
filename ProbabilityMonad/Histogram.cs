@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -87,7 +87,7 @@ namespace ProbCSharp
         /// </summary>
         internal static int LongestString<A>(IEnumerable<A> list, Func<A, string> toString)
         {
-            return list.Select(x => toString(x).Length).Max();
+            return list.Max(x => toString(x).Length);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace ProbCSharp
         /// </summary>
         internal static double Sum<A>(Func<A, double> getVal, IEnumerable<A> list)
         {
-            return list.Select(getVal).Sum();
+            return list.Sum(getVal);
         }
 
         /// <summary>
