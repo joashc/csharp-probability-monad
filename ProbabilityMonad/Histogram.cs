@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -103,14 +103,7 @@ namespace ProbCSharp
         /// Draw bar of width n
         /// </summary>
         internal static string Bar(int n)
-        {
-            var barBuilder = new StringBuilder();
-            for (var i = 0; i < n; i++)
-            {
-                barBuilder.Append("#");
-            }
-            return barBuilder.ToString();
-        }
+            => new string('#', n);
 
         /// <summary>
         /// Return sum of list with a given value function
