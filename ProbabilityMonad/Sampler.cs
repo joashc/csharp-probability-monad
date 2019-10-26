@@ -21,7 +21,8 @@ namespace ProbCSharp
         /// </summary>
         public static IEnumerable<A> SampleN<A>(this Dist<A> dist, int n)
         {
-            return Enumerable.Range(0, n).Select(_ => dist.Sample());
+            for (int i = 0; i < n; ++i)
+                yield return dist.Sample();
         }
     }
 
