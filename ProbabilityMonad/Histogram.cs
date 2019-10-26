@@ -106,14 +106,6 @@ namespace ProbCSharp
             => new string('#', n);
 
         /// <summary>
-        /// Return sum of list with a given value function
-        /// </summary>
-        internal static double Sum<A>(Func<A, double> getVal, IEnumerable<A> list)
-        {
-            return list.Sum(getVal);
-        }
-
-        /// <summary>
         /// Generates a weighted histogram from a list of ItemProbs
         /// </summary>
         /// <param name="scale">Scale factor. Defaults to 40</param>
@@ -126,7 +118,7 @@ namespace ProbCSharp
             var max = sorted.Last().Item;
             var bucketList = MakeBucketList(min, max, numBuckets);
 
-            var totalMass = Sum(ip => ip.Prob.Value, sorted.Where(ip => !Double.IsInfinity(ip.Prob.LogValue)));
+            var totalMass = sorted.Where(ip => !Double.IsInfinity(ip.Prob.LogValue)).Sum(ip => ip.Prob.Value);
             foreach (var bucket in bucketList)
             {
                 bucket.WeightedValues.AddRange(sorted.Where(x => x.Item >= bucket.Min && x.Item < bucket.Max));
@@ -154,7 +146,7 @@ namespace ProbCSharp
             var sorted = nums.OrderBy(x => x).ToArray();
             var min = sorted.First();
             var max = sorted.Last() + 10e-10;
-            var total = Sum(x => x, sorted);
+            var total = sorted.Sum(x => x);
 
             var bucketList = MakeBucketList(min, max, numBuckets);
 
