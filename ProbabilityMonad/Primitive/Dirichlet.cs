@@ -2,7 +2,6 @@
 
 namespace ProbCSharp
 {
-
     /// <summary>
     /// Primitive Dirichlet distribution
     /// </summary>
@@ -11,16 +10,15 @@ namespace ProbCSharp
         public double[] alpha;
 
         public MathNet.Numerics.Distributions.Dirichlet dist;
+
         public DirichletPrimitive(double[] alpha, Random gen)
         {
             this.alpha = alpha;
-            
+
             dist = new MathNet.Numerics.Distributions.Dirichlet(alpha, gen);
         }
 
         public Func<double[]> Sample
-        {
-            get { return () => dist.Sample(); }
-        }
+            => () => dist.Sample();
     }
 }

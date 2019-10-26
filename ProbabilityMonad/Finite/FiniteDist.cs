@@ -11,14 +11,10 @@ namespace ProbCSharp
     public class FiniteDist<A>
     {
         public FiniteDist(Samples<A> samples)
-        {
-            Explicit = samples;
-        }
+            => Explicit = samples;
 
         public FiniteDist(params ItemProb<A>[] samples)
-        {
-            Explicit = Samples(samples);
-        }
+            => Explicit = Samples(samples);
 
         public Samples<A> Explicit { get; }
     }
@@ -31,10 +27,8 @@ namespace ProbCSharp
         /// fmap f (FiniteDist (Samples xs)) = FiniteDist $ Samples $ map (first f) xs
         /// </summary>
         public static FiniteDist<B> Select<A, B>(this FiniteDist<A> self, Func<A, B> select)
-        {
-            return new FiniteDist<B>(Samples(self.Explicit.Weights.Select(i =>
-                ItemProb(select(i.Item), i.Prob))));
-        }
+            => new FiniteDist<B>(Samples(self.Explicit.Weights.Select(i =>
+                ItemProb(@select(i.Item), i.Prob))));
 
         /// <summary>
         /// (FiniteDist dist) >>= bind = FiniteDist $ do

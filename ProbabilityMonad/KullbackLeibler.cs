@@ -13,17 +13,20 @@ namespace ProbCSharp
         public static double KLDivergenceF<A, Key>(FiniteDist<A> distQ, FiniteDist<A> distP, Func<A, Key> keyFunc) where A : IComparable<A>
         {
             var qWeights = Enumerate(distQ, keyFunc);
-            Func<A, Prob> qDensity = x =>
+
+            Prob QDensity(A x)
             {
                 var weight = qWeights.FirstOrDefault(ip => keyFunc(ip.Item).Equals(keyFunc(x)));
-                if (weight == null) return Prob(0);
+                if (weight == null)
+                    return Prob(0);
+
                 return weight.Prob;
-            };
+            }
 
             var pWeights = Enumerate(distP, keyFunc);
 
             var divergences = pWeights.Weights
-                                      .Select(w => w.Prob.Value * Math.Log(w.Prob.Div(qDensity(w.Item)).Value));
+                                      .Select(w => w.Prob.Value * Math.Log(w.Prob.Div(QDensity(w.Item)).Value));
             return divergences.Sum();
         }
 

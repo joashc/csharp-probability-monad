@@ -10,6 +10,7 @@ namespace ProbCSharp
         public double alpha;
         public double beta;
         public MathNet.Numerics.Distributions.Beta dist;
+
         public BetaPrimitive(double alpha, double beta, Random gen)
         {
             this.alpha = alpha;
@@ -18,8 +19,6 @@ namespace ProbCSharp
         }
 
         public Func<double> Sample
-        {
-            get { return () => dist.Sample(); }
-        }
+            => () => dist.Sample();
     }
 }

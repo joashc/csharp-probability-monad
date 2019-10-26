@@ -67,15 +67,16 @@ namespace ProbCSharp
         internal static string ShowBuckets(IEnumerable<Bucket> buckets, double scale)
         {
             var sb = new StringBuilder();
-            Func<double, string> formatDouble = d => $"{d:N2}";
 
-            var minPadding = LongestString(buckets, b => formatDouble(b.Min));
-            var maxPadding = LongestString(buckets, b => formatDouble(b.Max));
+            string FormatDouble(double d) => d.ToString("N2");
+
+            var minPadding = LongestString(buckets, b => FormatDouble(b.Min));
+            var maxPadding = LongestString(buckets, b => FormatDouble(b.Max));
             var barScale = BarScale(buckets.Select(b => b.BarSize), scale);
             foreach (var bucket in buckets)
             {
-                var min = formatDouble(bucket.Min).PadLeft(minPadding, ' ');
-                var max = formatDouble(bucket.Max).PadLeft(maxPadding, ' ');
+                var min = FormatDouble(bucket.Min).PadLeft(minPadding, ' ');
+                var max = FormatDouble(bucket.Max).PadLeft(maxPadding, ' ');
                 sb.AppendLine($"{min} {max} {Bar((int) (bucket.BarSize * barScale))}");
             }
             sb.AppendLine("");
@@ -86,9 +87,7 @@ namespace ProbCSharp
         /// Returns the size of the longest string representation of an item in a list
         /// </summary>
         internal static int LongestString<A>(IEnumerable<A> list, Func<A, string> toString)
-        {
-            return list.Select(x => toString(x).Length).Max();
-        }
+            => list.Select(x => toString(x).Length).Max();
 
         /// <summary>
         /// Calculate scale factor for a list of bar lengths
@@ -103,22 +102,13 @@ namespace ProbCSharp
         /// Draw bar of width n
         /// </summary>
         internal static string Bar(int n)
-        {
-            var barBuilder = new StringBuilder();
-            for (var i = 0; i < n; i++)
-            {
-                barBuilder.Append("#");
-            }
-            return barBuilder.ToString();
-        }
+            => new string('#', n);
 
         /// <summary>
         /// Return sum of list with a given value function
         /// </summary>
         internal static double Sum<A>(Func<A, double> getVal, IEnumerable<A> list)
-        {
-            return list.Select(getVal).Sum();
-        }
+            => list.Select(getVal).Sum();
 
         /// <summary>
         /// Generates a weighted histogram from a list of ItemProbs
@@ -147,9 +137,7 @@ namespace ProbCSharp
         /// </summary>
         /// <param name="scale">Scale factor. Defaults to 40</param>
         public static string Weighted(Samples<double> nums, int numBuckets = 10, double scale = DEFAULT_SCALE)
-        {
-            return Weighted(nums.Weights, numBuckets, scale);
-        }
+            => Weighted(nums.Weights, numBuckets, scale);
 
         /// <summary>
         /// Generates an unweigted histogram for a list of numbers
@@ -178,9 +166,7 @@ namespace ProbCSharp
         /// </summary>
         /// <param name="scale">Scale factor. Defaults to 40</param>
         public static string Unweighted(IEnumerable<int> nums, int numBuckets = 10, double scale = DEFAULT_SCALE)
-        {
-            return Unweighted(nums.Select(x => (double)x), numBuckets, scale);
-        }
+            => Unweighted(nums.Select(x => (double)x), numBuckets, scale);
 
         /// <summary>
         /// Generates a histogram from some samples, grouping by a show function. 

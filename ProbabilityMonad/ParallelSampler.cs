@@ -14,9 +14,7 @@ namespace ProbCSharp
         /// This will throw an exception if the distribution contains any conditionals.
         /// </summary>
         public static A SampleParallel<A>(this Dist<A> dist)
-        {
-            return dist.RunParallel(new ParallelSampler<A>());
-        }
+            => dist.RunParallel(new ParallelSampler<A>());
 
         /// <summary>
         /// Draws n samples from a distribution in parallel
@@ -24,9 +22,7 @@ namespace ProbCSharp
         /// This will throw an exception if the distribution contains any conditionals.
         /// </summary>
         public static IEnumerable<A> SampleNParallel<A>(this Dist<A> dist, int n)
-        {
-            return Enumerable.Range(0, n).Select(_ => dist.SampleParallel());
-        }
+            => Enumerable.Range(0, n).Select(_ => dist.SampleParallel());
     }
 
     /// <summary>
@@ -41,24 +37,16 @@ namespace ProbCSharp
         }
 
         public A Conditional(Func<A, Prob> lik, Dist<A> dist)
-        {
-            throw new ArgumentException("Cannot sample from conditional distribution.");
-        }
+            => throw new ArgumentException("Cannot sample from conditional distribution.");
 
         public A Primitive(PrimitiveDist<A> dist)
-        {
-            return dist.Sample();
-        }
+            => dist.Sample();
 
         public A Pure(A value)
-        {
-            return value;
-        }
+            => value;
 
         public A Independent(Dist<A> independent)
-        {
-            return independent.RunParallel(new ParallelSampler<A>());
-        }
+            => independent.RunParallel(new ParallelSampler<A>());
 
         public A RunIndependent<B, C>(Dist<B> distB, Dist<C> distC, Func<B, C, Dist<A>> run)
         {

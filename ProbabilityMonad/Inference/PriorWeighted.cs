@@ -7,9 +7,7 @@ namespace ProbCSharp
     public static class PriorWeightedExtensions
     {
         public static Dist<ItemProb<A>> WeightedPrior<A>(this Dist<A> dist)
-        {
-            return dist.Run(new PriorWeighted<A>());
-        }
+            => dist.Run(new PriorWeighted<A>());
     }
 
     /// <summary>
@@ -20,32 +18,22 @@ namespace ProbCSharp
     public class PriorWeighted<A> : DistInterpreter<A, Dist<ItemProb<A>>>
     {
         public Dist<ItemProb<A>> Bind<B>(Dist<B> dist, Func<B, Dist<A>> bind)
-        {
-            return from x in dist.Run(new PriorWeighted<B>())
-                   from y in bind(x.Item) // Don't remove conditionals here
-                   select new ItemProb<A>(y, x.Prob);
-        }
+            => from x in dist.Run(new PriorWeighted<B>())
+                from y in bind(x.Item) // Don't remove conditionals here
+                select new ItemProb<A>(y, x.Prob);
 
         public Dist<ItemProb<A>> Conditional(Func<A, Prob> lik, Dist<A> dist)
-        {
-            return from itemProb in dist.Run(new PriorWeighted<A>())
-            select new ItemProb<A>(itemProb.Item, itemProb.Prob.Mult(lik(itemProb.Item)));
-        }
+            => from itemProb in dist.Run(new PriorWeighted<A>())
+                select new ItemProb<A>(itemProb.Item, itemProb.Prob.Mult(lik(itemProb.Item)));
 
         public DistInterpreter<B, Y> New<B, Y>()
-        {
-            return new PriorWeighted<B>() as DistInterpreter<B, Y>;
-        }
+            => new PriorWeighted<B>() as DistInterpreter<B, Y>;
 
         public Dist<ItemProb<A>> Primitive(PrimitiveDist<A> dist)
-        {
-            return new Primitive<ItemProb<A>>(dist.Select(a => ItemProb(a, Prob(1))));
-        }
+            => new Primitive<ItemProb<A>>(dist.Select(a => ItemProb(a, Prob(1))));
 
         public Dist<ItemProb<A>> Pure(A value)
-        {
-            return new Pure<ItemProb<A>>(new ItemProb<A>(value, Prob(1)));
-        }
+            => new Pure<ItemProb<A>>(new ItemProb<A>(value, Prob(1)));
     }
 
 }

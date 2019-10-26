@@ -9,9 +9,10 @@ namespace ProbCSharp
     /// </summary>
     public class PoissonPrimitive : PrimitiveDist<int>
     {
-        public double Lambda;  
+        public double Lambda;
         public Poisson Dist;
         public Random Gen;
+
         public PoissonPrimitive(double lambda, Random gen)
         {
             Lambda = lambda;
@@ -20,11 +21,6 @@ namespace ProbCSharp
         }
 
         public Func<int> Sample
-        {
-            get
-            {
-                return () => Dist.Sample();
-            }
-        }
+            => () => Dist.Sample();
     }
 }

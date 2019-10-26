@@ -7,15 +7,11 @@
     {
         public A Item { get; }
         public Prob Prob { get; }
+
         public ItemProb(A item, Prob prob)
-        {
-            Item = item;
-            Prob = prob;
-        }
+            => (Item, Prob) = (item, prob);
 
         public override string ToString()
-        {
-            return $"ItemProb ({Item}, {Prob})";
-        }
+            => $"ItemProb ({Item}, {Prob})";
     }
 }

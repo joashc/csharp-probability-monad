@@ -21,17 +21,10 @@ namespace ProbCSharp
         public double Value { get; }
 
         public double LogValue
-        {
-            get
-            {
-                return Math.Log(Value);
-            }
-        }
+            => Math.Log(Value);
 
         public DoubleProb(double probability)
-        {
-            Value = probability;
-        }
+            => Value = probability;
 
         public override string ToString()
         {
@@ -40,24 +33,16 @@ namespace ProbCSharp
         }
 
         public Prob Mult(Prob other)
-        {
-            return new DoubleProb(Value * other.Value);
-        }
+            => new DoubleProb(Value * other.Value);
 
         public Prob Div(Prob other)
-        {
-            return new DoubleProb(Value / other.Value);
-        }
+            => new DoubleProb(Value / other.Value);
 
         public int CompareTo(Prob other)
-        {
-            return Value.CompareTo(other.Value);
-        }
+            => Value.CompareTo(other.Value);
 
         public bool Equals(Prob other)
-        {
-            return Value.Equals(other.Value);
-        }
+            => Value.Equals(other.Value);
     }
 
     /// <summary>
@@ -75,45 +60,24 @@ namespace ProbCSharp
         }
 
         public double Value
-        {
-            get
-            {
-                return Math.Exp(logProb);
-            }
-        }
+            => Math.Exp(logProb);
 
         public double LogValue
-        {
-            get
-            {
-                return logProb;
-            }
-        }
+            => logProb;
 
         public override string ToString()
-        {
-            var str = $"{Value*100:G3}%";
-            return str;
-        }
+            => $"{Value*100:G3}%";
 
         public int CompareTo(Prob other)
-        {
-            return logProb.CompareTo(other.LogValue);
-        }
+            => logProb.CompareTo(other.LogValue);
 
         public Prob Div(Prob other)
-        {
-            return new LogProb(logProb - other.LogValue);
-        }
+            => new LogProb(logProb - other.LogValue);
 
         public bool Equals(Prob other)
-        {
-            return other.LogValue == logProb;
-        }
+            => other.LogValue == logProb;
 
         public Prob Mult(Prob other)
-        {
-            return new LogProb(logProb + other.LogValue);
-        }
+            => new LogProb(logProb + other.LogValue);
     }
 }

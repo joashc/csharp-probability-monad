@@ -19,15 +19,12 @@ namespace ProbCSharp
     public class SampleDist<A> : PrimitiveDist<A>
     {
         private readonly Func<A> _sample;
+
         public SampleDist(Func<A> sample)
-        {
-            _sample = sample;
-        }
+            => _sample = sample;
 
         public Func<A> Sample
-        {
-            get { return _sample; }
-        }
+            => _sample;
     }
 
 
@@ -35,23 +32,17 @@ namespace ProbCSharp
     public static class PrimitiveDistMonad
     {
         public static PrimitiveDist<B> Select<A, B>(this PrimitiveDist<A> self, Func<A, B> f)
-        {
-            return new SampleDist<B>(() => f(self.Sample()));
-        }
+            => new SampleDist<B>(() => f(self.Sample()));
 
         public static PrimitiveDist<C> SelectMany<A, B, C>(
             this PrimitiveDist<A> self,
             Func<A, PrimitiveDist<B>> bind,
-            Func<A, B, C> project
-        )
-        {
-            return new SampleDist<C>(() =>
+            Func<A, B, C> project)
+            => new SampleDist<C>(() =>
             {
                 var firstSample = self.Sample();
                 var secondSample = bind(firstSample).Sample();
                 return project(firstSample, secondSample);
             });
-        }
     }
-
 }

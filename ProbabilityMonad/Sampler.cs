@@ -11,18 +11,14 @@ namespace ProbCSharp
         /// This will throw an exception if the distribution contains any conditionals.
         /// </summary>
         public static A Sample<A>(this Dist<A> dist)
-        {
-            return dist.Run(new Sampler<A>());
-        }
+            => dist.Run(new Sampler<A>());
 
         /// <summary>
         /// Draws n samples from a distribution.
         /// This will throw an exception if the distribution contains any conditionals.
         /// </summary>
         public static IEnumerable<A> SampleN<A>(this Dist<A> dist, int n)
-        {
-            return Enumerable.Range(0, n).Select(_ => dist.Sample());
-        }
+            => Enumerable.Range(0, n).Select(_ => dist.Sample());
     }
 
     /// <summary>
@@ -31,9 +27,7 @@ namespace ProbCSharp
     public class Sampler<A> : DistInterpreter<A, A>
     {
         public DistInterpreter<C, Y> New<C, Y>()
-        {
-            return new Sampler<C>() as DistInterpreter<C, Y>;
-        }
+            => new Sampler<C>() as DistInterpreter<C, Y>;
 
         A DistInterpreter<A, A>.Bind<B>(Dist<B> dist, Func<B, Dist<A>> bind)
         {
@@ -45,19 +39,13 @@ namespace ProbCSharp
         /// All conditionals must be removed before sampling.
         /// </summary>
         A DistInterpreter<A, A>.Conditional(Func<A, Prob> lik, Dist<A> dist)
-        {
-            throw new ArgumentException("Cannot sample from conditional distribution.");
-        }
+            => throw new ArgumentException("Cannot sample from conditional distribution.");
 
         A DistInterpreter<A, A>.Primitive(PrimitiveDist<A> dist)
-        {
-            return dist.Sample();
-        }
+            => dist.Sample();
 
         A DistInterpreter<A, A>.Pure(A value)
-        {
-            return value;
-        }
+            => value;
     }
 
 }
