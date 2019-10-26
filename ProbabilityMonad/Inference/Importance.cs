@@ -10,9 +10,7 @@ namespace ProbCSharp
         /// Importance sample with given number of samples
         /// </summary>
         public static Dist<Samples<A>> ImportanceSamples<A>(this Dist<A> dist, int numSamples)
-        {
-            return Importance.ImportanceSamples(numSamples, dist);
-        }
+            => Importance.ImportanceSamples(numSamples, dist);
     }
 
     /// <summary>
@@ -35,11 +33,9 @@ namespace ProbCSharp
         /// Flattens nested samples
         /// </summary>
         public static Samples<A> Flatten<A>(Samples<Samples<A>> samples)
-        {
-            return Samples(from outer in Normalize(samples).Weights
-                   from inner in outer.Item.Weights
-                   select ItemProb(inner.Item, inner.Prob.Mult(outer.Prob)));
-        }
+            => Samples(from outer in Normalize(samples).Weights
+                from inner in outer.Item.Weights
+                select ItemProb(inner.Item, inner.Prob.Mult(outer.Prob)));
 
         /// <summary>
         /// Performs importance sampling on a distribution
@@ -57,11 +53,9 @@ namespace ProbCSharp
         /// </summary>
         /// <returns>An importance sampled distribution</returns>
         public static Dist<A> ImportanceDist<A>(int numSamples, Dist<A> dist)
-        {
-            return from probs in ImportanceSamples(numSamples, dist)
-                   from resampled in Categorical(probs)
-                   select resampled;
-        }
+            => from probs in ImportanceSamples(numSamples, dist)
+                from resampled in Categorical(probs)
+                select resampled;
 
         /// <summary>
         /// Normalizes a list of samples

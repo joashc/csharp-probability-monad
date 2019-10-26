@@ -12,17 +12,13 @@ namespace ProbCSharp
         /// SMC that discards pseudo-marginal likelihoods
         /// </summary>
         public static Dist<Samples<A>> SmcStandard<A>(this Dist<A> dist, int n)
-        {
-            return dist.Run(new Smc<A>(n)).Run(new Prior<Samples<A>>());
-        }
+            => dist.Run(new Smc<A>(n)).Run(new Prior<Samples<A>>());
 
         /// <summary>
         /// SMC that does importance sampling
         /// </summary>
         public static Dist<Samples<A>> SmcMultiple<A>(this Dist<A> dist, int numSamples, int numParticles)
-        {
-            return dist.Run(new Smc<A>(numParticles)).ImportanceSamples(numSamples).Select(Importance.Flatten);
-        }
+            => dist.Run(new Smc<A>(numParticles)).ImportanceSamples(numSamples).Select(Importance.Flatten);
     }
 
     /// <summary>
@@ -32,17 +28,13 @@ namespace ProbCSharp
     {
         public int numParticles;
         public Smc(int numParticles)
-        {
-            this.numParticles = numParticles;
-        }
+            => this.numParticles = numParticles;
 
         public Dist<Samples<A>> Bind<B>(Dist<B> dist, Func<B, Dist<A>> bind)
-        {
-            return from ps in dist.Run(new Smc<B>(numParticles))
-                   let unzipped = ps.Unzip()
-                   from ys in unzipped.Item1.Select(bind).Sequence()
-                   select Samples(ys.Zip(unzipped.Item2, ItemProb));
-        }
+            => from ps in dist.Run(new Smc<B>(numParticles))
+                let unzipped = ps.Unzip()
+                from ys in unzipped.Item1.Select(bind).Sequence()
+                select Samples(ys.Zip(unzipped.Item2, ItemProb));
 
         public Dist<Samples<A>> Conditional(Func<A, Prob> lik, Dist<A> dist)
         {
@@ -58,9 +50,7 @@ namespace ProbCSharp
         }
 
         public DistInterpreter<B, Y> New<B, Y>()
-        {
-            return new Smc<B>(numParticles) as DistInterpreter<B, Y>;
-        }
+            => new Smc<B>(numParticles) as DistInterpreter<B, Y>;
 
         public Dist<Samples<A>> Primitive(PrimitiveDist<A> dist)
         {

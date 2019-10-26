@@ -54,20 +54,15 @@ namespace ProbCSharp
     public class Pure<A> : Dist<A>
     {
         public readonly A Value;
+        
         public Pure(A value)
-        {
-            Value = value;
-        }
+            => Value = value;
 
         public X Run<X>(DistInterpreter<A, X> interpreter)
-        {
-            return interpreter.Pure(Value);
-        }
+            => interpreter.Pure(Value);
 
         public X RunParallel<X>(ParallelDistInterpreter<A, X> interpreter)
-        {
-            return interpreter.Pure(Value);
-        }
+            => interpreter.Pure(Value);
     }
 
     /// <summary>
@@ -76,20 +71,15 @@ namespace ProbCSharp
     public class Primitive<A> : Dist<A>
     {
         public readonly PrimitiveDist<A> dist;
+        
         public Primitive(PrimitiveDist<A> dist)
-        {
-            this.dist = dist;
-        }
+            => this.dist = dist;
 
         public X Run<X>(DistInterpreter<A, X> interpreter)
-        {
-            return interpreter.Primitive(dist);
-        }
+            => interpreter.Primitive(dist);
 
         public X RunParallel<X>(ParallelDistInterpreter<A, X> interpreter)
-        {
-            return interpreter.Primitive(dist);
-        }
+            => interpreter.Primitive(dist);
     }
 
     /// <summary>
@@ -99,21 +89,15 @@ namespace ProbCSharp
     {
         public readonly Func<A, Prob> likelihood;
         public readonly Dist<A> dist;
+
         public Conditional(Func<A, Prob> likelihood, Dist<A> dist)
-        {
-            this.likelihood = likelihood;
-            this.dist = dist;
-        }
+            => (this.likelihood, this.dist) = (likelihood, dist);
 
         public X Run<X>(DistInterpreter<A, X> interpreter)
-        {
-            return interpreter.Conditional(likelihood, dist);
-        }
+            => interpreter.Conditional(likelihood, dist);
 
         public X RunParallel<X>(ParallelDistInterpreter<A, X> interpreter)
-        {
-            return interpreter.Conditional(likelihood, dist);
-        }
+            => interpreter.Conditional(likelihood, dist);
     }
 
     /// <summary>
@@ -125,6 +109,7 @@ namespace ProbCSharp
         public readonly Dist<T2> second;
         public readonly Dist<T3> third;
         public readonly Func<T1, T2, T3, Dist<A>> run;
+        
         public RunIndependent3(Dist<T1> first, Dist<T2> second, Dist<T3> third, Func<T1, T2, T3, Dist<A>> run)
         {
             this.first = first;
@@ -145,9 +130,7 @@ namespace ProbCSharp
         }
 
         public X RunParallel<X>(ParallelDistInterpreter<A, X> interpreter)
-        {
-            return interpreter.RunIndependent3(first, second, third, run);
-        }
+            => interpreter.RunIndependent3(first, second, third, run);
     }
 
     /// <summary>
@@ -158,6 +141,7 @@ namespace ProbCSharp
         public readonly Dist<T1> first;
         public readonly Dist<T2> second;
         public readonly Func<T1, T2, Dist<A>> run;
+        
         public RunIndependent(Dist<T1> first, Dist<T2> second, Func<T1, T2, Dist<A>> run)
         {
             this.first = first;
@@ -176,9 +160,7 @@ namespace ProbCSharp
         }
 
         public X RunParallel<X>(ParallelDistInterpreter<A, X> interpreter)
-        {
-            return interpreter.RunIndependent(first, second, run);
-        }
+            => interpreter.RunIndependent(first, second, run);
     }
 
     /// <summary>
@@ -187,21 +169,16 @@ namespace ProbCSharp
     public class Independent<A> : Dist<Dist<A>>
     {
         public readonly Dist<A> dist;
+        
         public Independent(Dist<A> dist)
-        {
-            this.dist = dist;
-        }
+            => this.dist = dist;
 
         // Run sequentially if we're not using a parallel interpreter
         public X Run<X>(DistInterpreter<Dist<A>, X> interpreter)
-        {
-            return Return(dist).Run(interpreter);
-        }
+            => Return(dist).Run(interpreter);
 
         public X RunParallel<X>(ParallelDistInterpreter<Dist<A>, X> interpreter)
-        {
-            return interpreter.Independent(Return(dist));
-        }
+            => interpreter.Independent(Return(dist));
     }
 
     /// <summary>
@@ -211,6 +188,7 @@ namespace ProbCSharp
     {
         public readonly Dist<Y> dist;
         public readonly Func<Y, Dist<A>> bind;
+        
         public Bind(Dist<Y> dist, Func<Y, Dist<A>> bind)
         {
             this.dist = dist;
@@ -218,14 +196,10 @@ namespace ProbCSharp
         }
 
         public X Run<X>(DistInterpreter<A, X> interpreter)
-        {
-            return interpreter.Bind(dist, bind);
-        }
+            => interpreter.Bind(dist, bind);
 
         public X RunParallel<X>(ParallelDistInterpreter<A, X> interpreter)
-        {
-            return interpreter.Bind(dist, bind);
-        }
+            => interpreter.Bind(dist, bind);
     }
 
     /// <summary>
@@ -235,36 +209,27 @@ namespace ProbCSharp
     public static class DistExt
     {
         public static Dist<B> Select<A, B>(this Dist<A> dist, Func<A, B> f)
-        {
-            return new Bind<A, B>(dist, a => new Pure<B>(f(a)));
-        }
+            => new Bind<A, B>(dist, a => new Pure<B>(f(a)));
 
         public static Dist<B> SelectMany<A, B>(this Dist<A> dist, Func<A, Dist<B>> bind)
-        {
-            return new Bind<A, B>(dist, bind);
-        }
+            => new Bind<A, B>(dist, bind);
 
         public static Dist<C> SelectMany<A, B, C>(
             this Dist<A> dist,
             Func<A, Dist<B>> bind,
             Func<A, B, C> project
         )
-        {
-            return
-                new Bind<A, C>(dist, a =>
-                   new Bind<B, C>(bind(a), b =>
-                       new Pure<C>(project(a, b))
-                    )
-                );
-        }
+            => new Bind<A, C>(dist, a =>
+                new Bind<B, C>(bind(a), b =>
+                    new Pure<C>(project(a, b))
+                )
+            );
 
         /// <summary>
         /// Default to using recursion depth limit of 100
         /// </summary>
         public static Dist<IEnumerable<A>> Sequence<A>(this IEnumerable<Dist<A>> dists)
-        {
-            return SequenceWithDepth(dists, 100);
-        }
+            => SequenceWithDepth(dists, 100);
 
         /// <summary>
         /// This implementation sort of does trampolining to avoid stack overflows,

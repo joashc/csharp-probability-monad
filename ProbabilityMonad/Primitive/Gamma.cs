@@ -1,21 +1,24 @@
 ﻿using System;
 
-namespace ProbCSharp {
+namespace ProbCSharp
+{
     /// <summary>
     /// Primitive Gamma distribution
     /// </summary>
-    public class GammaPrimitive : PrimitiveDist<double> {
+    public class GammaPrimitive : PrimitiveDist<double>
+    {
         public double shape;
         public double rate;
         public MathNet.Numerics.Distributions.Gamma dist;
-        public GammaPrimitive(double shape, double rate, Random gen) {
+
+        public GammaPrimitive(double shape, double rate, Random gen)
+        {
             this.shape = shape;
             this.rate = rate;
             dist = new MathNet.Numerics.Distributions.Gamma(shape, rate);
         }
 
-        public Func<double> Sample {
-            get { return () => dist.Sample(); }
-        }
+        public Func<double> Sample
+            => () => dist.Sample();
     }
 }

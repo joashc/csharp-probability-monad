@@ -42,9 +42,6 @@ namespace ProbCSharp
         /// Returns the value of the metropolis chain at specified index
         /// </summary>
         public static Dist<A> MHIndex<A>(Dist<A> dist, int n, int index)
-        {
-            return MHPrior(dist, n).Select(list => list.ElementAt(index));
-        }
-
+            => MHPrior(dist, n).Select(list => list.ElementAt(index));
     }
 } 
