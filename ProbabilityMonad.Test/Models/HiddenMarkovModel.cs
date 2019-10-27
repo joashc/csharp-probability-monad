@@ -29,7 +29,7 @@ namespace ProbCSharp.Test.Models
                 samples = from prev in samples
                           from next in transitionDist(prev.Last().Item1)
                           from emit in emissionDist(next)
-                          select Append(prev, Tuple(next, emit)).ToList();
+                          select prev.Append(Tuple(next, emit)).ToList();
                 numSamples -= 1;
             }
             return samples;
@@ -94,7 +94,7 @@ namespace ProbCSharp.Test.Models
                 Condition(xs => emission(xs.Last(), y),
                 (from rest in d
                  from x in transitionMatrix(rest.Last())
-                 select Append(rest, x).ToList()));
+                 select rest.Append(x).ToList()));
 
             return observed.Aggregate(startDist, expand);
         }

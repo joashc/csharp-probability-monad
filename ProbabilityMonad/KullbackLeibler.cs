@@ -22,9 +22,8 @@ namespace ProbCSharp
 
             var pWeights = Enumerate(distP, keyFunc);
 
-            var divergences = pWeights.Weights
-                                      .Select(w => w.Prob.Value * Math.Log(w.Prob.Div(qDensity(w.Item)).Value));
-            return divergences.Sum();
+            return pWeights.Weights
+                .Sum(w => w.Prob.Value * Math.Log(w.Prob.Div(qDensity(w.Item)).Value));
         }
 
         /// <summary>

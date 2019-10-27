@@ -87,7 +87,7 @@ namespace ProbCSharp
         /// </summary>
         internal static int LongestString<A>(IEnumerable<A> list, Func<A, string> toString)
         {
-            return list.Select(x => toString(x).Length).Max();
+            return list.Max(x => toString(x).Length);
         }
 
         /// <summary>
@@ -103,22 +103,7 @@ namespace ProbCSharp
         /// Draw bar of width n
         /// </summary>
         internal static string Bar(int n)
-        {
-            var barBuilder = new StringBuilder();
-            for (var i = 0; i < n; i++)
-            {
-                barBuilder.Append("#");
-            }
-            return barBuilder.ToString();
-        }
-
-        /// <summary>
-        /// Return sum of list with a given value function
-        /// </summary>
-        internal static double Sum<A>(Func<A, double> getVal, IEnumerable<A> list)
-        {
-            return list.Select(getVal).Sum();
-        }
+            => new string('#', n);
 
         /// <summary>
         /// Generates a weighted histogram from a list of ItemProbs
@@ -128,16 +113,16 @@ namespace ProbCSharp
         {
             if (!nums.Any()) return "No data to graph.";
 
-            var sorted = nums.OrderBy(x => x.Item);
+            var sorted = nums.OrderBy(x => x.Item).ToArray();
             var min = sorted.First().Item;
             var max = sorted.Last().Item;
             var bucketList = MakeBucketList(min, max, numBuckets);
 
-            var totalMass = Sum(ip => ip.Prob.Value, sorted.Where(ip => !Double.IsInfinity(ip.Prob.LogValue)));
+            var totalMass = sorted.Where(ip => !Double.IsInfinity(ip.Prob.LogValue)).Sum(ip => ip.Prob.Value);
             foreach (var bucket in bucketList)
             {
                 bucket.WeightedValues.AddRange(sorted.Where(x => x.Item >= bucket.Min && x.Item < bucket.Max));
-                bucket.BarSize = (int) Math.Floor(bucket.WeightedValues.Select(x => x.Prob.Value).Sum() / totalMass * scale);
+                bucket.BarSize = (int) Math.Floor(bucket.WeightedValues.Sum(x => x.Prob.Value) / totalMass * scale);
             }
             return ShowBuckets(bucketList, scale);
         }
@@ -158,10 +143,10 @@ namespace ProbCSharp
         public static string Unweighted(IEnumerable<double> nums, int numBuckets = 10, double scale = DEFAULT_SCALE)
         {
             if (!nums.Any()) return "No data to graph.";
-            var sorted = nums.OrderBy(x => x);
+            var sorted = nums.OrderBy(x => x).ToArray();
             var min = sorted.First();
             var max = sorted.Last() + 10e-10;
-            var total = Sum(x => x, sorted);
+            var total = sorted.Sum(x => x);
 
             var bucketList = MakeBucketList(min, max, numBuckets);
 
@@ -193,8 +178,10 @@ namespace ProbCSharp
 
             var normalized = Importance.Normalize(CompactUnordered(itemProbs, showFunc));
             var sb = new StringBuilder();
-            var display = normalized.Weights.Select(ip => new Tuple<string, int, Prob>(showFunc(ip.Item), (int) Math.Floor(ip.Prob.Value * scale), ip.Prob));
-            var maxWidth = display.Select(d => d.Item1.Length).Max();
+            var display = normalized.Weights
+                .Select(ip => new Tuple<string, int, Prob>(showFunc(ip.Item), (int)Math.Floor(ip.Prob.Value * scale), ip.Prob))
+                .ToArray();
+            var maxWidth = display.Max(d => d.Item1.Length);
             var barScale = BarScale(display.Select(d => d.Item2), scale);
             foreach (var line in display)
             {

@@ -467,7 +467,7 @@ namespace ProbCSharp
                  .Select(g =>
                      ItemProb(
                          g.First().Item,
-                         Prob(g.Select(ip => ip.Prob.Value).Sum())
+                         Prob(g.Sum(ip => ip.Prob.Value))
                      )
                  );
          return Samples(compacted);
@@ -625,17 +625,6 @@ namespace ProbCSharp
             return Pmf(primitive.dist, y);
          }
          throw new ArgumentException("Can only calculate pmf for primitive distributions");
-      }
-
-
-      /// <summary>
-      /// Appends a value to a list. Non-mutative.
-      /// </summary>
-      public static IEnumerable<A> Append<A>(IEnumerable<A> list, A value)
-      {
-         var appendList = new List<A>(list);
-         appendList.Add(value);
-         return appendList;
       }
 
       /// <summary>

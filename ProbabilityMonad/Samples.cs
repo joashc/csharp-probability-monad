@@ -27,7 +27,7 @@ namespace ProbCSharp
         /// </summary>
         public static Prob SumProbs<A>(this Samples<A> self)
         {
-            return Prob(self.Weights.Select(ip => ip.Prob.Value).Sum());
+            return Prob(self.Weights.Sum(ip => ip.Prob.Value));
         }
 
         public static Samples<A> Normalize<A>(this Samples<A> self)

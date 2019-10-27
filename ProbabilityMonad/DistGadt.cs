@@ -293,7 +293,7 @@ namespace ProbCSharp
                 Return<IEnumerable<A>>(new List<A>()),
                 (listDist, aDist) => from a in aDist
                                      from list in listDist
-                                     select Append(list, a)
+                                     select list.Append(a)
             );
         }
 
